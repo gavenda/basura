@@ -1,0 +1,26 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "noEmit": true,
+    "module": "es2022",
+    "target": "es2021",
+    "lib": ["es2021"],
+    "strict": true,
+    "alwaysStrict": true,
+    "preserveConstEnums": true,
+    "moduleResolution": "node16",
+    "sourceMap": true,
+    "types": [
+			"@types/node",
+			"@types/debug",
+			"@cloudflare/workers-types"
+		],
+    "paths": {
+			"@env/env": ["src/env"],
+      "@discord-interactions/*": ["src/discord-interactions/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "test"]
+}

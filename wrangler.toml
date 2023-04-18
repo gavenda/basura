@@ -1,0 +1,12 @@
+name = "basura"
+main = "./src/server.ts"
+compatibility_date = "2023-04-16"
+
+[triggers]
+crons = []
+
+[env.dev]
+kv_namespaces = [{ binding = "CACHE", id = "857bc32ef3e84df3a29fc5f98c5c145f" }]
+
+[env.production]
+kv_namespaces = [{ binding = "CACHE", id = "3e272ff9879f430682babd8e01e53316" }]
