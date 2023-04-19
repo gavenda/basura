@@ -6,7 +6,6 @@
   "scripts": {
     "start": "wrangler dev --local",
     "deploy": "wrangler publish",
-    "ngrok": "ngrok http 8787 -region jp",
     "register": "ts-node --esm src/register-global.ts",
     "register:dev": "ts-node --esm src/register-dev.ts",
     "fix": "eslint --fix src/*.ts",
@@ -36,10 +35,8 @@
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "ngrok": "^4.3.3",
     "prettier": "^2.8.7",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.0.4",
     "wrangler": "^2.16.0"
   }
