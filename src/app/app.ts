@@ -1,5 +1,7 @@
 import {
+  APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
+  APIApplicationCommandOptionChoice,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
   APIInteractionResponse,
@@ -18,6 +20,7 @@ import { InteractionContext } from './context/interaction-context.js';
 import { MessageCommandContext } from './context/message-command-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
 import { UserCommandContext } from './context/user-command-context.js';
+import { AutocompleteContext } from './context/autocomplete-context.js';
 
 export interface CommandMap {
   [name: string]: CommandHandler<InteractionContext>;
@@ -144,6 +147,9 @@ export class App {
       if (interaction.type === InteractionType.ApplicationCommand) {
         return this.handleApplicationCommand(interaction);
       }
+      if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
+        return this.handleApplicationCommandAutocomplete(interaction);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -197,7 +203,7 @@ export class App {
   async handleApplicationCommand(interaction: APIApplicationCommandInteraction): Promise<APIInteractionResponse> {
     const initialResponse: Required<APIInteractionResponse> = {
       type: InteractionResponseType.DeferredChannelMessageWithSource,
-      data: {}
+      data: {},
     };
 
     let handler: CommandHandler<InteractionContext>;
@@ -217,6 +223,17 @@ export class App {
         handler = this.commandMap[interaction.data.name];
     }
 
+    if (!handler) {
+      console.error(`No handlers found for command: ${interaction.data.name}`);
+      return {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: {
+          flags: MessageFlags.Ephemeral,
+          content: 'No handlers found for this command.',
+        },
+      };
+    }
+
     if (handler.ephemeral) {
       initialResponse.data.flags = MessageFlags.Ephemeral;
     }
@@ -225,5 +242,25 @@ export class App {
     this.executionContext.waitUntil(handler.handle(context));
     // Respond immediately before interaction finishes handling.
     return initialResponse;
+  }
+
+  async handleApplicationCommandAutocomplete(
+    interaction: APIApplicationCommandAutocompleteInteraction
+  ): Promise<APIInteractionResponse> {
+    const handler = this.commandMap[interaction.data.name];
+    const context = new AutocompleteContext(this, interaction);
+
+    let choices: APIApplicationCommandOptionChoice[] = [];
+
+    if (handler.handleAutocomplete) {
+      choices = await handler.handleAutocomplete(context);
+    }
+
+    return {
+      type: InteractionResponseType.ApplicationCommandAutocompleteResult,
+      data: {
+        choices: choices.slice(0, 25),
+      },
+    };
   }
 }

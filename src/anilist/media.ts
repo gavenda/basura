@@ -65,7 +65,7 @@ export const findMediaByRanking = async (
   }
 };
 
-export const findMediaTitles = async (query: string, type: MediaType): Promise<any> => {
+export const findMediaTitles = async (query: string, type?: MediaType): Promise<string[]> => {
   const variables: Partial<FindMediaVars> = {
     query,
     type,
@@ -75,9 +75,26 @@ export const findMediaTitles = async (query: string, type: MediaType): Promise<a
 
   try {
     const result = await aniListRequest<any>(FIND_MEDIA_NAME, variables);
-    return result.Page?.media;
+
+    const titles = [];
+    for (const media of result.Page?.media) {
+      if (media.title.native) {
+        titles.push(media.title.native);
+      }
+      if (media.title.romaji) {
+        titles.push(media.title.romaji);
+      }
+      if (media.title.english) {
+        titles.push(media.title.english);
+      }
+      if (media.synonyms) {
+        titles.push(...media.synonyms);
+      }
+    }
+
+    return titles;
   } catch (err) {
     console.error(err);
-    return null;
+    return [];
   }
 };

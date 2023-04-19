@@ -11,6 +11,7 @@ export const FIND_MEDIA_NAME = `
 			media(type: $type, search: $query, genre_not_in: $genreNotIn) {
 				id
 				title {
+					native
 					romaji
 					english
 				}
