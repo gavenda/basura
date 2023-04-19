@@ -1,16 +1,10 @@
 import {
-  APIApplicationCommandGuildInteraction,
-  APIApplicationCommandInteraction,
-  APIApplicationCommandInteractionData,
-  APIApplicationCommandInteractionDataOption,
-  APIApplicationCommandInteractionWrapper,
-  APIChatInputApplicationCommandGuildInteraction,
-  APIChatInputApplicationCommandInteraction,
-  APIChatInputApplicationCommandInteractionData,
-  APIEmbed,
-  APIInteraction,
-  ApplicationCommandOptionType,
-  InteractionType,
+	APIApplicationCommandInteractionDataOption,
+	APIChatInputApplicationCommandInteraction,
+	APIChatInputApplicationCommandInteractionData,
+	APIEmbed,
+	APIInteraction,
+	ApplicationCommandOptionType
 } from 'discord-api-types/v10';
 import { App } from './app.js';
 import { Webhook } from './webhook.js';

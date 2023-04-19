@@ -1,1 +1,1 @@
-export const discordApi = (route: string): string => `https://discord.com/api${route}`;
+export const discordApi = (route: string, version: string = '10'): string => `https://discord.com/api/v${version}${route}`;

@@ -1,6 +1,5 @@
 import { request } from '@ninetailed/cf-worker-graphql-request';
-
-const ANILIST_ENDPOINT = `https://graphql.anilist.co/`;
+import { ANILIST_ENDPOINT } from './anilist.js';
 
 const findUserName = `
   query ($page: Int, $perPage: Int, $query: String) {
