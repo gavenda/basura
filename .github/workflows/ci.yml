@@ -1,6 +1,12 @@
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'wrangler.toml'
+      - 'tsconfig.json'
 jobs:
   release:
     runs-on: ubuntu-latest
