@@ -1,18 +1,14 @@
-import { discordApi } from '../../util.js';
-import { CommandHandler } from '../command.js';
-import { InteractionContext } from '../interaction-context.js';
+import Client from '@client/client.js';
 import { APIUser, Routes } from 'discord-api-types/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
+import { CommandHandler } from '../command.js';
+import { InteractionContext } from '../interaction-context.js';
 
 export class About implements CommandHandler {
   async handle(ctx: InteractionContext): Promise<void> {
-    const response = await fetch(discordApi(Routes.user()), {
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        Authorization: `Bot ${ctx.app.token}`,
-      },
-    });
-    const user = await response.json<APIUser>();
+    const client = new Client().setToken(ctx.app.token);
+
+    const user = await client.get<APIUser>(Routes.user());
     const dateCreated = getDate(user.id as Snowflake);
     const selfAvatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`;
 

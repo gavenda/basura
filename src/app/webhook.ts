@@ -1,55 +1,44 @@
-import { APIEmbed, APIMessage, Routes, Snowflake } from 'discord-api-types/v10';
-import { discordApi } from '../util.js';
+import Client from '@client/client.js';
+import { APIEmbed, APIMessage, RESTPostAPIInteractionFollowupJSONBody, Routes, Snowflake } from 'discord-api-types/v10';
 
-const toJsonString = (message: string | APIEmbed[]): string => {
+const toFollowUp = (message: string | APIEmbed[]): RESTPostAPIInteractionFollowupJSONBody => {
   if (typeof message === 'string') {
-    return JSON.stringify({
+    return {
       content: message,
-    });
+    };
   }
 
-  return JSON.stringify({
+  return {
     embeds: message,
-  });
+  };
 };
 
 export class Webhook {
   private id: Snowflake;
   private token: string;
+  private client: Client;
 
   constructor(id: Snowflake, token: string) {
     this.id = id;
     this.token = token;
+    this.client = new Client();
   }
 
   async followUp(message: string | APIEmbed[]): Promise<APIMessage> {
-    const response = await fetch(discordApi(Routes.webhook(this.id, this.token)), {
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      method: 'POST',
-      body: toJsonString(message),
+    return this.client.post<APIMessage>(Routes.webhook(this.id, this.token), {
+      auth: false,
+      body: toFollowUp(message),
     });
-    return await response.json<APIMessage>();
   }
 
   async edit(message: string | APIEmbed[], messageId: string): Promise<APIMessage> {
-    const response = await fetch(discordApi(Routes.webhookMessage(this.id, this.token, messageId)), {
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      method: 'PATCH',
-      body: toJsonString(message),
+    return this.client.patch<APIMessage>(Routes.webhookMessage(this.id, this.token, messageId), {
+      auth: false,
+      body: toFollowUp(message),
     });
-    return await response.json<APIMessage>();
   }
 
   async delete(id: Snowflake): Promise<void> {
-    await fetch(discordApi(Routes.webhookMessage(this.id, this.token, id)), {
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      method: 'delete',
-    });
+    await this.client.delete(Routes.webhookMessage(this.id, this.token, id), { auth: false });
   }
 }

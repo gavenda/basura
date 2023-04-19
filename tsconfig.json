@@ -11,14 +11,10 @@
     "preserveConstEnums": true,
     "moduleResolution": "node16",
     "sourceMap": true,
-    "types": [
-			"@types/node",
-			"@types/debug",
-			"@cloudflare/workers-types"
-		],
+    "types": ["@types/node", "@types/debug", "@cloudflare/workers-types"],
     "paths": {
-			"@env/env": ["src/env"],
-      "@discord-interactions/*": ["src/discord-interactions/*"]
+      "@env/env": ["src/env"],
+      "@client/*": ["src/client/*"]
     }
   },
   "include": ["src"],
