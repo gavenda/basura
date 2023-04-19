@@ -1,9 +1,11 @@
 import { Env } from 'src/env.js';
 import { CommandHandler } from '../command.js';
-import { InteractionContext } from '../interaction-context.js';
+import { SlashCommandContext } from '../context/slash-command-context.js';
 
-export class Unlink implements CommandHandler {
-  async handle(ctx: InteractionContext): Promise<void> {
+export class Unlink implements CommandHandler<SlashCommandContext> {
+  ephemeral: boolean = true;
+
+  async handle(ctx: SlashCommandContext): Promise<void> {
     const factory = ctx.app.env<Env>().DB_FACTORY;
     const db = factory.connection();
 
@@ -22,11 +24,11 @@ export class Unlink implements CommandHandler {
       ctx.guildId,
     ]);
 
-		if (deleteQuery.rowsAffected > 0) {
-			await ctx.edit(`Your have successfully unlinked your account.`);
-			return;
-		}
+    if (deleteQuery.rowsAffected > 0) {
+      await ctx.edit(`Your have successfully unlinked your account.`);
+      return;
+    }
 
-		await ctx.edit(`There was an error unlinking your account.`);
+    await ctx.edit(`There was an error unlinking your account.`);
   }
 }

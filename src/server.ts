@@ -1,11 +1,10 @@
-import { APIInteraction } from 'discord-api-types/v10';
+import { Client } from '@planetscale/database';
 import { Router } from 'itty-router';
 import { App } from './app/app.js';
-import { Env } from './env.js';
 import { About } from './app/commands/about.js';
 import { Link } from './app/commands/link.js';
 import { Unlink } from './app/commands/unlink.js';
-import { Client } from '@planetscale/database';
+import { Env } from './env.js';
 
 const router = Router();
 
@@ -37,29 +36,11 @@ router.post('/', async (requestLike, env: Env, ctx: ExecutionContext) => {
       link: new Link(),
       unlink: new Unlink(),
     },
-    env,
-    ctx,
+    environment: env,
+    executionContext: ctx,
   });
 
-  const requestValid = await app.isRequestValid(request);
-
-  if (!requestValid) {
-    return new Response('Bad request signature.', { status: 401 });
-  }
-
-  const interaction = await request.json<APIInteraction>();
-  const [interactionHandler, deferred] = await app.handleInteraction(interaction);
-
-  // Wait for deferred responses.
-  ctx.waitUntil(deferred);
-
-  const interactionResponse = await interactionHandler;
-
-  return new Response(JSON.stringify(interactionResponse), {
-    headers: {
-      'content-type': 'application/json;charset=UTF-8',
-    },
-  });
+  return app.handle(request);
 });
 
 /**

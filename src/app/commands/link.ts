@@ -1,10 +1,12 @@
-import { findUserByName } from '../../gql/anilist/user.js';
 import { Env } from '../../env.js';
+import { findUserByName } from '../../gql/anilist/user.js';
 import { CommandHandler } from '../command.js';
-import { InteractionContext } from '../interaction-context.js';
+import { SlashCommandContext } from '../context/slash-command-context.js';
 
-export class Link implements CommandHandler {
-  async handle(ctx: InteractionContext): Promise<void> {
+export class Link implements CommandHandler<SlashCommandContext> {
+  ephemeral: boolean = true;
+
+  async handle(ctx: SlashCommandContext): Promise<void> {
     const factory = ctx.app.env<Env>().DB_FACTORY;
     const db = factory.connection();
 
@@ -18,7 +20,7 @@ export class Link implements CommandHandler {
       return;
     }
 
-    const username = ctx.getOptionString('username');
+    const username = ctx.getStringOption('username').value;
     const user = await findUserByName(username);
 
     if (!user) {

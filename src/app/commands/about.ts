@@ -2,10 +2,12 @@ import Client from '@client/client.js';
 import { APIUser, Routes } from 'discord-api-types/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
 import { CommandHandler } from '../command.js';
-import { InteractionContext } from '../interaction-context.js';
+import { SlashCommandContext } from '../context/slash-command-context.js';
 
-export class About implements CommandHandler {
-  async handle(ctx: InteractionContext): Promise<void> {
+export class About implements CommandHandler<SlashCommandContext> {
+  ephemeral: boolean = true;
+
+  async handle(ctx: SlashCommandContext): Promise<void> {
     const client = new Client().setToken(ctx.app.token);
 
     const user = await client.get<APIUser>(Routes.user());
