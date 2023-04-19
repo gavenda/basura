@@ -1,7 +1,7 @@
+import { Client } from './client/client.js';
 import { Routes } from 'discord-api-types/v10';
 import * as dotenv from 'dotenv';
-import { COMMAND_ABOUT, COMMAND_LINK, COMMAND_UNLINK } from './commands.js';
-import { discordApi } from './util.js';
+import { commandList } from './commands/index.js';
 
 dotenv.config({ path: '.dev.vars' });
 
@@ -20,13 +20,9 @@ const registerGuildCommands = async () => {
     throw new Error('No test guild id passed');
   }
 
-  fetch(discordApi(Routes.applicationGuildCommands(applicationId, guildId)), {
-    headers: {
-      'content-type': 'application/json;charset=UTF-8',
-      Authorization: `Bot ${token}`,
-    },
-    method: 'PUT',
-    body: JSON.stringify([COMMAND_ABOUT, COMMAND_LINK, COMMAND_UNLINK]),
+  const client = new Client().setToken(token);
+  await client.put(Routes.applicationGuildCommands(applicationId, guildId), {
+    body: commandList,
   });
 };
 

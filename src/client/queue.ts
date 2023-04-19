@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import debug from 'debug';
 import { DiscordError, ErrorBody, isDiscordError } from './errors/discord-error.js';
 import { RequestError } from './errors/request-error.js';
 import { Manager } from './manager.js';
@@ -7,8 +6,6 @@ import { RequestMethod, Route } from './types.js';
 import { parse } from './util/response.js';
 import { getRouteKey } from './util/routes.js';
 import { OFFSET, ONE_HOUR, sleep } from './util/time.js';
-
-const log = debug('discord-request:queue');
 
 export class Queue {
   lastRequest = -1;
@@ -128,7 +125,7 @@ export class Queue {
     const identifier = getRouteKey(init.method as RequestMethod, route);
 
     if (key != null && key !== this.id) {
-      log(`Received new bucket hash. ${this.id} -> ${key}`);
+      console.log(`Received new bucket hash. ${this.id} -> ${key}`);
 
       this.manager.buckets.set(identifier, {
         key,
@@ -161,7 +158,7 @@ export class Queue {
 
       this.manager.onRateLimit?.(rateLimitData);
 
-      log(`Encountered 429 rate limit. ${JSON.stringify(rateLimitData)}.`);
+      console.log(`Encountered 429 rate limit. ${JSON.stringify(rateLimitData)}.`);
       await sleep(retryAfter, this.#shutdownSignal);
 
       // Don't bump retries for a non-server issue (the request is expected to succeed)
@@ -210,9 +207,9 @@ export class Queue {
       const delay = isGlobal ? this.manager.globalDelay ?? this.manager.setGlobalDelay(timeout) : sleep(timeout);
 
       if (isGlobal) {
-        log(`Global rate limit reached. Blocking all requests for ${timeout}ms`);
+        console.log(`Global rate limit reached. Blocking all requests for ${timeout}ms`);
       } else {
-        log(`${this.id} encountered a local rate limit. Waiting ${timeout}ms before continuing`);
+        console.log(`${this.id} encountered a local rate limit. Waiting ${timeout}ms before continuing`);
       }
 
       await delay;

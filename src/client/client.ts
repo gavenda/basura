@@ -1,7 +1,7 @@
 import { Callbacks, Manager, ManagerArgs } from './manager.js';
 import { RequestData, RequestMethod, RequestOptions } from './types.js';
 
-export default class Client {
+export class Client {
   #manager: Manager;
 
   constructor(options: ManagerArgs = {}) {

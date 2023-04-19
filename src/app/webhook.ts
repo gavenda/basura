@@ -1,4 +1,4 @@
-import Client from '@client/client.js';
+import { Client } from '@client/client.js';
 import { APIEmbed, APIMessage, RESTPostAPIInteractionFollowupJSONBody, Routes, Snowflake } from 'discord-api-types/v10';
 
 const toFollowUp = (message: string | APIEmbed[]): RESTPostAPIInteractionFollowupJSONBody => {

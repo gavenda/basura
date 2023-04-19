@@ -197,9 +197,7 @@ export class App {
   async handleApplicationCommand(interaction: APIApplicationCommandInteraction): Promise<APIInteractionResponse> {
     const initialResponse: Required<APIInteractionResponse> = {
       type: InteractionResponseType.DeferredChannelMessageWithSource,
-      data: {
-        flags: MessageFlags.Ephemeral,
-      },
+      data: {}
     };
 
     let handler: CommandHandler<InteractionContext>;

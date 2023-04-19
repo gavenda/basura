@@ -13,7 +13,9 @@
     "sourceMap": true,
     "types": ["@types/node", "@types/debug", "@cloudflare/workers-types"],
     "paths": {
-      "@env/env": ["src/env"],
+      "@env/env": ["src/env.ts"],
+      "@app/*": ["src/app/*"],
+      "@anilist/*": ["src/anilist/*"],
       "@client/*": ["src/client/*"]
     }
   },

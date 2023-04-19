@@ -39,6 +39,7 @@
     "ngrok": "^4.3.3",
     "prettier": "^2.8.7",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.0.4",
     "wrangler": "^2.16.0"
   }

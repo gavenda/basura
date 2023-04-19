@@ -1,7 +1,7 @@
-import { Env } from '../../env.js';
-import { findUserByName } from '../../gql/anilist/user.js';
-import { CommandHandler } from '../command.js';
-import { SlashCommandContext } from '../context/slash-command-context.js';
+import { Env } from '../env.js';
+import { CommandHandler } from '@app/command.js';
+import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { findUserByName } from '@anilist/user.js';
 
 export class Link implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;

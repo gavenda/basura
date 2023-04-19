@@ -1,0 +1,29 @@
+export const FIND_AIRING_MEDIA = `
+	query ($page: Int, $perPage: Int, $mediaIn: [Int]) {
+		Page(page: $page, perPage: $perPage) {
+			pageInfo {
+				total
+				currentPage
+				lastPage
+				hasNextPage
+				perPage
+			}
+			airingSchedules(mediaId_in: $mediaIn, sort: EPISODE_DESC, notYetAired: false) {
+				id
+				episode
+				mediaId
+				media {
+					title {
+						english
+						romaji
+						native
+					}
+					coverImage {
+						extraLarge
+					}
+					siteUrl
+				}
+			}
+		}
+	}
+`;
