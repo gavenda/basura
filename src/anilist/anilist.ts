@@ -1,4 +1,4 @@
-import { request } from '@ninetailed/cf-worker-graphql-request';
+import { GraphQLClient } from '@graphql/client.js';
 
 const ANILIST_ENDPOINT = `https://graphql.anilist.co/`;
 
@@ -31,6 +31,11 @@ type Variables = {
   [key: string]: any;
 };
 
-export const aniListRequest = <T>(query: string, variables: Variables): Promise<T> => {
-  return request<T>(ANILIST_ENDPOINT, query, variables);
+const graphQlClient = new GraphQLClient(ANILIST_ENDPOINT);
+
+export const aniListRequest = <T>(query: string, variables: Variables, cacheTtl: number = 10): Promise<T> => {
+  return graphQlClient.request<T>(query, variables, {
+    cache: cacheTtl > 0,
+    cacheTtl,
+  });
 };

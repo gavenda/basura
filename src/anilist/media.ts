@@ -1,4 +1,4 @@
-import { MediaSeason, MediaFormat, aniListRequest, MediaType } from './anilist.js';
+import { MediaFormat, MediaSeason, MediaType, aniListRequest } from './anilist.js';
 import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
 import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
 import { FIND_MEDIA } from './gql/find-media.js';

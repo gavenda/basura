@@ -16,7 +16,8 @@
       "@env/env": ["src/env.ts"],
       "@app/*": ["src/app/*"],
       "@anilist/*": ["src/anilist/*"],
-      "@client/*": ["src/client/*"]
+      "@client/*": ["src/client/*"],
+      "@graphql/*": ["src/graphql/*"]
     }
   },
   "include": ["src"],

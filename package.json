@@ -14,7 +14,6 @@
   "author": "Gavenda <gavenda@disroot.org>",
   "license": "MIT",
   "dependencies": {
-    "@ninetailed/cf-worker-graphql-request": "^1.2.0",
     "@planetscale/database": "1.6.0",
     "discord-api-methods": "^0.0.4",
     "discord-api-types": "^0.37.38",

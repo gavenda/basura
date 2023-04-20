@@ -1,7 +1,7 @@
 import { aniListRequest } from './anilist.js';
 import { FIND_CHARACTER_NAME } from './gql/find-character-name.js';
 import { FIND_CHARACTER } from './gql/find-character.js';
-import { Character, Maybe, Query } from './gql/types.js';
+import { Character, Query } from './gql/types.js';
 
 export const findCharacterNames = async (query: string): Promise<string[]> => {
   const variables = {
