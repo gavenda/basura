@@ -281,8 +281,12 @@ export class App {
 
     // The actual handling
     const handling = new Promise<void>(async (resolve, _) => {
-      await handler.handle(context);
-      context.handled = true;
+			try {
+				await handler.handle(context);
+				context.handled = true;
+			} catch (err) {
+				console.error(err);
+			}
       resolve();
     });
 
