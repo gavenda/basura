@@ -7,6 +7,7 @@ import { Link } from './link.js';
 import { Staff } from './staff.js';
 import { Unlink } from './unlink.js';
 import { User } from './user.js';
+import { Character } from './character.js';
 
 export const commands: CommandMap = {
   about: new About(),
@@ -17,4 +18,5 @@ export const commands: CommandMap = {
   user: new User(),
   link: new Link(),
   unlink: new Unlink(),
+  character: new Character(),
 };

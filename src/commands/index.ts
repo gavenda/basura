@@ -102,6 +102,21 @@ export const COMMAND_USER: Partial<APIApplicationCommand> = {
   ],
 };
 
+export const COMMAND_CHARACTER: Partial<APIApplicationCommand> = {
+  name: 'character',
+  type: ApplicationCommandType.ChatInput,
+  description: `Looks up the name of an anime/manga character.`,
+  options: [
+    {
+      type: ApplicationCommandOptionType.String,
+      name: 'query',
+      description: 'Name of the anime/manga character.',
+			autocomplete: true,
+      required: true,
+    },
+  ],
+};
+
 export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
   name: 'ranking',
   type: ApplicationCommandType.ChatInput,
@@ -204,4 +219,5 @@ export const commandList = [
   COMMAND_LINK,
   COMMAND_UNLINK,
   COMMAND_RANKING,
+	COMMAND_CHARACTER
 ];

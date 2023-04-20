@@ -2,7 +2,8 @@ import { MediaFormat, MediaSeason, MediaType, aniListRequest } from './anilist.j
 import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
 import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
 import { FIND_MEDIA } from './gql/find-media.js';
-import { Media, Query } from './gql/types.js';
+import { FIND_SCORE_BY_MEDIA_ID_AND_USER_ID } from './gql/find-score-by-media-id-and-user-id.js';
+import { Media, MediaList, Query } from './gql/types.js';
 
 export interface FindMediaVars {
   query: string;
@@ -95,5 +96,19 @@ export const findMediaTitles = async (query: string, type?: MediaType): Promise<
   } catch (err) {
     console.error(err);
     return [];
+  }
+};
+
+export const findScoreByUsersAndMedias = async (
+  userIds: number[],
+  mediaIds: number[]
+): Promise<MediaList[] | undefined> => {
+  const variables = { userIds, mediaIds };
+
+  try {
+    const result = await aniListRequest<Query>(FIND_SCORE_BY_MEDIA_ID_AND_USER_ID, variables);
+    return result.Page?.mediaList;
+  } catch (err) {
+    console.error(err);
   }
 };
