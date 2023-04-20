@@ -1,5 +1,5 @@
 export const FIND_USER_NAME = `
-	query ($page: Int, $perPage: Int, $query: String) {
+	query ($page: Int, $perPage: Int, $name: String) {
 		Page(page: $page, perPage: $perPage) {
 			pageInfo {
 				total
@@ -8,7 +8,7 @@ export const FIND_USER_NAME = `
 				hasNextPage
 				perPage
 			}
-			users(search: $query) {
+			users(search: $name) {
 				name
 			}
 		}
