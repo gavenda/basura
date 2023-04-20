@@ -1,16 +1,45 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import debug from 'debug';
 import { Queue } from './queue.js';
 import { RateLimitData, RequestData, RequestMethod, Route } from './types.js';
 import { getRouteInformation, getRouteKey } from './util/routes.js';
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from './util/time.js';
 
-const log = debug('discord-request:manager');
-
-type Bucket = {
+export type Bucket = {
   key: string;
   lastRequest: number;
+};
+
+export interface BucketManager {
+  list(): Promise<[string, Bucket][]>;
+  has(key: string): Promise<boolean>;
+  get(key: string): Promise<Bucket | undefined>;
+  delete(key: string): Promise<void>;
+  set(key: string, bucket: Bucket): Promise<void>;
+}
+
+export class DefaultBucketManager implements BucketManager {
+  buckets = new Map<string, Bucket>();
+
+  async list(): Promise<[string, Bucket][]> {
+    return Array.from(this.buckets.entries());
+  }
+  async has(key: string): Promise<boolean> {
+    return this.buckets.has(key);
+  }
+  async get(key: string): Promise<Bucket | undefined> {
+    return this.buckets.get(key);
+  }
+  async delete(key: string): Promise<void> {
+    this.buckets.delete(key);
+  }
+  async set(key: string, bucket: Bucket): Promise<void> {
+    this.buckets.set(key, bucket);
+  }
+}
+
+export type BucketManagerConfig = {
+  bucketManager?: BucketManager;
 };
 
 export type Config = {
@@ -37,7 +66,7 @@ type Cache = {
   bucketSweepInterval?: number;
 };
 
-export type ManagerArgs = Partial<Config> & Cache & Callbacks;
+export type ManagerArgs = Partial<Config> & Cache & Callbacks & BucketManagerConfig;
 
 export class Manager {
   #token: string | null = null;
@@ -48,7 +77,7 @@ export class Manager {
   globalReset = -1;
   globalRequestCounter: number;
 
-  buckets: Map<string, Bucket>;
+  buckets: BucketManager;
   queues: Map<string, Queue>;
 
   #bucketSweeper!: NodeJS.Timer;
@@ -80,6 +109,7 @@ export class Manager {
     queueSweepInterval,
     onRateLimit,
     onRequest,
+    bucketManager,
   }: ManagerArgs) {
     this.config = {
       api: api ?? 'https://discord.com/api',
@@ -92,7 +122,7 @@ export class Manager {
       globalRequestsPerSecond: globalRequestsPerSecond ?? 50,
     };
 
-    this.buckets = new Map();
+    this.buckets = bucketManager ?? new DefaultBucketManager();
     this.queues = new Map();
 
     this.globalRequestCounter = this.config.globalRequestsPerSecond;
@@ -124,7 +154,7 @@ export class Manager {
     const route = getRouteInformation(data.path);
 
     const key = getRouteKey(data.method as RequestMethod, route);
-    const bucket = this.#getBucket(key);
+    const bucket = await this.#getBucket(key);
     const queue = this.#getBucketQueue(bucket, route.identifier);
 
     const { resource, init } = this.#resolve(data);
@@ -175,18 +205,20 @@ export class Manager {
       return;
     }
 
-    this.#bucketSweeper = setInterval(() => {
+    this.#bucketSweeper = setInterval(async () => {
       const swept = new Map<string, Bucket>();
 
-      for (const [key, bucket] of this.buckets.entries()) {
+      const buckets = await this.buckets.list();
+
+      for (const [key, bucket] of buckets) {
         if (bucket.lastRequest === -1) {
           continue;
         }
 
         if (Math.floor(Date.now() - bucket.lastRequest) > ONE_DAY) {
           swept.set(key, bucket);
-          log(`Swept the ${key} bucket`);
-          this.buckets.delete(key);
+          console.log(`Swept the ${key} bucket`);
+          await this.buckets.delete(key);
         }
       }
 
@@ -204,7 +236,7 @@ export class Manager {
 
       for (const [key, queue] of this.queues.entries()) {
         if (queue.inactive) {
-          log(`Swept the ${key} queue`);
+          console.log(`Swept the ${key} queue`);
           swept.set(key, queue);
           this.queues.delete(key);
         }
@@ -214,15 +246,14 @@ export class Manager {
     }, this.queueSweepInterval);
   }
 
-  #getBucket(key: string) {
-    if (this.buckets.has(key)) {
-      return this.buckets.get(key)!;
-    }
-
-    return {
+  async #getBucket(key: string) {
+    const bucket = await this.buckets.get(key);
+    const newBucket: Bucket = {
       key: `Global(${key})`,
       lastRequest: -1,
     };
+
+    return bucket ?? newBucket;
   }
 
   #getBucketQueue(bucket: Bucket, primaryId: string) {

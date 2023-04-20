@@ -123,16 +123,17 @@ export class Queue {
 
     // Update bucket hashes as needed
     const identifier = getRouteKey(init.method as RequestMethod, route);
+    const inBucket = await this.manager.buckets.has(identifier);
 
     if (key != null && key !== this.id) {
       console.log(`Received new bucket hash. ${this.id} -> ${key}`);
 
-      this.manager.buckets.set(identifier, {
+      await this.manager.buckets.set(identifier, {
         key,
         lastRequest: Date.now(),
       });
-    } else if (key != null && this.manager.buckets.has(identifier)) {
-      this.manager.buckets.set(identifier, {
+    } else if (key != null && inBucket) {
+      await this.manager.buckets.set(identifier, {
         key,
         lastRequest: Date.now(),
       });

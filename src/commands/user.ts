@@ -11,8 +11,8 @@ export class User implements CommandHandler<SlashCommandContext> {
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const query = ctx.getStringOption(`query`).value;
-    const names = await findUserName(query);
+    const username = ctx.getStringOption(`username`).value;
+    const names = await findUserName(username);
 
     return names.map((x) => {
       return {

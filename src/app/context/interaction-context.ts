@@ -26,7 +26,7 @@ export abstract class InteractionContext {
     this.token = interaction.token;
     this.userId = interaction.member?.user.id ?? interaction.user?.id;
     this.guildId = interaction.guild_id;
-    this.webhook = new Webhook(this.app.id, this.token);
+    this.webhook = new Webhook(this.app.rest, this.app.id, this.token);
 
     if (interaction.data.resolved) {
       Object.assign(this.resolved, interaction.data.resolved);

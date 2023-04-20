@@ -10,4 +10,5 @@ export interface Env {
   DATABASE_PASSWORD: string;
   DB_FACTORY: Client;
   CACHE: KVNamespace;
+  BUCKETS: KVNamespace;
 }

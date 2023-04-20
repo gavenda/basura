@@ -21,6 +21,9 @@ import { MessageCommandContext } from './context/message-command-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
 import { UserCommandContext } from './context/user-command-context.js';
 import { AutocompleteContext } from './context/autocomplete-context.js';
+import { Client } from '@client/client.js';
+import { BucketManager, DefaultBucketManager } from '@client/manager.js';
+import { KVBucketManager } from '@client/kv-bucket-manager.js';
 
 export interface CommandMap {
   [name: string]: CommandHandler<InteractionContext>;
@@ -51,6 +54,10 @@ export interface AppOptions {
    * Command handlers.
    */
   commands: CommandMap;
+  /**
+   * Namespace for buckets, optional.
+   */
+  bucketNamespace?: KVNamespace;
 }
 
 /**
@@ -63,21 +70,26 @@ export class App {
   /**
    * Application public key.
    */
-  public publicKey: string;
+  publicKey: string;
   /**
    * Application identifier.
    */
-  public id: string;
+  id: string;
 
   /**
    * Application token.
    */
-  public token: string;
+  token: string;
 
   /**
    * The cloudflare service worker execution context.
    */
-  public executionContext: ExecutionContext;
+  executionContext: ExecutionContext;
+
+  /**
+   * Application REST client.
+   */
+  rest: Client;
 
   constructor(options: AppOptions) {
     this.environment = options.environment;
@@ -86,6 +98,14 @@ export class App {
     this.publicKey = options.publicKey;
     this.executionContext = options.executionContext;
     this.commandMap = options.commands;
+
+    let bucketManager: BucketManager = new DefaultBucketManager();
+
+    if (options.bucketNamespace) {
+      bucketManager = new KVBucketManager(options.bucketNamespace);
+    }
+
+    this.rest = new Client({ bucketManager }).setToken(options.token);
   }
 
   /**
