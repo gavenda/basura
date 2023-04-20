@@ -7,7 +7,7 @@ import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 export class Staff implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(ctx: SlashCommandContext): Promise<void> {
-    ctx.edit(`Not supported yet!`);
+    await ctx.edit(`Not supported yet!`);
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {

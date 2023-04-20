@@ -1,6 +1,10 @@
 name = "basura"
 main = "./src/server.ts"
 compatibility_date = "2023-04-16"
+kv_namespaces = [
+	{ binding = "BUCKETS", id = "5834eb959af448d0b2f68a0abe2712f9" },
+	{ binding = "CACHE", id = "61e75786d0d04cb7b7516ad682001cf0" },
+]
 
 [triggers]
 crons = []
@@ -9,10 +13,4 @@ crons = []
 kv_namespaces = [
 	{ binding = "CACHE", id = "51292a717b8a495aa567d524f90c56a2" },
 	{ binding = "BUCKETS", id = "b7ded24a9d634aecad31899ebe223ef2" },
-]
-
-[env.production]
-kv_namespaces = [
-	{ binding = "CACHE", id = "61e75786d0d04cb7b7516ad682001cf0" },
-	{ binding = "BUCKETS", id = "5834eb959af448d0b2f68a0abe2712f9" },
 ]
