@@ -2,6 +2,7 @@ import { MediaSeason, MediaFormat, aniListRequest, MediaType } from './anilist.j
 import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
 import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
 import { FIND_MEDIA } from './gql/find-media.js';
+import { Media, Query } from './gql/types.js';
 
 export interface FindMediaVars {
   query: string;
@@ -15,7 +16,7 @@ export interface FindMediaVars {
   genreNotIn: string[];
 }
 
-export const findMedia = async (query: string, type: MediaType, hentai: boolean): Promise<any> => {
+export const findMedia = async (query: string, type: MediaType, hentai: boolean): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     query,
     type,
@@ -28,11 +29,10 @@ export const findMedia = async (query: string, type: MediaType, hentai: boolean)
   }
 
   try {
-    const result = await aniListRequest<any>(FIND_MEDIA, variables);
+    const result = await aniListRequest<Query>(FIND_MEDIA, variables);
     return result.Page?.media;
   } catch (err) {
     console.error(err);
-    return null;
   }
 };
 
@@ -42,7 +42,7 @@ export const findMediaByRanking = async (
   season: MediaSeason,
   seasonYear: number,
   hentai: Boolean
-): Promise<any> => {
+): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     page: 1,
     perPage: amount,
@@ -57,11 +57,10 @@ export const findMediaByRanking = async (
   }
 
   try {
-    const result = await aniListRequest<any>(FIND_MEDIA_BY_RANKING, variables);
+    const result = await aniListRequest<Query>(FIND_MEDIA_BY_RANKING, variables);
     return result.Page?.media;
   } catch (err) {
     console.error(err);
-    return null;
   }
 };
 
@@ -74,17 +73,17 @@ export const findMediaTitles = async (query: string, type?: MediaType): Promise<
   };
 
   try {
-    const result = await aniListRequest<any>(FIND_MEDIA_NAME, variables);
-
-    const titles = [];
-    for (const media of result.Page?.media) {
-      if (media.title.native) {
+    const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
+    const medias = result.Page?.media ?? [];
+    const titles: string[] = [];
+    for (const media of medias) {
+      if (media?.title?.native) {
         titles.push(media.title.native);
       }
-      if (media.title.romaji) {
+      if (media?.title?.romaji) {
         titles.push(media.title.romaji);
       }
-      if (media.title.english) {
+      if (media?.title?.english) {
         titles.push(media.title.english);
       }
       if (media.synonyms) {

@@ -1,7 +1,9 @@
 import { Env } from '../env.js';
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
-import { findUserByName } from '@anilist/user.js';
+import { findUserByName, findUserName } from '@anilist/user.js';
+import { AutocompleteContext } from '@app/context/autocomplete-context.js';
+import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 export class Link implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
@@ -30,7 +32,7 @@ export class Link implements CommandHandler<SlashCommandContext> {
 
     const insertQuery = await db.execute(
       `INSERT INTO anilist_user (discord_id, discord_guild_id, anilist_id, anilist_username) VALUES (?, ?, ?, ?)`,
-      [ctx.userId, ctx.guildId, user.User.id, user.User.name]
+      [ctx.userId, ctx.guildId, user.id, user.name]
     );
 
     if (insertQuery.rowsAffected > 0) {
@@ -39,5 +41,17 @@ export class Link implements CommandHandler<SlashCommandContext> {
     }
 
     await ctx.edit(`There was an error linking your account.`);
+  }
+
+  async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
+    const username = ctx.getStringOption(`username`).value;
+    const names = await findUserName(username);
+
+    return names.map((x) => {
+      return {
+        name: x,
+        value: x,
+      };
+    });
   }
 }
