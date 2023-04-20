@@ -19,10 +19,10 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
     const query = ctx.getStringOption(`query`).value;
     const character = await findCharacter(query);
 
-    if (character) {
-      ctx.reply([createEmbed(character[0])]);
+    if (character && character.length > 0) {
+      await ctx.reply([createEmbed(character[0])]);
     } else {
-      ctx.reply(`No anime/manga character found.`);
+      await ctx.reply(`No anime/manga character found.`);
     }
   }
 

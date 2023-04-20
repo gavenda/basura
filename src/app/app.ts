@@ -2,20 +2,20 @@ import { Client } from '@client/client.js';
 import { KVBucketManager } from '@client/kv-bucket-manager.js';
 import { BucketManager, DefaultBucketManager } from '@client/manager.js';
 import {
-	APIApplicationCommandAutocompleteInteraction,
-	APIApplicationCommandInteraction,
-	APIApplicationCommandOptionChoice,
-	APIChatInputApplicationCommandInteraction,
-	APIInteraction,
-	APIInteractionResponse,
-	APIMessageApplicationCommandInteraction,
-	APIMessageComponentInteraction,
-	APIModalSubmitInteraction,
-	APIUserApplicationCommandInteraction,
-	ApplicationCommandType,
-	InteractionResponseType,
-	InteractionType,
-	MessageFlags,
+  APIApplicationCommandAutocompleteInteraction,
+  APIApplicationCommandInteraction,
+  APIApplicationCommandOptionChoice,
+  APIChatInputApplicationCommandInteraction,
+  APIInteraction,
+  APIInteractionResponse,
+  APIMessageApplicationCommandInteraction,
+  APIMessageComponentInteraction,
+  APIModalSubmitInteraction,
+  APIUserApplicationCommandInteraction,
+  ApplicationCommandType,
+  InteractionResponseType,
+  InteractionType,
+  MessageFlags,
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { CommandHandler } from './command.js';
@@ -168,21 +168,17 @@ export class App {
       return { type: InteractionResponseType.Pong };
     }
 
-    try {
-      if (interaction.type === InteractionType.MessageComponent) {
-        return this.handleMessageComponentInteraction(interaction);
-      }
-      if (interaction.type === InteractionType.ModalSubmit) {
-        return this.handleModalSubmitInteraction(interaction);
-      }
-      if (interaction.type === InteractionType.ApplicationCommand) {
-        return this.handleApplicationCommand(interaction);
-      }
-      if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
-        return this.handleApplicationCommandAutocomplete(interaction);
-      }
-    } catch (err) {
-      console.error(err);
+    if (interaction.type === InteractionType.MessageComponent) {
+      return this.handleMessageComponentInteraction(interaction);
+    }
+    if (interaction.type === InteractionType.ModalSubmit) {
+      return this.handleModalSubmitInteraction(interaction);
+    }
+    if (interaction.type === InteractionType.ApplicationCommand) {
+      return this.handleApplicationCommand(interaction);
+    }
+    if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
+      return this.handleApplicationCommandAutocomplete(interaction);
     }
 
     return {
@@ -281,12 +277,13 @@ export class App {
 
     // The actual handling
     const handling = new Promise<void>(async (resolve, _) => {
-			try {
-				await handler.handle(context);
-				context.handled = true;
-			} catch (err) {
-				console.error(err);
-			}
+      try {
+        await handler.handle(context);
+        context.handled = true;
+      } catch (err) {
+        await context.edit(`An error occured during the interaction.`);
+        console.error(err);
+      }
       resolve();
     });
 
