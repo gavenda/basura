@@ -2,7 +2,7 @@ import { Env } from '@env/env';
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 
-export class Unlink implements CommandHandler<SlashCommandContext> {
+export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
   async handle(ctx: SlashCommandContext): Promise<void> {

@@ -9,6 +9,7 @@ export abstract class InteractionContext {
   userId?: string;
   guildId?: string;
   messageId?: string;
+	handled: boolean = false;
 
   resolved: Required<APIInteractionDataResolved> = {
     users: {},

@@ -4,7 +4,7 @@ import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
-export class Find implements CommandHandler<SlashCommandContext> {
+export class FindCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(ctx: SlashCommandContext): Promise<void> {
     await ctx.edit(`Not supported yet!`);

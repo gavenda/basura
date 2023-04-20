@@ -1,7 +1,7 @@
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 
-export class Ranking implements CommandHandler<SlashCommandContext> {
+export class RankingCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(ctx: SlashCommandContext): Promise<void> {
     await ctx.edit(`Not supported yet!`);

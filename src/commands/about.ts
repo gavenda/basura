@@ -4,7 +4,7 @@ import { Snowflake, getDate } from 'discord-snowflake';
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 
-export class About implements CommandHandler<SlashCommandContext> {
+export class AboutCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
   async handle(ctx: SlashCommandContext): Promise<void> {

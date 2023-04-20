@@ -5,7 +5,7 @@ import { findUserByName, findUserName } from '@anilist/user.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
-export class Link implements CommandHandler<SlashCommandContext> {
+export class LinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
   async handle(ctx: SlashCommandContext): Promise<void> {

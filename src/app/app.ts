@@ -1,29 +1,30 @@
+import { Client } from '@client/client.js';
+import { KVBucketManager } from '@client/kv-bucket-manager.js';
+import { BucketManager, DefaultBucketManager } from '@client/manager.js';
 import {
-  APIApplicationCommandAutocompleteInteraction,
-  APIApplicationCommandInteraction,
-  APIApplicationCommandOptionChoice,
-  APIChatInputApplicationCommandInteraction,
-  APIInteraction,
-  APIInteractionResponse,
-  APIMessageApplicationCommandInteraction,
-  APIMessageComponentInteraction,
-  APIModalSubmitInteraction,
-  APIUserApplicationCommandInteraction,
-  ApplicationCommandType,
-  InteractionResponseType,
-  InteractionType,
-  MessageFlags,
+	APIApplicationCommandAutocompleteInteraction,
+	APIApplicationCommandInteraction,
+	APIApplicationCommandOptionChoice,
+	APIChatInputApplicationCommandInteraction,
+	APIInteraction,
+	APIInteractionResponse,
+	APIMessageApplicationCommandInteraction,
+	APIMessageComponentInteraction,
+	APIModalSubmitInteraction,
+	APIUserApplicationCommandInteraction,
+	ApplicationCommandType,
+	InteractionResponseType,
+	InteractionType,
+	MessageFlags,
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { CommandHandler } from './command.js';
+import { AutocompleteContext } from './context/autocomplete-context.js';
 import { InteractionContext } from './context/interaction-context.js';
 import { MessageCommandContext } from './context/message-command-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
 import { UserCommandContext } from './context/user-command-context.js';
-import { AutocompleteContext } from './context/autocomplete-context.js';
-import { Client } from '@client/client.js';
-import { BucketManager, DefaultBucketManager } from '@client/manager.js';
-import { KVBucketManager } from '@client/kv-bucket-manager.js';
+import { sleep } from './time.js';
 
 export interface CommandMap {
   [name: string]: CommandHandler<InteractionContext>;
@@ -54,6 +55,10 @@ export interface AppOptions {
    * Command handlers.
    */
   commands: CommandMap;
+  /**
+   * The number in milliseconds before any interaction is deemed timed out.
+   */
+  timeoutMs?: number;
   /**
    * Namespace for buckets, optional.
    */
@@ -87,6 +92,11 @@ export class App {
   executionContext: ExecutionContext;
 
   /**
+   * The number in milliseconds before any interaction is deemed timed out.
+   */
+  timeoutMs: number;
+
+  /**
    * Application REST client.
    */
   rest: Client;
@@ -98,6 +108,7 @@ export class App {
     this.publicKey = options.publicKey;
     this.executionContext = options.executionContext;
     this.commandMap = options.commands;
+    this.timeoutMs = options.timeoutMs ?? 5000;
 
     let bucketManager: BucketManager = new DefaultBucketManager();
 
@@ -258,8 +269,28 @@ export class App {
       initialResponse.data.flags = MessageFlags.Ephemeral;
     }
 
-    // Do not forcibly exit worker until we finish fully handling the interaction
-    this.executionContext.waitUntil(handler.handle(context));
+    // Timeout the interaction if it passes than given timeout
+    const timeout = new Promise<void>(async (resolve, _) => {
+      await sleep(this.timeoutMs);
+      // We send a message if not handled
+      if (!context.handled) {
+        await context.edit(`The interaction timed out.`);
+      }
+      resolve();
+    });
+
+    // The actual handling
+    const handling = new Promise<void>(async (resolve, _) => {
+      await handler.handle(context);
+      context.handled = true;
+      resolve();
+    });
+
+    const race = Promise.race([handling, timeout]);
+
+    // Do not forcibly exit worker until we finish fully handling the interaction race
+    this.executionContext.waitUntil(race);
+
     // Respond immediately before interaction finishes handling.
     return initialResponse;
   }
