@@ -9,6 +9,7 @@ import {
 	isBlank,
 	isNotBlank,
 	titleCase,
+	truncate,
 	truncateParagraph,
 	zip
 } from './util.js';
@@ -51,7 +52,7 @@ const createEmbed = (partial: Character): APIEmbed => {
 
   // Description operations
   description = description.replace(new RegExp(/~!.*?!~/), '');
-  description = truncateParagraph(description, 4096);
+  description = truncate(description, 4096);
 
   // Appearances operations
   if (character.media.nodes && character.media.edges) {
@@ -69,8 +70,8 @@ const createEmbed = (partial: Character): APIEmbed => {
       }
     }
 
-    animeAppearances = truncateParagraph(animeAppearances, 256);
-    mangaAppearances = truncateParagraph(mangaAppearances, 256);
+    animeAppearances = truncate(animeAppearances, 256);
+    mangaAppearances = truncate(mangaAppearances, 256);
   }
 
   if (isNotBlank(animeAppearances)) {
