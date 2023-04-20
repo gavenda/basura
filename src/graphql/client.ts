@@ -21,10 +21,6 @@ export class GraphQLClient {
       cache: false,
     }
   ): Promise<{ data?: T; extensions?: any; headers: Headers; status: number; errors?: GraphQLError[] }> {
-    if (options.cache && !options.cacheKey) {
-      throw new Error('GraphQLClient request: cache is set true but no cacheKey is specified.');
-    }
-
     if (options.cache && !options.cacheTtl) {
       throw new Error('GraphQLClient request: cache is set true but no cacheTtl is specified.');
     }
