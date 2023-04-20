@@ -2,20 +2,20 @@ import { Client } from '@client/client.js';
 import { KVBucketManager } from '@client/kv-bucket-manager.js';
 import { BucketManager, DefaultBucketManager } from '@client/manager.js';
 import {
-  APIApplicationCommandAutocompleteInteraction,
-  APIApplicationCommandInteraction,
-  APIApplicationCommandOptionChoice,
-  APIChatInputApplicationCommandInteraction,
-  APIInteraction,
-  APIInteractionResponse,
-  APIMessageApplicationCommandInteraction,
-  APIMessageComponentInteraction,
-  APIModalSubmitInteraction,
-  APIUserApplicationCommandInteraction,
-  ApplicationCommandType,
-  InteractionResponseType,
-  InteractionType,
-  MessageFlags,
+	APIApplicationCommandAutocompleteInteraction,
+	APIApplicationCommandInteraction,
+	APIApplicationCommandOptionChoice,
+	APIChatInputApplicationCommandInteraction,
+	APIInteraction,
+	APIInteractionResponse,
+	APIMessageApplicationCommandInteraction,
+	APIMessageComponentInteraction,
+	APIModalSubmitInteraction,
+	APIUserApplicationCommandInteraction,
+	ApplicationCommandType,
+	InteractionResponseType,
+	InteractionType,
+	MessageFlags,
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { CommandHandler } from './command.js';

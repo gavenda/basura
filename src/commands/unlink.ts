@@ -1,6 +1,6 @@
-import { Env } from '@env/env';
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { Env } from '@env/env';
 
 export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;

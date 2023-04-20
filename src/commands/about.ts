@@ -1,8 +1,7 @@
-import { Client } from '@client/client.js';
-import { APIUser, Routes } from 'discord-api-types/v10';
-import { Snowflake, getDate } from 'discord-snowflake';
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { APIUser, Routes } from 'discord-api-types/v10';
+import { Snowflake, getDate } from 'discord-snowflake';
 
 export class AboutCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;

@@ -1,6 +1,6 @@
-import { Client } from './client/client.js';
 import { Routes } from 'discord-api-types/v10';
 import * as dotenv from 'dotenv';
+import { Client } from './client/client.js';
 import { commandList } from './commands/index.js';
 
 dotenv.config({ path: '.dev.vars' });
