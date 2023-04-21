@@ -10,25 +10,63 @@ import {
 	APIApplicationCommandInteractionDataUserOption,
 	APIAttachment,
 	APIChatInputApplicationCommandInteraction,
+	APIEmbed,
+	APIInteractionDataResolved,
 	APIInteractionDataResolvedChannel,
 	APIInteractionDataResolvedGuildMember,
 	APIRole,
 	APIUser,
 } from 'discord-api-types/v10';
+import { MessageComponent } from 'discord-interactions';
 import { App } from '../app.js';
 import { InteractionContext } from './interaction-context.js';
+import { convertComponents } from './util.js';
 
 export class SlashCommandContext extends InteractionContext {
+  command: string;
   private options = new Map<string, APIApplicationCommandInteractionDataBasicOption>();
+
+  resolved: Required<APIInteractionDataResolved> = {
+    users: {},
+    members: {},
+    roles: {},
+    channels: {},
+    attachments: {},
+  };
 
   constructor(app: App, interaction: APIChatInputApplicationCommandInteraction) {
     super(app, interaction);
+
+    if (interaction.data.resolved) {
+      Object.assign(this.resolved, interaction.data.resolved);
+    }
+
+    this.command = interaction.data.name;
     this.parseOptions(interaction.data.options as APIApplicationCommandInteractionDataBasicOption[]);
   }
 
   private parseOptions(options: APIApplicationCommandInteractionDataBasicOption[] = []): void {
     for (const option of options) {
       this.options.set(option.name, option);
+    }
+  }
+
+  async replyWithComponents(message: string | APIEmbed[], components: MessageComponent[]) {
+    if (this.messageId) {
+      throw new Error(`Follow up message already sent!`);
+    }
+    const converted = convertComponents(this.command, components);
+    const followUp = await this.webhook.followUp(message, converted);
+    this.messageId = followUp.id;
+  }
+
+  async editWithComponents(message: string | APIEmbed[], components: MessageComponent[]) {
+    const converted = convertComponents(this.command, components);
+
+    if (this.messageId) {
+      await this.webhook.edit(message, this.messageId, converted);
+    } else {
+      await this.replyWithComponents(message, components);
     }
   }
 

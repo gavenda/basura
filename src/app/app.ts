@@ -19,7 +19,9 @@ import {
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { CommandHandler } from './command.js';
+import { ComponentManager } from './component-manager.js';
 import { AutocompleteContext } from './context/autocomplete-context.js';
+import { ComponentContext } from './context/component-context.js';
 import { InteractionContext } from './context/interaction-context.js';
 import { MessageCommandContext } from './context/message-command-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
@@ -63,6 +65,10 @@ export interface AppOptions {
    * Namespace for buckets, optional.
    */
   bucketNamespace?: KVNamespace;
+  /**
+   * Namespace for component cache.
+   */
+  componentNamespace: KVNamespace;
 }
 
 /**
@@ -101,6 +107,8 @@ export class App {
    */
   rest: Client;
 
+  componentManager: ComponentManager;
+
   constructor(options: AppOptions) {
     this.environment = options.environment;
     this.id = options.id;
@@ -117,6 +125,7 @@ export class App {
     }
 
     this.rest = new Client({ bucketManager }).setToken(options.token);
+    this.componentManager = new ComponentManager(options.componentNamespace);
   }
 
   /**
@@ -213,12 +222,54 @@ export class App {
   async handleMessageComponentInteraction(
     interaction: APIMessageComponentInteraction
   ): Promise<APIInteractionResponse> {
+    const context = new ComponentContext(this, interaction);
+    // Lookup handler for command
+    const handler = this.commandMap[context.command];
+
+    if (!handler) {
+      return {
+        type: InteractionResponseType.UpdateMessage,
+        data: {
+          flags: MessageFlags.Ephemeral,
+          content: 'No command handler for this component.',
+        },
+      };
+    }
+
+    // Timeout the interaction if it passes than given timeout
+    const timeout = new Promise<void>(async (resolve, _) => {
+      await sleep(this.timeoutMs);
+      // We send a message if not handled
+      if (!context.handled) {
+        await context.edit(`The interaction timed out.`);
+      }
+      resolve();
+    });
+
+    // The actual handling
+    const handling = new Promise<void>(async (resolve, _) => {
+      try {
+        if (handler.handleComponent) {
+          context.handled = true;
+          await handler.handleComponent(context);
+        } else {
+          await context.edit(`No component handlers found.`);
+        }
+      } catch (err) {
+        await context.edit(`An error occured during the interaction.`);
+        console.error(err);
+      }
+      resolve();
+    });
+
+    // Handle the component interaction.
+    const race = Promise.race([handling, timeout]);
+
+    // Do not forcibly exit worker until we finish fully handling the interaction race
+    this.executionContext.waitUntil(race);
+
     return {
-      type: InteractionResponseType.ChannelMessageWithSource,
-      data: {
-        flags: MessageFlags.Ephemeral,
-        content: 'Unsupported interaction.',
-      },
+      type: InteractionResponseType.DeferredMessageUpdate,
     };
   }
 

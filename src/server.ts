@@ -30,6 +30,7 @@ router.post('/', async (requestLike, env: Env, ctx: ExecutionContext) => {
     id: env.DISCORD_APPLICATION_ID,
     publicKey: env.DISCORD_PUBLIC_KEY,
     bucketNamespace: env.BUCKETS,
+    componentNamespace: env.CACHE,
     commands,
     environment: env,
     executionContext: ctx,

@@ -3,29 +3,20 @@ import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandInteractionDataIntegerOption,
 	APIApplicationCommandInteractionDataNumberOption,
-	APIApplicationCommandInteractionDataStringOption
+	APIApplicationCommandInteractionDataStringOption,
 } from 'discord-api-types/v10';
+import { InteractionContext } from './interaction-context.js';
 
 export type AutocompleteOption =
   | APIApplicationCommandInteractionDataStringOption
   | APIApplicationCommandInteractionDataIntegerOption
   | APIApplicationCommandInteractionDataNumberOption;
 
-export class AutocompleteContext {
-  app: App;
-  id: string;
-  token: string;
-  userId?: string;
-  guildId?: string;
-  messageId?: string;
+export class AutocompleteContext extends InteractionContext {
   option: AutocompleteOption;
 
   constructor(app: App, interaction: APIApplicationCommandAutocompleteInteraction) {
-    this.app = app;
-    this.id = interaction.id;
-    this.token = interaction.token;
-    this.userId = interaction.member?.user.id ?? interaction.user?.id;
-    this.guildId = interaction.guild_id;
+    super(app, interaction);
     this.option = interaction.data.options[0] as AutocompleteOption;
   }
 

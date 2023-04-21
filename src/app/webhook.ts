@@ -1,15 +1,18 @@
 import { Client } from '@client/client.js';
 import { APIEmbed, APIMessage, RESTPostAPIInteractionFollowupJSONBody, Routes, Snowflake } from 'discord-api-types/v10';
+import { MessageComponent } from 'discord-interactions';
 
-const toFollowUp = (message: string | APIEmbed[]): RESTPostAPIInteractionFollowupJSONBody => {
+const toFollowUp = (message: string | APIEmbed[], components: any[]): RESTPostAPIInteractionFollowupJSONBody => {
   if (typeof message === 'string') {
     return {
       content: message,
+      components,
     };
   }
 
   return {
     embeds: message,
+    components,
   };
 };
 
@@ -24,17 +27,21 @@ export class Webhook {
     this.rest = client;
   }
 
-  async followUp(message: string | APIEmbed[]): Promise<APIMessage> {
+  async followUp(message: string | APIEmbed[], components: MessageComponent[] = []): Promise<APIMessage> {
     return this.rest.post<APIMessage>(Routes.webhook(this.id, this.token), {
       auth: false,
-      body: toFollowUp(message),
+      body: toFollowUp(message, components),
     });
   }
 
-  async edit(message: string | APIEmbed[], messageId: string): Promise<APIMessage> {
+  async edit(
+    message: string | APIEmbed[],
+    messageId: string,
+    components: MessageComponent[] = []
+  ): Promise<APIMessage> {
     return this.rest.patch<APIMessage>(Routes.webhookMessage(this.id, this.token, messageId), {
       auth: false,
-      body: toFollowUp(message),
+      body: toFollowUp(message, components),
     });
   }
 
