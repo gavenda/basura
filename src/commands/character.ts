@@ -7,7 +7,16 @@ import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
-import { appendIfNotMax, isBlank, isNotBlank, titleCase, truncate, truncateParagraph, zip } from './util.js';
+import {
+	appendIfNotMax,
+	htmlToMarkdown,
+	isBlank,
+	isNotBlank,
+	titleCase,
+	truncate,
+	truncateParagraph,
+	zip,
+} from './util.js';
 
 export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
@@ -67,8 +76,11 @@ const createEmbed = (partial: Character, pageNumber: number, pageMax: number): A
   let description = character.description.trim();
 
   // Description operations
+  // Remove spoilers
   description = description.replace(new RegExp(/~!.*?!~/), '');
-	description = decode(description);
+  // Convert html to markdown
+  description = htmlToMarkdown(description);
+  description = decode(description);
   description = truncate(description, 4096);
 
   // Appearances operations

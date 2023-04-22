@@ -50,7 +50,7 @@ export const zip = <S1, S2>(firstCollection: Array<S1>, lastCollection: Array<S2
 };
 
 export const titleCase = (str: string): string => {
-	// https://stackoverflow.com/a/32589289
+  // https://stackoverflow.com/a/32589289
   var splitStr = str.toLowerCase().split(' ');
   for (var i = 0; i < splitStr.length; i++) {
     // You do not need to check if i is larger than splitStr length, as your for does that for you
@@ -59,4 +59,14 @@ export const titleCase = (str: string): string => {
   }
   // Directly return the joined string
   return splitStr.join(' ');
+};
+
+export const htmlToMarkdown = (str: string): string => {
+  return str
+    .replaceAll('<b>', '**')
+    .replaceAll('</b>', '**')
+    .replaceAll('<u>', '__')
+    .replaceAll('</u>', '__')
+    .replaceAll('<i>', '*')
+    .replaceAll('</i>', '*');
 };

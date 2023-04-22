@@ -2,15 +2,11 @@ import { APIEmbed } from 'discord-api-types/v10';
 import {
 	Button,
 	ButtonStyleTypes,
-	InputText,
 	MessageComponent,
-	MessageComponentTypes,
-	StringSelect,
+	MessageComponentTypes
 } from 'discord-interactions';
 import { ComponentContext } from './context/component-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
-
-type InteractableComponents = Button | StringSelect | InputText;
 
 export enum PaginatorButton {
   NEXT_BUTTON_ID = 'next',
