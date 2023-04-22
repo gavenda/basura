@@ -65,15 +65,14 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   }
 }
 
-const createEmbed = (partial: Character, pageNumber: number, pageMax: number): APIEmbed => {
-  const character = partial as Required<Character>;
+const createEmbed = (character: Character, pageNumber: number, pageMax: number): APIEmbed => {
   const title = characterName(character.name);
   const fields: APIEmbedField[] = [];
   const aliases = truncateParagraph(characterAliases(character.name), 256);
 
   let animeAppearances = '';
   let mangaAppearances = '';
-  let description = character.description.trim();
+  let description = character.description?.trim() ?? 'No description found.';
 
   // Description operations
   // Remove spoilers
@@ -84,7 +83,7 @@ const createEmbed = (partial: Character, pageNumber: number, pageMax: number): A
   description = truncate(description, 4096);
 
   // Appearances operations
-  if (character.media.nodes && character.media.edges) {
+  if (character.media?.nodes && character.media?.edges) {
     const nodes = zip(character.media.nodes, character.media.edges);
     for (const pair of nodes) {
       const [media, edge] = pair;
@@ -128,7 +127,7 @@ const createEmbed = (partial: Character, pageNumber: number, pageMax: number): A
     title,
     description,
     thumbnail: {
-      url: character?.image?.large ?? character?.image?.medium ?? '',
+      url: character.image?.large ?? character.image?.medium ?? '',
     },
     author: {
       name: `ID#${character.id}`,
@@ -141,15 +140,15 @@ const createEmbed = (partial: Character, pageNumber: number, pageMax: number): A
   };
 };
 
-const characterName = (name: CharacterName) => {
-  if (name.native) {
+const characterName = (name: CharacterName | undefined) => {
+  if (name?.native) {
     return `${name.full} (${name.native})`;
   } else {
-    return name.full;
+    return name?.full;
   }
 };
 
-const characterAliases = (name: CharacterName): string => {
+const characterAliases = (name: CharacterName | undefined): string => {
   let aliases = '';
   const names = name as Required<CharacterName>;
   const uniqueNames = [...new Set(names.alternative)];
