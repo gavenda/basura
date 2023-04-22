@@ -72,15 +72,16 @@ const createEmbed = (character: Character, pageNumber: number, pageMax: number):
 
   let animeAppearances = '';
   let mangaAppearances = '';
-  let description = character.description?.trim() ?? 'No description found.';
+  let description = character.description ?? 'No description found.';
 
   // Description operations
   // Remove spoilers
-  description = description.replaceAll(/\~!.*?!\~/g, '');
+  description = description.replaceAll(/\~!.*?!\~/g, '(spoiler removed)\n');
   // Convert html to markdown
   description = htmlToMarkdown(description);
   description = decode(description);
   description = truncate(description, 4096);
+	description = description.trim();
 
   // Appearances operations
   if (character.media?.nodes && character.media?.edges) {
