@@ -2,8 +2,8 @@ name = "basura"
 main = "./src/server.ts"
 compatibility_date = "2023-04-16"
 kv_namespaces = [
-	{ binding = "BUCKETS", id = "5834eb959af448d0b2f68a0abe2712f9", preview_id = "96c7fe64ae7c485dbb7d276ae67d6681" },
-	{ binding = "CACHE", id = "61e75786d0d04cb7b7516ad682001cf0", preview_id = "e57b7cdce0474ad8aa72be0924887460" },
+	{ binding = "BUCKETS", id = "5834eb959af448d0b2f68a0abe2712f9", preview_id = "e57b7cdce0474ad8aa72be0924887460" },
+	{ binding = "CACHE", id = "84338b34ceda4151889deb42218eaa24", preview_id = "f5506d2c4b9d4b7fab09ccbbbfd580c0" },
 ]
 
 [triggers]

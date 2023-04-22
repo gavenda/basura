@@ -6,6 +6,12 @@ export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {
   description: 'Literally all about the trash, me!',
 };
 
+export const COMMAND_PAGE: Partial<APIApplicationCommand> = {
+  name: 'page',
+  type: ApplicationCommandType.ChatInput,
+  description: 'Paging test.',
+};
+
 export const COMMAND_LINK: Partial<APIApplicationCommand> = {
   name: 'link',
   type: ApplicationCommandType.ChatInput,
@@ -15,7 +21,7 @@ export const COMMAND_LINK: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.String,
       name: 'username',
       description: 'Your AniList username.',
-			autocomplete: true,
+      autocomplete: true,
       required: true,
     },
   ],
@@ -51,7 +57,7 @@ export const COMMAND_ANIME: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.String,
       name: 'query',
       description: 'Name of the anime.',
-			autocomplete: true,
+      autocomplete: true,
       required: true,
     },
   ],
@@ -66,7 +72,7 @@ export const COMMAND_MANGA: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.String,
       name: 'query',
       description: 'Name of the manga.',
-			autocomplete: true,
+      autocomplete: true,
       required: true,
     },
   ],
@@ -81,7 +87,7 @@ export const COMMAND_STAFF: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.String,
       name: 'query',
       description: 'Name of the anime/manga staff.',
-			autocomplete: true,
+      autocomplete: true,
       required: true,
     },
   ],
@@ -96,7 +102,7 @@ export const COMMAND_USER: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.String,
       name: 'username',
       description: 'AniList username.',
-			autocomplete: true,
+      autocomplete: true,
       required: true,
     },
   ],
@@ -111,7 +117,7 @@ export const COMMAND_CHARACTER: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.String,
       name: 'query',
       description: 'Name of the anime/manga character.',
-			autocomplete: true,
+      autocomplete: true,
       required: true,
     },
   ],
@@ -219,5 +225,6 @@ export const commandList = [
   COMMAND_LINK,
   COMMAND_UNLINK,
   COMMAND_RANKING,
-	COMMAND_CHARACTER
+  COMMAND_CHARACTER,
+  COMMAND_PAGE,
 ];

@@ -1,4 +1,5 @@
 import { Client } from '@planetscale/database';
+import { Redis } from '@upstash/redis/cloudflare';
 import { Router } from 'itty-router';
 import { App } from './app/app.js';
 import { commands } from './commands/commands.js';
@@ -25,14 +26,18 @@ router.post('/', async (requestLike, env: Env, ctx: ExecutionContext) => {
     password: env.DATABASE_PASSWORD,
   });
 
+  const redis = Redis.fromEnv(env);
+
   const app = new App({
     token: env.DISCORD_TOKEN,
     id: env.DISCORD_APPLICATION_ID,
     publicKey: env.DISCORD_PUBLIC_KEY,
     bucketNamespace: env.BUCKETS,
+    cacheNamespace: env.CACHE,
     commands,
     environment: env,
     executionContext: ctx,
+    redis,
   });
 
   return app.handle(request);
