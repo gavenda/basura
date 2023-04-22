@@ -8,14 +8,14 @@ export function getRouteInformation(method: RequestMethod, endpoint: string): Ro
       identifier: 'burst',
     };
   }
-  const majorIdMatch = /^\/(?:channels|guilds|webhooks)\/(\d{17,19})\/(.{200,214})/.exec(endpoint);
+  const majorIdMatch = /^\/(?:channels|guilds|webhooks)\/(\d{17,19})\/(.{100,300})/.exec(endpoint);
   // Get the major id for this route - global otherwise
   const identifier = majorIdMatch?.[1] ?? 'global';
   const baseRoute = endpoint
     // Strip out all ids
     .replaceAll(/\d{17,19}/g, ':id')
 		// Strip tokens
-    .replace(/\/webhooks\/:id\/(.{200,214})\//, '/webhooks/:id/:token/')
+    .replace(/\/webhooks\/:id\/(.{100,300})\//, '/webhooks/:id/:token/')
     // Strip out reaction as they fall under the same bucket
     .replace(/\/reactions\/(.*)/, '/reactions/:reaction');
 
