@@ -1,10 +1,5 @@
 import { APIEmbed } from 'discord-api-types/v10';
-import {
-	Button,
-	ButtonStyleTypes,
-	MessageComponent,
-	MessageComponentTypes
-} from 'discord-interactions';
+import { Button, ButtonStyleTypes, MessageComponent, MessageComponentTypes } from 'discord-interactions';
 import { ComponentContext } from './context/component-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
 
@@ -119,18 +114,23 @@ export const handlePaginatorComponents = async (context: ComponentContext): Prom
 
   const page = pages.pages[pages.current];
 
-  const buttonLink = components.find(
-    (x) => x.type === MessageComponentTypes.BUTTON && x.style === ButtonStyleTypes.LINK
+	// Don't retrieve non-link buttons
+  const updatedComponents = components.filter(
+    (x) => x.type === MessageComponentTypes.BUTTON && x.style !== ButtonStyleTypes.LINK
   );
 
-  if (buttonLink && buttonLink.type === MessageComponentTypes.BUTTON && page.link) {
-    buttonLink.label = page.link.label;
-    buttonLink.url = page.link.url;
+  if (page.link) {
+    updatedComponents.push({
+      type: MessageComponentTypes.BUTTON,
+      style: ButtonStyleTypes.LINK,
+      label: page.link.label,
+      url: page.link.url,
+    });
   }
 
   await context.edit({
     message: [page.embed],
-    components,
+    components: updatedComponents,
   });
   await context.bindData(pages);
 };
