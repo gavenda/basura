@@ -11,7 +11,7 @@
     "preserveConstEnums": true,
     "moduleResolution": "node16",
     "sourceMap": true,
-    "types": ["@types/node", "@types/debug", "@cloudflare/workers-types"],
+    "types": ["@types/node", "@cloudflare/workers-types", "@types/uuid", "@types/he"],
     "paths": {
       "@env/env": ["src/env.ts"],
       "@app/*": ["src/app/*"],
