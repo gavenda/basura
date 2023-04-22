@@ -6,12 +6,6 @@ export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {
   description: 'Literally all about the trash, me!',
 };
 
-export const COMMAND_PAGE: Partial<APIApplicationCommand> = {
-  name: 'page',
-  type: ApplicationCommandType.ChatInput,
-  description: 'Paging test.',
-};
-
 export const COMMAND_LINK: Partial<APIApplicationCommand> = {
   name: 'link',
   type: ApplicationCommandType.ChatInput,
@@ -225,6 +219,5 @@ export const commandList = [
   COMMAND_LINK,
   COMMAND_UNLINK,
   COMMAND_RANKING,
-  COMMAND_CHARACTER,
-  COMMAND_PAGE,
+  COMMAND_CHARACTER
 ];

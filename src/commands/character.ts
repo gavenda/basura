@@ -2,29 +2,41 @@ import { findCharacter, findCharacterNames } from '@anilist/character.js';
 import { Character, CharacterName, MediaType } from '@anilist/gql/types.js';
 import { CommandHandler } from '@app/command.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
+import { ComponentContext } from '@app/context/component-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
-import {
-	appendIfNotMax,
-	isBlank,
-	isNotBlank,
-	titleCase,
-	truncate,
-	truncateParagraph,
-	zip
-} from './util.js';
+import { decode } from 'he';
+import { appendIfNotMax, isBlank, isNotBlank, titleCase, truncate, truncateParagraph, zip } from './util.js';
 
 export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
-  async handle(ctx: SlashCommandContext): Promise<void> {
-    const query = ctx.getStringOption(`query`).value;
-    const character = await findCharacter(query);
+  async handle(context: SlashCommandContext): Promise<void> {
+    const query = context.getStringOption(`query`).value;
+    const characters = await findCharacter(query);
 
-    if (character && character.length > 0) {
-      await ctx.reply([createEmbed(character[0])]);
-    } else {
-      await ctx.reply(`No anime/manga character found.`);
+    if (characters === undefined || characters.length === 0) {
+      await context.reply({
+        message: `No anime/manga character found.`,
+      });
+      return;
     }
+
+    let pageNumber = 1;
+    const pages: Page[] = [];
+
+    for (const character of characters) {
+      pages.push({
+        embed: createEmbed(character, pageNumber, characters.length),
+        link: {
+          label: 'View on AniList',
+          url: character.siteUrl!!,
+        },
+      });
+      pageNumber = pageNumber + 1;
+    }
+
+    await paginator({ context, pages });
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
@@ -38,9 +50,13 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
       };
     });
   }
+
+  async handleComponent(context: ComponentContext): Promise<void> {
+    await handlePaginatorComponents(context);
+  }
 }
 
-const createEmbed = (partial: Character): APIEmbed => {
+const createEmbed = (partial: Character, pageNumber: number, pageMax: number): APIEmbed => {
   const character = partial as Required<Character>;
   const title = characterName(character.name);
   const fields: APIEmbedField[] = [];
@@ -48,10 +64,11 @@ const createEmbed = (partial: Character): APIEmbed => {
 
   let animeAppearances = '';
   let mangaAppearances = '';
-  let description = character.description;
+  let description = character.description.trim();
 
   // Description operations
   description = description.replace(new RegExp(/~!.*?!~/), '');
+	description = decode(description);
   description = truncate(description, 4096);
 
   // Appearances operations
@@ -104,9 +121,11 @@ const createEmbed = (partial: Character): APIEmbed => {
     author: {
       name: `ID#${character.id}`,
     },
-    url: character.siteUrl,
     color: 16711680,
     fields,
+    footer: {
+      text: `Page ${pageNumber} / ${pageMax}`,
+    },
   };
 };
 

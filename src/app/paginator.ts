@@ -1,7 +1,16 @@
 import { APIEmbed } from 'discord-api-types/v10';
-import { Button, ButtonStyleTypes, MessageComponent, MessageComponentTypes } from 'discord-interactions';
+import {
+	Button,
+	ButtonStyleTypes,
+	InputText,
+	MessageComponent,
+	MessageComponentTypes,
+	StringSelect,
+} from 'discord-interactions';
 import { ComponentContext } from './context/component-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
+
+type InteractableComponents = Button | StringSelect | InputText;
 
 export enum PaginatorButton {
   NEXT_BUTTON_ID = 'next',
@@ -10,14 +19,24 @@ export enum PaginatorButton {
 
 export interface PaginatorOptions {
   context: SlashCommandContext;
-  pages: APIEmbed[];
+  pages: Page[];
   nextButton?: Button;
   prevButton?: Button;
 }
 
+interface LinkOptions {
+  label: string;
+  url: string;
+}
+
+export interface Page {
+  embed: APIEmbed;
+  link?: LinkOptions;
+}
+
 interface Pages {
   current: number;
-  pages: APIEmbed[];
+  pages: Page[];
 }
 
 export const paginator = async (options: PaginatorOptions): Promise<void> => {
@@ -37,6 +56,9 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
     label: 'Prev',
   };
 
+  const page = options.pages[0];
+  const buttons: Button[] = [];
+
   const nextButton = await options.context.createComponent<Button>({
     id: PaginatorButton.NEXT_BUTTON_ID,
     component: options.nextButton ?? defaultNextButton,
@@ -47,10 +69,24 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
     component: options.prevButton ?? defaultPrevButton,
   });
 
+  if (options.pages.length > 1) {
+    buttons.push(prevButton);
+    buttons.push(nextButton);
+  }
+
+  if (page.link) {
+    buttons.push({
+      type: MessageComponentTypes.BUTTON,
+      style: ButtonStyleTypes.LINK,
+      label: page.link.label,
+      url: page.link.url,
+    });
+  }
+
   const components: MessageComponent[] = [
     {
       type: MessageComponentTypes.ACTION_ROW,
-      components: [prevButton, nextButton],
+      components: buttons,
     },
   ];
 
@@ -60,7 +96,7 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
   };
 
   await options.context.edit({
-    message: [options.pages[0]],
+    message: [page.embed],
     components,
   });
   await options.context.bindData(pagesData);
@@ -85,8 +121,19 @@ export const handlePaginatorComponents = async (context: ComponentContext): Prom
     }
   }
 
+  const page = pages.pages[pages.current];
+
+  const buttonLink = components.find(
+    (x) => x.type === MessageComponentTypes.BUTTON && x.style === ButtonStyleTypes.LINK
+  );
+
+  if (buttonLink && buttonLink.type === MessageComponentTypes.BUTTON && page.link) {
+    buttonLink.label = page.link.label;
+    buttonLink.url = page.link.url;
+  }
+
   await context.edit({
-    message: [pages.pages[pages.current]],
+    message: [page.embed],
     components,
   });
   await context.bindData(pages);

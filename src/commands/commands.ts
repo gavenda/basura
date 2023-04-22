@@ -5,7 +5,6 @@ import { FindAnimeCommand } from './find-anime.js';
 import { FindMangaCommand } from './find-manga.js';
 import { FindCommand } from './find.js';
 import { LinkCommand } from './link.js';
-import { PageCommand } from './page.js';
 import { StaffCommand } from './staff.js';
 import { UnlinkCommand } from './unlink.js';
 import { UserCommand } from './user.js';
@@ -20,5 +19,4 @@ export const commands: CommandMap = {
   link: new LinkCommand(),
   unlink: new UnlinkCommand(),
   character: new CharacterCommand(),
-  page: new PageCommand(),
 };

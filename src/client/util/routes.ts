@@ -8,13 +8,14 @@ export function getRouteInformation(method: RequestMethod, endpoint: string): Ro
       identifier: 'burst',
     };
   }
+
   const majorIdMatch = /^\/(?:channels|guilds|webhooks)\/(\d{17,19})\/(.{100,300})/.exec(endpoint);
   // Get the major id for this route - global otherwise
   const identifier = majorIdMatch?.[1] ?? 'global';
   const baseRoute = endpoint
     // Strip out all ids
     .replaceAll(/\d{17,19}/g, ':id')
-		// Strip tokens
+    // Strip tokens
     .replace(/\/webhooks\/:id\/(.{100,300})\//, '/webhooks/:id/:token/')
     // Strip out reaction as they fall under the same bucket
     .replace(/\/reactions\/(.*)/, '/reactions/:reaction');
@@ -30,12 +31,6 @@ export function getRouteInformation(method: RequestMethod, endpoint: string): Ro
       exceptions += '/Delete Old Message';
     }
   }
-
-  const path = endpoint
-    // Replace Snowflake IDs
-    .replace(/\d{16,19}/g, ':id')
-    // Reactions share a bucket
-    .replace(/\/reactions\/(.*)/, '/reactions/:reaction');
 
   return {
     path: baseRoute + exceptions,

@@ -5,7 +5,7 @@ import { InteractionContext } from './context/interaction-context.js';
 
 export interface CommandHandler<T extends InteractionContext> {
   ephemeral: boolean;
-  handle(ctx: T): Promise<void>;
-  handleComponent?(ctx: ComponentContext): Promise<void>;
-  handleAutocomplete?(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]>;
+  handle(context: T): Promise<void>;
+  handleComponent?(context: ComponentContext): Promise<void>;
+  handleAutocomplete?(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]>;
 }

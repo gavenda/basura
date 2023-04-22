@@ -8,43 +8,51 @@ import { Env } from '../env.js';
 export class LinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
-  async handle(ctx: SlashCommandContext): Promise<void> {
-    const factory = ctx.app.env<Env>().DB_FACTORY;
+  async handle(context: SlashCommandContext): Promise<void> {
+    const factory = context.app.env<Env>().DB_FACTORY;
     const db = factory.connection();
 
     const userCheckQuery = await db.execute(
       `SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`,
-      [ctx.guildId, ctx.userId]
+      [context.guildId, context.userId]
     );
 
     if (userCheckQuery.size > 0) {
-      await ctx.edit(`Your account is already linked.`);
+      await context.edit({
+        message: `Your account is already linked.`,
+      });
       return;
     }
 
-    const username = ctx.getStringOption('username').value;
+    const username = context.getStringOption('username').value;
     const user = await findUserByName(username);
 
     if (!user) {
-      await ctx.edit(`Cannot find AniList user \`${username}\`.`);
+      await context.edit({
+        message: `Cannot find AniList user \`${username}\`.`,
+      });
       return;
     }
 
     const insertQuery = await db.execute(
       `INSERT INTO anilist_user (discord_id, discord_guild_id, anilist_id, anilist_username) VALUES (?, ?, ?, ?)`,
-      [ctx.userId, ctx.guildId, user.id, user.name]
+      [context.userId, context.guildId, user.id, user.name]
     );
 
     if (insertQuery.rowsAffected > 0) {
-      await ctx.edit(`You have successfully linked your account.`);
+      await context.edit({
+        message: `You have successfully linked your account.`,
+      });
       return;
     }
 
-    await ctx.edit(`There was an error linking your account.`);
+    await context.edit({
+      message: `There was an error linking your account.`,
+    });
   }
 
-  async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const username = ctx.getStringOption(`username`).value;
+  async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
+    const username = context.getStringOption(`username`).value;
     const names = await findUserName(username);
 
     return names.map((x) => {
