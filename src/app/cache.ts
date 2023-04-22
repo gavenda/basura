@@ -51,6 +51,8 @@ export class KVCache implements Cache {
   }
 
   async put<T>(key: string, value: T): Promise<void> {
-    await this.cache.put(key, JSON.stringify(value), { expirationTtl: this.ttl });
+    await this.cache.put(key, JSON.stringify(value), {
+      expirationTtl: this.ttl > 60 ? this.ttl : 60,
+    });
   }
 }

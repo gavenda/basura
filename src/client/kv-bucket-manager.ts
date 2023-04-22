@@ -37,7 +37,7 @@ export class KVBucketManager implements BucketManager {
   }
   async set(key: string, bucket: Bucket, ttl: number): Promise<void> {
     await this.kv.put(key, JSON.stringify(bucket), {
-      expirationTtl: ttl,
+      expirationTtl: ttl > 60 ? ttl : 60,
     });
   }
 }

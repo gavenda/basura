@@ -1,7 +1,7 @@
-import { APIEmbed, APIInteraction } from 'discord-api-types/v10';
-import { MessageComponent } from 'discord-interactions';
+import { APIInteraction } from 'discord-api-types/v10';
 import { App } from '../app.js';
 import { Webhook } from '../webhook.js';
+import { MessageOptions } from './message-options.js';
 
 export abstract class InteractionContext {
   app: App;
@@ -45,19 +45,19 @@ export abstract class InteractionContext {
     throw new Error(`No message id!`);
   }
 
-  async reply(message: string | APIEmbed[], components: MessageComponent[] = []) {
+  async reply(options: MessageOptions) {
     if (this.messageId) {
       throw new Error(`Follow up message already sent!`);
     }
-    const followUp = await this.webhook.followUp(message, components);
+    const followUp = await this.webhook.followUp(options.message, options.components);
     this.messageId = followUp.id;
   }
 
-  async edit(message: string | APIEmbed[], components: MessageComponent[] = []) {
+  async edit(options: MessageOptions) {
     if (this.messageId) {
-      await this.webhook.edit(message, this.messageId, components);
+      await this.webhook.edit(options.message, this.messageId, options.components);
     } else {
-      await this.reply(message, components);
+      await this.reply(options);
     }
   }
 }

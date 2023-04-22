@@ -271,7 +271,10 @@ export class App {
       await sleep(this.timeoutMs);
       // We send a message if not handled
       if (!context.handled) {
-        await context.edit(`The interaction timed out.`);
+        await context.edit({
+          message: `The interaction timed out.`,
+          ephmeral: true,
+        });
       }
       resolve();
     });
@@ -283,10 +286,16 @@ export class App {
           context.handled = true;
           await handler.handleComponent(context);
         } else {
-          await context.edit(`No component handlers found.`);
+          await context.edit({
+            message: `No component handlers found.`,
+            ephmeral: true,
+          });
         }
       } catch (err) {
-        await context.edit(`An error occured during the interaction.`);
+        await context.edit({
+          message: `An error occured during the interaction.`,
+          ephmeral: true,
+        });
         console.error(err);
       }
       resolve();
@@ -351,7 +360,10 @@ export class App {
       await sleep(this.timeoutMs);
       // We send a message if not handled
       if (!context.handled) {
-        await context.edit(`The interaction timed out.`);
+        await context.edit({
+          message: `The interaction timed out.`,
+          ephmeral: true,
+        });
       }
       resolve();
     });
@@ -362,7 +374,10 @@ export class App {
         await handler.handle(context);
         context.handled = true;
       } catch (err) {
-        await context.edit(`An error occured during the interaction.`);
+        await context.edit({
+          message: `An error occured during the interaction.`,
+          ephmeral: true,
+        });
         console.error(err);
       }
       resolve();
