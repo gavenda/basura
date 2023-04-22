@@ -10,7 +10,7 @@ import { decode } from 'he';
 import { appendIfNotMax, isBlank, isNotBlank, titleCase, truncate, truncateParagraph, zip } from './util.js';
 
 export class CharacterCommand implements CommandHandler<SlashCommandContext> {
-  ephemeral: boolean = true;
+  ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
     const query = context.getStringOption(`query`).value;
     const characters = await findCharacter(query);
