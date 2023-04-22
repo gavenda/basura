@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@planetscale/database": "1.6.0",
+    "@upstash/redis": "^1.20.4",
     "discord-api-methods": "^0.0.4",
     "discord-api-types": "^0.37.38",
     "discord-interactions": "^3.3.0",

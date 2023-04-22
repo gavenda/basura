@@ -1,6 +1,7 @@
 import { Client } from '@client/client.js';
 import { KVBucketManager } from '@client/kv-bucket-manager.js';
-import { BucketManager, DefaultBucketManager } from '@client/manager.js';
+import { RedisBucketManager } from '@client/redis-bucket-manager.js';
+import { Redis } from '@upstash/redis';
 import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandInteraction,
@@ -18,8 +19,8 @@ import {
 	MessageFlags,
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
+import { Cache, DefaultCache, KVCache, RedisCache } from './cache.js';
 import { CommandHandler } from './command.js';
-import { ComponentManager } from './component-manager.js';
 import { AutocompleteContext } from './context/autocomplete-context.js';
 import { ComponentContext } from './context/component-context.js';
 import { InteractionContext } from './context/interaction-context.js';
@@ -66,9 +67,21 @@ export interface AppOptions {
    */
   bucketNamespace?: KVNamespace;
   /**
-   * Namespace for component cache.
+   * Namespace for cache, optional.
    */
-  componentNamespace: KVNamespace;
+  cacheNamespace?: KVNamespace;
+  /**
+   * Message cache ttl, defaults to 3600
+   */
+  messageCacheTtl?: number;
+  /**
+   * Component cache ttl, defaults to 86400
+   */
+  componentTtl?: number;
+  /**
+   * Redis client.
+   */
+  redis?: Redis;
 }
 
 /**
@@ -107,7 +120,14 @@ export class App {
    */
   rest: Client;
 
-  componentManager: ComponentManager;
+  /**
+   * Component cache.
+   */
+  componentCache: Cache;
+  /**
+   * Message cache.
+   */
+  messageCache: Cache;
 
   constructor(options: AppOptions) {
     this.environment = options.environment;
@@ -117,15 +137,25 @@ export class App {
     this.executionContext = options.executionContext;
     this.commandMap = options.commands;
     this.timeoutMs = options.timeoutMs ?? 5000;
+    this.componentCache = new DefaultCache();
+    this.messageCache = new DefaultCache();
+    this.rest = new Client().setToken(options.token);
 
-    let bucketManager: BucketManager = new DefaultBucketManager();
-
-    if (options.bucketNamespace) {
-      bucketManager = new KVBucketManager(options.bucketNamespace);
+    if (options.redis) {
+      const bucketManager = new RedisBucketManager(options.redis);
+      this.rest = new Client({ bucketManager }).setToken(options.token);
+    } else if (options.bucketNamespace) {
+      const bucketManager = new KVBucketManager(options.bucketNamespace);
+      this.rest = new Client({ bucketManager }).setToken(options.token);
     }
 
-    this.rest = new Client({ bucketManager }).setToken(options.token);
-    this.componentManager = new ComponentManager(options.componentNamespace);
+    if (options.redis) {
+      this.componentCache = new RedisCache(options.redis, options.componentTtl ?? 86400);
+      this.messageCache = new RedisCache(options.redis, options.messageCacheTtl ?? 3600);
+    } else if (options.cacheNamespace) {
+      this.componentCache = new KVCache(options.cacheNamespace, options.componentTtl ?? 86400);
+      this.messageCache = new KVCache(options.cacheNamespace, options.messageCacheTtl ?? 3600);
+    }
   }
 
   /**
