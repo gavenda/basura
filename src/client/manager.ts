@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Queue } from './queue.js';
-import { RateLimitData, RequestData, RequestMethod, Route } from './types.js';
-import { getRouteInformation, getRouteKey } from './util/routes.js';
+import { RateLimitData, RequestData, Route } from './types.js';
+import { getRouteInformation } from './util/routes.js';
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from './util/time.js';
 
 export type Bucket = {
@@ -15,7 +15,7 @@ export interface BucketManager {
   has(key: string): Promise<boolean>;
   get(key: string): Promise<Bucket | undefined>;
   delete(key: string): Promise<void>;
-  set(key: string, bucket: Bucket): Promise<void>;
+  set(key: string, bucket: Bucket, ttl: number): Promise<void>;
 }
 
 export class DefaultBucketManager implements BucketManager {
@@ -33,7 +33,7 @@ export class DefaultBucketManager implements BucketManager {
   async delete(key: string): Promise<void> {
     this.buckets.delete(key);
   }
-  async set(key: string, bucket: Bucket): Promise<void> {
+  async set(key: string, bucket: Bucket, ttl: number): Promise<void> {
     this.buckets.set(key, bucket);
   }
 }
@@ -151,9 +151,9 @@ export class Manager {
   }
 
   async queue(data: RequestData) {
-    const route = getRouteInformation(data.path);
+    const route = getRouteInformation(data.method, data.path);
 
-    const key = getRouteKey(data.method as RequestMethod, route);
+    const key = `${data.method}:${route.path}`;
     const bucket = await this.#getBucket(key);
     const queue = this.#getBucketQueue(bucket, route.identifier);
 

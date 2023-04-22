@@ -4,7 +4,6 @@ import { RequestError } from './errors/request-error.js';
 import { Manager } from './manager.js';
 import { RequestMethod, Route } from './types.js';
 import { parse } from './util/response.js';
-import { getRouteKey } from './util/routes.js';
 import { OFFSET, ONE_HOUR, sleep } from './util/time.js';
 
 export class Queue {
@@ -122,21 +121,30 @@ export class Queue {
     }
 
     // Update bucket hashes as needed
-    const identifier = getRouteKey(init.method as RequestMethod, route);
+    const identifier = `${init.method}:${route.path}`;
     const inBucket = await this.manager.buckets.has(identifier);
+    const ttl = reset ? Math.floor(Number(reset) + OFFSET) : OFFSET;
 
     if (key != null && key !== this.id) {
       console.log(`Received new bucket hash. ${this.id} -> ${key}`);
 
-      await this.manager.buckets.set(identifier, {
-        key,
-        lastRequest: Date.now(),
-      });
+      await this.manager.buckets.set(
+        identifier,
+        {
+          key,
+          lastRequest: Date.now(),
+        },
+        ttl
+      );
     } else if (key != null && inBucket) {
-      await this.manager.buckets.set(identifier, {
-        key,
-        lastRequest: Date.now(),
-      });
+      await this.manager.buckets.set(
+        identifier,
+        {
+          key,
+          lastRequest: Date.now(),
+        },
+        ttl
+      );
     }
 
     // Successful Requests

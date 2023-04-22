@@ -29,13 +29,11 @@ export class RedisBucketManager implements BucketManager {
     return buckets;
   }
   async has(key: string): Promise<boolean> {
-    console.log(`Checking bucket: ${key}`);
     return (await this.redis.get<Bucket>(`${this.namespace}:${key}`)) !== null;
   }
   async get(key: string): Promise<Bucket | undefined> {
     const bucket = await this.redis.get<Bucket>(`${this.namespace}:${key}`);
     if (bucket) {
-      console.log(`Found existing bucket: ${key}`);
       return bucket;
     }
   }
@@ -44,9 +42,9 @@ export class RedisBucketManager implements BucketManager {
     await this.redis.del(`${this.namespace}:${key}`);
   }
 
-  async set(key: string, bucket: Bucket): Promise<void> {
+  async set(key: string, bucket: Bucket, ttl: number): Promise<void> {
     await this.redis.set(`${this.namespace}:${key}`, bucket, {
-      ex: 300,
+      ex: ttl,
     });
   }
 }

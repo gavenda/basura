@@ -35,7 +35,9 @@ export class KVBucketManager implements BucketManager {
   async delete(key: string): Promise<void> {
     await this.kv.delete(key);
   }
-  async set(key: string, bucket: Bucket): Promise<void> {
-    await this.kv.put(key, JSON.stringify(bucket));
+  async set(key: string, bucket: Bucket, ttl: number): Promise<void> {
+    await this.kv.put(key, JSON.stringify(bucket), {
+      expirationTtl: ttl,
+    });
   }
 }
