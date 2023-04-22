@@ -76,7 +76,7 @@ const createEmbed = (character: Character, pageNumber: number, pageMax: number):
 
   // Description operations
   // Remove spoilers
-  description = description.replace(new RegExp(/~!.*?!~/), '');
+  description = description.replaceAll(/\~!.*?!\~/g, '');
   // Convert html to markdown
   description = htmlToMarkdown(description);
   description = decode(description);
