@@ -104,13 +104,11 @@ const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; name
     description = description + `_(Synonym: ${title})_\n`;
   }
 
-  description = description + '\n';
-  description = description + media.description;
-  description = htmlToMarkdown(description);
+  description = description + '\n\n';
+  // Replace all double line breaks.
+  description = description + htmlToMarkdown(media.description || '').replaceAll('\n\n', '\n');
   description = decode(description);
   description = truncate(description, 4096);
-	// Replace all double line breaks.
-  description = description.replaceAll('\n\n', '\n');
   description = description.trim();
 
   // Author operations
