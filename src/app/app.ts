@@ -3,20 +3,20 @@ import { KVBucketManager } from '@client/kv-bucket-manager.js';
 import { RedisBucketManager } from '@client/redis-bucket-manager.js';
 import { Redis } from '@upstash/redis';
 import {
-  APIApplicationCommandAutocompleteInteraction,
-  APIApplicationCommandInteraction,
-  APIApplicationCommandOptionChoice,
-  APIChatInputApplicationCommandInteraction,
-  APIInteraction,
-  APIInteractionResponse,
-  APIMessageApplicationCommandInteraction,
-  APIMessageComponentInteraction,
-  APIModalSubmitInteraction,
-  APIUserApplicationCommandInteraction,
-  ApplicationCommandType,
-  InteractionResponseType,
-  InteractionType,
-  MessageFlags,
+	APIApplicationCommandAutocompleteInteraction,
+	APIApplicationCommandInteraction,
+	APIApplicationCommandOptionChoice,
+	APIChatInputApplicationCommandInteraction,
+	APIInteraction,
+	APIInteractionResponse,
+	APIMessageApplicationCommandInteraction,
+	APIMessageComponentInteraction,
+	APIModalSubmitInteraction,
+	APIUserApplicationCommandInteraction,
+	ApplicationCommandType,
+	InteractionResponseType,
+	InteractionType,
+	MessageFlags,
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { Cache, DefaultCache, KVCache, RedisCache } from './cache.js';
@@ -376,6 +376,7 @@ export class App {
           message: `An error occured during the interaction.`,
           ephmeral: true,
         });
+        context.handled = true;
         console.error(err);
       }
       resolve();
