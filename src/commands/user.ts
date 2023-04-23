@@ -183,10 +183,10 @@ const createUserEmbed = (user: User): APIEmbed => {
   });
 
   const mangaStats = `
-		- Total: **${statistics?.manga?.count}**
-		- Volumes: **${statistics?.manga?.volumesRead}**
-		- Chapters: **${statistics?.manga?.chaptersRead}**
-		- Mean Score: **${statistics?.manga?.meanScore}**
+		- Total: **${statistics?.manga?.count}**\n
+		- Volumes: **${statistics?.manga?.volumesRead}**\n
+		- Chapters: **${statistics?.manga?.chaptersRead}**\n
+		- Mean Score: **${statistics?.manga?.meanScore}**\n
 	`;
 
   fields.push({
@@ -250,9 +250,9 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s3 = genresByMean[2];
 
     const topGenres = `
-			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})
-			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})
-			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})
+			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n
+			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n
+			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n
 		`;
 
     fields.push({
@@ -295,9 +295,9 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s3 = tagsByMean[2];
 
     const topTags = `
-			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})
-			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})
-			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})
+			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n
+			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n
+			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n
 		`;
 
     fields.push({
