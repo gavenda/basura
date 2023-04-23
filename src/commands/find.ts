@@ -100,7 +100,7 @@ const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; name
     description = description + `_(Native: ${media.title.native})_\n`;
   }
 
-  for (const title in media.synonyms) {
+  for (const title of media.synonyms || []) {
     description = description + `_(Synonym: ${title})_\n`;
   }
 
@@ -109,6 +109,8 @@ const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; name
   description = htmlToMarkdown(description);
   description = decode(description);
   description = truncate(description, 4096);
+	// Replace all double line breaks.
+  description = description.replaceAll('\n\n', '\n');
   description = description.trim();
 
   // Author operations
@@ -167,7 +169,7 @@ const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; name
     inline: true,
   });
   fields.push({
-    name: `Rating`,
+    name: `Popularity`,
     value: `${media.popularity}`,
     inline: true,
   });
