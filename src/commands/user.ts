@@ -169,12 +169,12 @@ const createUserEmbed = (user: User): APIEmbed => {
   const animeFormats = statistics?.anime?.formats || [];
   const formats = [...mangaFormats, ...animeFormats];
 
-  const animeStats = `
-		- Total: **${statistics?.anime?.count}**\n
-		- Episodes: **${statistics?.anime?.episodesWatched}**\n
-		- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes\n
-		- Mean Score: **${statistics?.anime?.meanScore}**\n
-	`;
+  let animeStats = ``;
+
+  animeStats += `- Total: **${statistics?.anime?.count}**\n`;
+  animeStats += `- Episodes: **${statistics?.anime?.episodesWatched}**\n`;
+  animeStats += `- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes\n`;
+  animeStats += `- Mean Score: **${statistics?.anime?.meanScore}**\n`;
 
   fields.push({
     name: `Anime`,
@@ -182,12 +182,12 @@ const createUserEmbed = (user: User): APIEmbed => {
     inline: false,
   });
 
-  const mangaStats = `
-		- Total: **${statistics?.manga?.count}**\n
-		- Volumes: **${statistics?.manga?.volumesRead}**\n
-		- Chapters: **${statistics?.manga?.chaptersRead}**\n
-		- Mean Score: **${statistics?.manga?.meanScore}**\n
-	`;
+  let mangaStats = ``;
+
+  mangaStats += `- Total: **${statistics?.manga?.count}**\n`;
+  mangaStats += `- Volumes: **${statistics?.manga?.volumesRead}**\n`;
+  mangaStats += `- Chapters: **${statistics?.manga?.chaptersRead}**\n`;
+  mangaStats += `- Mean Score: **${statistics?.manga?.meanScore}**\n`;
 
   fields.push({
     name: `Manga`,
@@ -249,11 +249,10 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s2 = genresByMean[1];
     const s3 = genresByMean[2];
 
-    const topGenres = `
-			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n
-			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n
-			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n
-		`;
+    let topGenres = ``;
+    topGenres += `- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n`;
+    topGenres += `- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n`;
+    topGenres += `- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n`;
 
     fields.push({
       name: `Top Genres`,
@@ -294,11 +293,10 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s2 = tagsByMean[1];
     const s3 = tagsByMean[2];
 
-    const topTags = `
-			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n
-			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n
-			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n
-		`;
+    let topTags = ``;
+    topTags += `- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n`;
+    topTags += `- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n`;
+    topTags += `- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n`;
 
     fields.push({
       name: `Top Tags`,
