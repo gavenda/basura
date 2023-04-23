@@ -1,11 +1,14 @@
 import { MediaFormat } from '@anilist/gql/types.js';
 
+export const EMBED_FIELD_LIMIT = 256;
+export const EMBED_DESCRIPTION_LIMIT = 4096;
+
 export const trimIndent = (str: string): string => {
   return str.replace(/^ +/gm, '');
 };
 
 export const truncate = (str: string, n: number) => {
-  return str.length > n ? str.slice(0, n - 1) + '...' : str;
+  return str.length > n ? str.slice(0, n - 3) + '...' : str;
 };
 
 export const isBlank = (str: string) => {

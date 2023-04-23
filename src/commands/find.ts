@@ -9,7 +9,7 @@ import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { Env } from '@env/env';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
-import { htmlToMarkdown, inStatement, mediaFormatDisplay, titleCase, toStars, truncate } from './util.js';
+import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT, appendIfNotMax, htmlToMarkdown, inStatement, mediaFormatDisplay, titleCase, toStars, truncate } from './util.js';
 
 export class FindCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
@@ -108,7 +108,7 @@ const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; name
   // Replace all double line breaks.
   description = description + htmlToMarkdown(media.description || '').replaceAll('\n\n', '\n');
   description = decode(description);
-  description = truncate(description, 4096);
+  description = truncate(description, EMBED_DESCRIPTION_LIMIT);
   description = description.trim();
 
   // Author operations
@@ -233,31 +233,31 @@ const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; name
 
       switch (embedMedia.status) {
         case MediaListStatus.COMPLETED: {
-          completed += `- ${embedMedia.discordName} ‣ ${score}\n`;
+          completed = appendIfNotMax(completed, `- ${embedMedia.discordName} ‣ ${score}\n`, EMBED_FIELD_LIMIT);
           break;
         }
         case MediaListStatus.CURRENT: {
-          inProgress += `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`;
+          inProgress = appendIfNotMax(inProgress, `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`, EMBED_FIELD_LIMIT);
           break;
         }
         case MediaListStatus.DROPPED: {
-          dropped += `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`;
+          dropped = appendIfNotMax(dropped, `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`, EMBED_FIELD_LIMIT);
           break;
         }
         case MediaListStatus.PAUSED: {
-          paused += `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`;
+          paused = appendIfNotMax(paused, `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`, EMBED_FIELD_LIMIT);
           break;
         }
         case MediaListStatus.PLANNING: {
-          planned += `- ${embedMedia.discordName}\n`;
+          planned = appendIfNotMax(planned, `- ${embedMedia.discordName}\n`, EMBED_FIELD_LIMIT);
           break;
         }
         case MediaListStatus.REPEATING: {
-          repeating += `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`;
+          repeating = appendIfNotMax(repeating, `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`, EMBED_FIELD_LIMIT);
           break;
         }
         default: {
-          notOnList += `- ${embedMedia.discordName}\n`;
+          notOnList = appendIfNotMax(notOnList, `- ${embedMedia.discordName}\n`, EMBED_FIELD_LIMIT);
           break;
         }
       }

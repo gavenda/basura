@@ -5,7 +5,7 @@ import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { ButtonStyleTypes, MessageComponentTypes } from 'discord-interactions';
-import { distinctByKey, toIntColor, trimIndent } from './util.js';
+import { EMBED_FIELD_LIMIT, appendIfNotMax, distinctByKey, toIntColor, trimIndent } from './util.js';
 
 export class UserCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
@@ -171,10 +171,10 @@ const createUserEmbed = (user: User): APIEmbed => {
 
   let animeStats = ``;
 
-  animeStats += `- Total: **${statistics?.anime?.count}**\n`;
-  animeStats += `- Episodes: **${statistics?.anime?.episodesWatched}**\n`;
-  animeStats += `- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes\n`;
-  animeStats += `- Mean Score: **${statistics?.anime?.meanScore}**\n`;
+  animeStats = appendIfNotMax(animeStats, `- Total: **${statistics?.anime?.count}**\n`, EMBED_FIELD_LIMIT);
+  animeStats = appendIfNotMax(animeStats, `- Episodes: **${statistics?.anime?.episodesWatched}**\n`, EMBED_FIELD_LIMIT);
+  animeStats = appendIfNotMax(animeStats, `- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes\n`, EMBED_FIELD_LIMIT);
+  animeStats = appendIfNotMax(animeStats, `- Mean Score: **${statistics?.anime?.meanScore}**\n`, EMBED_FIELD_LIMIT);
 
   fields.push({
     name: `Anime`,
@@ -184,10 +184,10 @@ const createUserEmbed = (user: User): APIEmbed => {
 
   let mangaStats = ``;
 
-  mangaStats += `- Total: **${statistics?.manga?.count}**\n`;
-  mangaStats += `- Volumes: **${statistics?.manga?.volumesRead}**\n`;
-  mangaStats += `- Chapters: **${statistics?.manga?.chaptersRead}**\n`;
-  mangaStats += `- Mean Score: **${statistics?.manga?.meanScore}**\n`;
+  mangaStats = appendIfNotMax(mangaStats, `- Total: **${statistics?.manga?.count}**\n`, EMBED_FIELD_LIMIT);
+  mangaStats = appendIfNotMax(mangaStats, `- Volumes: **${statistics?.manga?.volumesRead}**\n`, EMBED_FIELD_LIMIT);
+  mangaStats = appendIfNotMax(mangaStats, `- Chapters: **${statistics?.manga?.chaptersRead}**\n`, EMBED_FIELD_LIMIT);
+  mangaStats = appendIfNotMax(mangaStats, `- Mean Score: **${statistics?.manga?.meanScore}**\n`, EMBED_FIELD_LIMIT);
 
   fields.push({
     name: `Manga`,
@@ -199,39 +199,36 @@ const createUserEmbed = (user: User): APIEmbed => {
   let weabTendencies = '';
 
   if (releaseYears) {
-    weabTendencies += `- Loves **${releaseYears[0].releaseYear}** media.\n`;
+    weabTendencies = appendIfNotMax(weabTendencies, `- Loves **${releaseYears[0].releaseYear}** media.\n`, EMBED_FIELD_LIMIT);
   }
 
   if (animeStartYears) {
-    weabTendencies += `- Started consuming weabness in **${animeStartYears[0].startYear}**.\n`;
+    weabTendencies = appendIfNotMax(weabTendencies, `- Started consuming weabness in **${animeStartYears[0].startYear}**.\n`, EMBED_FIELD_LIMIT);
   }
 
   if (mangaStartYears) {
-    weabTendencies += `- Started consuming trash in **${mangaStartYears[0].startYear}**.\n`;
+    weabTendencies = appendIfNotMax(weabTendencies, `- Started consuming trash in **${mangaStartYears[0].startYear}**.\n`, EMBED_FIELD_LIMIT);
   }
 
   if (formats && formats[0].format != MediaFormat.TV) {
-    weabTendencies += `- Addicted to the **${formats[0].format}** format.\n`;
+    weabTendencies = appendIfNotMax(weabTendencies, `- Addicted to the **${formats[0].format}** format.\n`, EMBED_FIELD_LIMIT);
   }
 
   if (statuses) {
     const total = statuses.filter((x) => x.status != MediaListStatus.PLANNING).reduce((sum, current) => sum + current.count, 0);
-
+		const dropped = statuses.filter((x) => x.status != MediaListStatus.DROPPED).reduce((sum, current) => sum + current.count, 0);
     const completed = statuses.filter((x) => x.status === MediaListStatus.COMPLETED || x.status === MediaListStatus.REPEATING).reduce((sum, current) => sum + current.count, 0);
-
-    const dropped = statuses.filter((x) => x.status != MediaListStatus.DROPPED).reduce((sum, current) => sum + current.count, 0);
-
     const completedRatio = (completed / total) * 100;
     const completedRatioStr = completedRatio.toFixed(2);
 
     if (dropped == 0) {
-      weabTendencies += `- Has **never** dropped an anime/manga!\n`;
+      weabTendencies = appendIfNotMax(weabTendencies, `- Has **never** dropped an anime/manga!\n`, EMBED_FIELD_LIMIT);
     }
 
-    weabTendencies += `- Ends up completing **${completedRatioStr}%**.\n`;
+    weabTendencies = appendIfNotMax(weabTendencies, `- Ends up completing **${completedRatioStr}%**.\n`, EMBED_FIELD_LIMIT);
 
     if (statuses[0].status == MediaListStatus.PLANNING) {
-      weabTendencies += `- Apparently thinks PLANNING > WATCHING...\n`;
+      weabTendencies = appendIfNotMax(weabTendencies, `- Apparently thinks PLANNING > WATCHING...\n`, EMBED_FIELD_LIMIT);
     }
   }
 
@@ -250,13 +247,13 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s3 = genresByMean[2];
 
     let topGenres = ``;
-    topGenres += `- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n`;
-    topGenres += `- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n`;
-    topGenres += `- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n`;
+    topGenres = appendIfNotMax(topGenres, `- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n`, EMBED_FIELD_LIMIT);
+    topGenres = appendIfNotMax(topGenres, `- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n`, EMBED_FIELD_LIMIT);
+    topGenres = appendIfNotMax(topGenres, `- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n`, EMBED_FIELD_LIMIT);
 
     fields.push({
       name: `Top Genres`,
-      value: trimIndent(topGenres).trim(),
+      value: topGenres,
       inline: false,
     });
 
@@ -271,11 +268,11 @@ const createUserEmbed = (user: User): APIEmbed => {
     const maxMangaGenre = statistics?.manga?.genres?.reduce((prev, curr) => (prev.chaptersRead > curr.chaptersRead ? prev : curr));
 
     if (maxAnimeGenre) {
-      genreStats += `- Wasted **${maxAnimeGenre.minutesWatched}** minutes on **${maxAnimeGenre.genre}**.\n`;
+      genreStats = appendIfNotMax(genreStats, `- Wasted **${maxAnimeGenre.minutesWatched}** minutes on **${maxAnimeGenre.genre}**.\n`, EMBED_FIELD_LIMIT);
     }
 
     if (maxMangaGenre) {
-      genreStats += `- Wasted **${maxMangaGenre.chaptersRead}** minutes on **${maxMangaGenre.genre}**.\n`;
+      genreStats = appendIfNotMax(genreStats, `- Wasted **${maxMangaGenre.chaptersRead}** minutes on **${maxMangaGenre.genre}**.\n`, EMBED_FIELD_LIMIT);
     }
 
     if (genreStats) {
@@ -294,21 +291,19 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s3 = tagsByMean[2];
 
     let topTags = ``;
-    topTags += `- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n`;
-    topTags += `- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n`;
-    topTags += `- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n`;
+    topTags = appendIfNotMax(topTags, `- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})\n`, EMBED_FIELD_LIMIT);
+    topTags = appendIfNotMax(topTags, `- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})\n`, EMBED_FIELD_LIMIT);
+    topTags = appendIfNotMax(topTags, `- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})\n`, EMBED_FIELD_LIMIT);
 
     fields.push({
       name: `Top Tags`,
-      value: trimIndent(topTags).trim(),
+      value: topTags,
       inline: false,
     });
 
     fields.push({
       name: `Most Hated Tag`,
-      value: `
-			- ${worseTag.name} (Score: ${worseTag.meanScore}, Count: ${worseTag.count})
-			`.trim(),
+      value: `- ${worseTag.name} (Score: ${worseTag.meanScore}, Count: ${worseTag.count})`,
       inline: false,
     });
 
@@ -317,11 +312,11 @@ const createUserEmbed = (user: User): APIEmbed => {
     const maxMangaTag = statistics?.manga?.tags?.reduce((prev, curr) => (prev.chaptersRead > curr.chaptersRead ? prev : curr));
 
     if (maxAnimeTag) {
-      tagStats += `- Wasted **${maxAnimeTag.minutesWatched}** minutes on **${maxAnimeTag.tag?.name}**.\n`;
+      tagStats = appendIfNotMax(tagStats, `- Wasted **${maxAnimeTag.minutesWatched}** minutes on **${maxAnimeTag.tag?.name}**.\n`, EMBED_FIELD_LIMIT);
     }
 
     if (maxMangaTag) {
-      tagStats += `- Wasted **${maxMangaTag.chaptersRead}** minutes on **${maxMangaTag.tag?.name}**.\n`;
+      tagStats = appendIfNotMax(tagStats, `- Wasted **${maxMangaTag.chaptersRead}** minutes on **${maxMangaTag.tag?.name}**.\n`, EMBED_FIELD_LIMIT);
     }
 
     if (tagStats) {

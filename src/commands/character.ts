@@ -7,7 +7,7 @@ import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
-import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate, truncateParagraph, zip } from './util.js';
+import { EMBED_DESCRIPTION_LIMIT, appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate, zip } from './util.js';
 
 export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
@@ -59,7 +59,7 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
 const createCharacterEmbed = (character: Character, pageNumber: number, pageMax: number): APIEmbed => {
   const title = characterName(character.name);
   const fields: APIEmbedField[] = [];
-  const aliases = truncateParagraph(characterAliases(character.name), 256);
+  const aliases = truncate(characterAliases(character.name), 256);
 
   let animeAppearances = '';
   let mangaAppearances = '';
@@ -67,11 +67,11 @@ const createCharacterEmbed = (character: Character, pageNumber: number, pageMax:
 
   // Description operations
   // Remove spoilers
-  description = description.replaceAll(/\~!.*?!\~/g, '(spoiler removed)\n');
+  description = description.replaceAll(/\~!.*?!\~/gs, '(spoiler removed)\n');
   // Convert html to markdown
   description = htmlToMarkdown(description);
   description = decode(description);
-  description = truncate(description, 4096);
+  description = truncate(description, EMBED_DESCRIPTION_LIMIT);
   description = description.trim();
 
   // Appearances operations
@@ -89,9 +89,6 @@ const createCharacterEmbed = (character: Character, pageNumber: number, pageMax:
         mangaAppearances = appendIfNotMax(mangaAppearances, appearance, 256);
       }
     }
-
-    animeAppearances = truncate(animeAppearances, 256);
-    mangaAppearances = truncate(mangaAppearances, 256);
   }
 
   if (isNotBlank(animeAppearances)) {
@@ -114,6 +111,12 @@ const createCharacterEmbed = (character: Character, pageNumber: number, pageMax:
       value: aliases,
     });
   }
+
+  fields.push({
+    name: `Favorites`,
+    value: `${character.favourites}`,
+    inline: true,
+  });
 
   return {
     title,

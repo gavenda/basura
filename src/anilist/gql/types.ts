@@ -426,11 +426,11 @@ export type CharacterNameInput = {
 /** The role the character plays in the media */
 export enum CharacterRole {
   /** A primary character role in the media */
-  Main = 'MAIN',
+  MAIN = 'MAIN',
   /** A supporting character role in the media */
-  Supporting = 'SUPPORTING',
+  SUPPORTING = 'SUPPORTING',
   /** A background character in the media */
-  Background = 'BACKGROUND',
+  BACKGROUND = 'BACKGROUND',
 }
 
 /** Character sort enums */
