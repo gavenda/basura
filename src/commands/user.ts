@@ -10,7 +10,7 @@ import { EMBED_FIELD_LIMIT, appendIfNotMax, distinctByKey, toIntColor, trimInden
 export class UserCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
-    const username = context.getStringOption(`username`).value;
+    const username = context.getRequiredString(`username`);
     const user = await findUserStatisticsByName(username);
 
     if (user === undefined) {
@@ -63,7 +63,7 @@ export class UserCommand implements CommandHandler<SlashCommandContext> {
   }
 
   async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const username = context.getStringOption(`username`).value;
+    const username = context.getRequiredString(`username`);
     const names = await findUserName(username);
 
     return names.map((x) => {
@@ -216,7 +216,7 @@ const createUserEmbed = (user: User): APIEmbed => {
 
   if (statuses) {
     const total = statuses.filter((x) => x.status != MediaListStatus.PLANNING).reduce((sum, current) => sum + current.count, 0);
-		const dropped = statuses.filter((x) => x.status != MediaListStatus.DROPPED).reduce((sum, current) => sum + current.count, 0);
+    const dropped = statuses.filter((x) => x.status != MediaListStatus.DROPPED).reduce((sum, current) => sum + current.count, 0);
     const completed = statuses.filter((x) => x.status === MediaListStatus.COMPLETED || x.status === MediaListStatus.REPEATING).reduce((sum, current) => sum + current.count, 0);
     const completedRatio = (completed / total) * 100;
     const completedRatioStr = completedRatio.toFixed(2);

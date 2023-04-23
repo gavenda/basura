@@ -11,12 +11,12 @@ import { handleFindMedia } from './find.js';
 export class FindMangaCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
-    const query = context.getStringOption(`query`).value;
+    const query = context.getRequiredString(`query`);
     await handleFindMedia(context, query, MediaType.MANGA);
   }
 
   async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const query = context.getStringOption(`query`).value;
+    const query = context.getRequiredString(`query`);
     const titles = await findMediaTitles(query, MediaType.MANGA);
 
     return titles.map((x) => {

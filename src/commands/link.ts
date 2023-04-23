@@ -21,7 +21,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
       return;
     }
 
-    const username = context.getStringOption('username').value;
+    const username = context.getRequiredString(`username`);
     const user = await findUserByName(username);
 
     if (!user) {
@@ -51,7 +51,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
   }
 
   async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const username = context.getStringOption(`username`).value;
+    const username = context.getRequiredString(`username`);
     const names = await findUserName(username);
 
     return names.map((x) => {

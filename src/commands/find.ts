@@ -14,12 +14,12 @@ import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT, appendIfNotMax, htmlToMarkd
 export class FindCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
-    const query = context.getStringOption(`query`).value;
+    const query = context.getRequiredString(`query`);
     await handleFindMedia(context, query);
   }
 
   async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const query = context.getStringOption(`query`).value;
+    const query = context.getRequiredString(`query`);
     const titles = await findMediaTitles(query);
 
     return titles.map((x) => {
@@ -44,6 +44,11 @@ export const handleFindMedia = async (context: SlashCommandContext, query: strin
     });
     return;
   }
+
+  sendMediaEmbed(context, medias);
+};
+
+export const sendMediaEmbed = async (context: SlashCommandContext, medias: Media[]) => {
   const mediaIds = medias.map((x) => x.id);
   const mediaList = await lookupMediaList(context.app, mediaIds, context.guildId);
   const userIds = mediaList?.map((x) => x.userId);

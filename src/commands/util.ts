@@ -75,11 +75,14 @@ export const htmlToMarkdown = (str: string): string => {
   return str
     .replaceAll('<b>', '**')
     .replaceAll('</b>', '**')
+    .replaceAll('<em>', '_')
+    .replaceAll('</em>', '_')
     .replaceAll('<u>', '__')
     .replaceAll('</u>', '__')
     .replaceAll('<i>', '*')
     .replaceAll('</i>', '*')
-    .replaceAll('<br>', '\n');
+    .replaceAll('<br>', '\n')
+    .replaceAll('</br>', '\n');
 };
 
 export const inStatement = (amount: number): string => {

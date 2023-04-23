@@ -1,20 +1,20 @@
 import {
-  APIApplicationCommandInteractionDataAttachmentOption,
-  APIApplicationCommandInteractionDataBasicOption,
-  APIApplicationCommandInteractionDataBooleanOption,
-  APIApplicationCommandInteractionDataChannelOption,
-  APIApplicationCommandInteractionDataMentionableOption,
-  APIApplicationCommandInteractionDataNumberOption,
-  APIApplicationCommandInteractionDataRoleOption,
-  APIApplicationCommandInteractionDataStringOption,
-  APIApplicationCommandInteractionDataUserOption,
-  APIAttachment,
-  APIChatInputApplicationCommandInteraction,
-  APIInteractionDataResolved,
-  APIInteractionDataResolvedChannel,
-  APIInteractionDataResolvedGuildMember,
-  APIRole,
-  APIUser,
+	APIApplicationCommandInteractionDataAttachmentOption,
+	APIApplicationCommandInteractionDataBasicOption,
+	APIApplicationCommandInteractionDataBooleanOption,
+	APIApplicationCommandInteractionDataChannelOption,
+	APIApplicationCommandInteractionDataMentionableOption,
+	APIApplicationCommandInteractionDataNumberOption,
+	APIApplicationCommandInteractionDataRoleOption,
+	APIApplicationCommandInteractionDataStringOption,
+	APIApplicationCommandInteractionDataUserOption,
+	APIAttachment,
+	APIChatInputApplicationCommandInteraction,
+	APIInteractionDataResolved,
+	APIInteractionDataResolvedChannel,
+	APIInteractionDataResolvedGuildMember,
+	APIRole,
+	APIUser,
 } from 'discord-api-types/v10';
 import { MessageComponent, MessageComponentTypes } from 'discord-interactions';
 import { v4 as uuidv4 } from 'uuid';
@@ -63,6 +63,17 @@ export class SlashCommandContext extends InteractionContext {
     }
   }
 
+  getString(name: string): string | undefined {
+    const option = this.options.get(name) as APIApplicationCommandInteractionDataStringOption | undefined;
+    if (option !== undefined) {
+      return option.value;
+    }
+  }
+
+  getRequiredString(name: string): string {
+    return this.getStringOption(name).value;
+  }
+
   getStringOption(name: string): APIApplicationCommandInteractionDataStringOption {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataStringOption | undefined;
     if (option === undefined) {
@@ -71,12 +82,34 @@ export class SlashCommandContext extends InteractionContext {
     return option;
   }
 
+  getInteger(name: string): number | undefined {
+    const option = this.options.get(name) as APIApplicationCommandInteractionDataNumberOption | undefined;
+    if (option !== undefined) {
+      return option.value;
+    }
+  }
+
+  getRequiredInteger(name: string): number {
+    return this.getIntegerOption(name).value;
+  }
+
   getIntegerOption(name: string): APIApplicationCommandInteractionDataNumberOption {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataNumberOption | undefined;
     if (option === undefined) {
       throw new Error(`Integer option ${name} does not exist.`);
     }
     return option;
+  }
+
+  getBoolean(name: string): boolean | undefined {
+    const option = this.options.get(name) as APIApplicationCommandInteractionDataBooleanOption | undefined;
+    if (option !== undefined) {
+      return option.value;
+    }
+  }
+
+  getRequiredBoolean(name: string): boolean {
+    return this.getBooleanOption(name).value;
   }
 
   getBooleanOption(name: string): APIApplicationCommandInteractionDataBooleanOption {
@@ -137,6 +170,17 @@ export class SlashCommandContext extends InteractionContext {
     const role = this.resolved.roles[option.value];
 
     return { user, role, ...option };
+  }
+
+  getNumber(name: string): number | undefined {
+    const option = this.options.get(name) as APIApplicationCommandInteractionDataNumberOption | undefined;
+    if (option !== undefined) {
+      return option.value;
+    }
+  }
+
+  getRequiredNumber(name: string): number {
+    return this.getNumberOption(name).value;
   }
 
   getNumberOption(name: string): APIApplicationCommandInteractionDataNumberOption {

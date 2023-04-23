@@ -3,7 +3,7 @@ import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
 import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
 import { FIND_MEDIA } from './gql/find-media.js';
 import { FIND_SCORE_BY_MEDIA_ID_AND_USER_ID } from './gql/find-score-by-media-id-and-user-id.js';
-import { Media, MediaFormat, MediaList, MediaSeason, MediaType, Query } from './gql/types.js';
+import { Media, MediaFormat, MediaList, MediaSeason, MediaSort, MediaType, Query } from './gql/types.js';
 
 export interface FindMediaVars {
   query: string;
@@ -37,17 +37,23 @@ export const findMedia = async (query: string, type?: MediaType, hentai: boolean
   }
 };
 
-export const findMediaByRanking = async (amount: number = 10, formatIn: MediaFormat[], season: MediaSeason, seasonYear: number, hentai: Boolean): Promise<Media[] | undefined> => {
+export const findMediaByRanking = async (options: {
+  amount: number;
+  formatIn: MediaFormat[];
+  season?: MediaSeason;
+  seasonYear?: number;
+  hentai?: Boolean;
+}): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     page: 1,
-    perPage: amount,
-    sort: ['DESC'],
-    formatIn,
-    season,
-    seasonYear,
+    perPage: options.amount,
+    sort: [MediaSort.SCORE_DESC],
+    formatIn: options.formatIn,
+    season: options.season,
+    seasonYear: options.seasonYear,
   };
 
-  if (!hentai) {
+  if (!options.hentai) {
     variables.genreNotIn = ['hentai'];
   }
 

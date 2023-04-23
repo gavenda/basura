@@ -12,7 +12,7 @@ import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT, appendIfNotMax, htmlToMarkd
 export class StaffCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
   async handle(context: SlashCommandContext): Promise<void> {
-    const query = context.getStringOption(`query`).value;
+    const query = context.getRequiredString(`query`);
     const staffs = await findStaff(query);
 
     if (staffs === undefined || staffs.length === 0) {
@@ -40,7 +40,7 @@ export class StaffCommand implements CommandHandler<SlashCommandContext> {
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const query = ctx.getStringOption(`query`).value;
+    const query = ctx.getRequiredString(`query`);
     const names = await findStaffByName(query);
 
     return names.map((x) => {

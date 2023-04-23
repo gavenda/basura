@@ -12,7 +12,7 @@ import { EMBED_DESCRIPTION_LIMIT, appendIfNotMax, htmlToMarkdown, isBlank, isNot
 export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
-    const query = context.getStringOption(`query`).value;
+    const query = context.getRequiredString(`query`);
     const characters = await findCharacter(query);
 
     if (characters === undefined || characters.length === 0) {
@@ -40,7 +40,7 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const query = ctx.getStringOption(`query`).value;
+    const query = ctx.getRequiredString(`query`);
     const names = await findCharacterNames(query);
 
     return names.map((x) => {
