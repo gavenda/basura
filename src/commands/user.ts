@@ -170,10 +170,10 @@ const createUserEmbed = (user: User): APIEmbed => {
   const formats = [...mangaFormats, ...animeFormats];
 
   const animeStats = `
-		- Total: **${statistics?.anime?.count}**
-		- Episodes: **${statistics?.anime?.episodesWatched}**
-		- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes
-		- Mean Score: **${statistics?.anime?.meanScore}**
+		- Total: **${statistics?.anime?.count}**\n
+		- Episodes: **${statistics?.anime?.episodesWatched}**\n
+		- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes\n
+		- Mean Score: **${statistics?.anime?.meanScore}**\n
 	`;
 
   fields.push({
