@@ -5,7 +5,7 @@ import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { ButtonStyleTypes, MessageComponentTypes } from 'discord-interactions';
-import { distinctByKey, toIntColor } from './util.js';
+import { distinctByKey, toIntColor, trimIndent } from './util.js';
 
 export class UserCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
@@ -169,25 +169,29 @@ const createUserEmbed = (user: User): APIEmbed => {
   const animeFormats = statistics?.anime?.formats || [];
   const formats = [...mangaFormats, ...animeFormats];
 
+  const animeStats = `
+		- Total: **${statistics?.anime?.count}**
+		- Episodes: **${statistics?.anime?.episodesWatched}**
+		- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes
+		- Mean Score: **${statistics?.anime?.meanScore}**
+	`;
+
   fields.push({
     name: `Anime`,
-    value: `
-			- Total: **${statistics?.anime?.count}**
-			- Episodes: **${statistics?.anime?.episodesWatched}**
-			- Time: **${daysWatched}** days, **${hoursWatched} hours**, **${minutesWatched}** minutes
-			- Mean Score: **${statistics?.anime?.meanScore}**
-		`.trim(),
+    value: trimIndent(animeStats).trim(),
     inline: false,
   });
 
+  const mangaStats = `
+		- Total: **${statistics?.manga?.count}**
+		- Volumes: **${statistics?.manga?.volumesRead}**
+		- Chapters: **${statistics?.manga?.chaptersRead}**
+		- Mean Score: **${statistics?.manga?.meanScore}**
+	`;
+
   fields.push({
     name: `Manga`,
-    value: `
-			- Total: **${statistics?.manga?.count}**
-			- Volumes: **${statistics?.manga?.volumesRead}**
-			- Chapters: **${statistics?.manga?.chaptersRead}**
-			- Mean Score: **${statistics?.manga?.meanScore}**
-		`.trim(),
+    value: trimIndent(mangaStats).trim(),
     inline: false,
   });
 
@@ -245,21 +249,21 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s2 = genresByMean[1];
     const s3 = genresByMean[2];
 
-    fields.push({
-      name: `Top Genres`,
-      value: `
+    const topGenres = `
 			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})
 			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})
 			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})
-			`.trim(),
+		`;
+
+    fields.push({
+      name: `Top Genres`,
+      value: trimIndent(topGenres).trim(),
       inline: false,
     });
 
     fields.push({
       name: `Most Hated Genre`,
-      value: `
-			- ${worseGenre.name} (Score: ${worseGenre.meanScore}, Count: ${worseGenre.count})
-			`.trim(),
+      value: `- ${worseGenre.name} (Score: ${worseGenre.meanScore}, Count: ${worseGenre.count})`,
       inline: false,
     });
 
@@ -290,13 +294,15 @@ const createUserEmbed = (user: User): APIEmbed => {
     const s2 = tagsByMean[1];
     const s3 = tagsByMean[2];
 
-    fields.push({
-      name: `Top Tags`,
-      value: `
+    const topTags = `
 			- ${s1.name} (Score: ${s1.meanScore}, Count: ${s1.count})
 			- ${s2.name} (Score: ${s2.meanScore}, Count: ${s2.count})
 			- ${s3.name} (Score: ${s3.meanScore}, Count: ${s3.count})
-			`.trim(),
+		`;
+
+    fields.push({
+      name: `Top Tags`,
+      value: trimIndent(topTags).trim(),
       inline: false,
     });
 
