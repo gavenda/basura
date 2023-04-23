@@ -1,9 +1,9 @@
-import { MediaFormat, MediaSeason, MediaType, aniListRequest } from './anilist.js';
+import { aniListRequest } from './anilist.js';
 import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
 import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
 import { FIND_MEDIA } from './gql/find-media.js';
 import { FIND_SCORE_BY_MEDIA_ID_AND_USER_ID } from './gql/find-score-by-media-id-and-user-id.js';
-import { Media, MediaList, Query } from './gql/types.js';
+import { Media, MediaFormat, MediaList, MediaSeason, MediaType, Query } from './gql/types.js';
 
 export interface FindMediaVars {
   query: string;
@@ -17,7 +17,7 @@ export interface FindMediaVars {
   genreNotIn: string[];
 }
 
-export const findMedia = async (query: string, type: MediaType, hentai: boolean): Promise<Media[] | undefined> => {
+export const findMedia = async (query: string, type?: MediaType, hentai: boolean = true): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     query,
     type,
@@ -37,13 +37,7 @@ export const findMedia = async (query: string, type: MediaType, hentai: boolean)
   }
 };
 
-export const findMediaByRanking = async (
-  amount: number = 10,
-  formatIn: MediaFormat[],
-  season: MediaSeason,
-  seasonYear: number,
-  hentai: Boolean
-): Promise<Media[] | undefined> => {
+export const findMediaByRanking = async (amount: number = 10, formatIn: MediaFormat[], season: MediaSeason, seasonYear: number, hentai: Boolean): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     page: 1,
     perPage: amount,
@@ -99,10 +93,7 @@ export const findMediaTitles = async (query: string, type?: MediaType): Promise<
   }
 };
 
-export const findScoreByUsersAndMedias = async (
-  userIds: number[],
-  mediaIds: number[]
-): Promise<MediaList[] | undefined> => {
+export const findScoreByUsersAndMedias = async (userIds: number[], mediaIds: number[]): Promise<MediaList[] | undefined> => {
   const variables = { userIds, mediaIds };
 
   try {

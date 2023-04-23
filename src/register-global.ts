@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 import { Client } from './client/client.js';
 import { commandList } from './commands/index.js';
 
-dotenv.config({ path: '.dev.vars' });
+dotenv.config({ path: '.prod.vars' });
 
 const registerCommands = async () => {
   const token = process.env.DISCORD_TOKEN;

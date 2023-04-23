@@ -1,9 +1,9 @@
 import { App } from '@app/app.js';
 import {
-	APIApplicationCommandAutocompleteInteraction,
-	APIApplicationCommandInteractionDataIntegerOption,
-	APIApplicationCommandInteractionDataNumberOption,
-	APIApplicationCommandInteractionDataStringOption,
+  APIApplicationCommandAutocompleteInteraction,
+  APIApplicationCommandInteractionDataIntegerOption,
+  APIApplicationCommandInteractionDataNumberOption,
+  APIApplicationCommandInteractionDataStringOption,
 } from 'discord-api-types/v10';
 import { InteractionContext } from './interaction-context.js';
 

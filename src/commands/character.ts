@@ -7,16 +7,7 @@ import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
-import {
-	appendIfNotMax,
-	htmlToMarkdown,
-	isBlank,
-	isNotBlank,
-	titleCase,
-	truncate,
-	truncateParagraph,
-	zip,
-} from './util.js';
+import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate, truncateParagraph, zip } from './util.js';
 
 export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
@@ -36,7 +27,7 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
 
     for (const character of characters) {
       pages.push({
-        embed: createEmbed(character, pageNumber, characters.length),
+        embed: createCharacterEmbed(character, pageNumber, characters.length),
         link: {
           label: 'View on AniList',
           url: character.siteUrl!!,
@@ -65,7 +56,7 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   }
 }
 
-const createEmbed = (character: Character, pageNumber: number, pageMax: number): APIEmbed => {
+const createCharacterEmbed = (character: Character, pageNumber: number, pageMax: number): APIEmbed => {
   const title = characterName(character.name);
   const fields: APIEmbedField[] = [];
   const aliases = truncateParagraph(characterAliases(character.name), 256);
@@ -81,7 +72,7 @@ const createEmbed = (character: Character, pageNumber: number, pageMax: number):
   description = htmlToMarkdown(description);
   description = decode(description);
   description = truncate(description, 4096);
-	description = description.trim();
+  description = description.trim();
 
   // Appearances operations
   if (character.media?.nodes && character.media?.edges) {
@@ -92,7 +83,7 @@ const createEmbed = (character: Character, pageNumber: number, pageMax: number):
       const role = edge.characterRole as string;
       const appearance = `- [${mediaTitle}](${media.siteUrl}) [${titleCase(role)}]\n`;
 
-      if (media.type === MediaType.Anime) {
+      if (media.type === MediaType.ANIME) {
         animeAppearances = appendIfNotMax(animeAppearances, appearance, 256);
       } else {
         mangaAppearances = appendIfNotMax(mangaAppearances, appearance, 256);

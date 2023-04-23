@@ -3,20 +3,20 @@ import { KVBucketManager } from '@client/kv-bucket-manager.js';
 import { RedisBucketManager } from '@client/redis-bucket-manager.js';
 import { Redis } from '@upstash/redis';
 import {
-	APIApplicationCommandAutocompleteInteraction,
-	APIApplicationCommandInteraction,
-	APIApplicationCommandOptionChoice,
-	APIChatInputApplicationCommandInteraction,
-	APIInteraction,
-	APIInteractionResponse,
-	APIMessageApplicationCommandInteraction,
-	APIMessageComponentInteraction,
-	APIModalSubmitInteraction,
-	APIUserApplicationCommandInteraction,
-	ApplicationCommandType,
-	InteractionResponseType,
-	InteractionType,
-	MessageFlags,
+  APIApplicationCommandAutocompleteInteraction,
+  APIApplicationCommandInteraction,
+  APIApplicationCommandOptionChoice,
+  APIChatInputApplicationCommandInteraction,
+  APIInteraction,
+  APIInteractionResponse,
+  APIMessageApplicationCommandInteraction,
+  APIMessageComponentInteraction,
+  APIModalSubmitInteraction,
+  APIUserApplicationCommandInteraction,
+  ApplicationCommandType,
+  InteractionResponseType,
+  InteractionType,
+  MessageFlags,
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { Cache, DefaultCache, KVCache, RedisCache } from './cache.js';
@@ -136,7 +136,7 @@ export class App {
     this.publicKey = options.publicKey;
     this.executionContext = options.executionContext;
     this.commandMap = options.commands;
-    this.timeoutMs = options.timeoutMs ?? 5000;
+    this.timeoutMs = options.timeoutMs ?? 20000;
     this.componentCache = new DefaultCache();
     this.messageCache = new DefaultCache();
     this.rest = new Client().setToken(options.token);
@@ -249,9 +249,7 @@ export class App {
    * @param interaction
    * @returns
    */
-  async handleMessageComponentInteraction(
-    interaction: APIMessageComponentInteraction
-  ): Promise<APIInteractionResponse> {
+  async handleMessageComponentInteraction(interaction: APIMessageComponentInteraction): Promise<APIInteractionResponse> {
     const context = new ComponentContext(this, interaction);
     // Lookup handler for command
     const handler = this.commandMap[context.command];
@@ -392,9 +390,7 @@ export class App {
     return initialResponse;
   }
 
-  async handleApplicationCommandAutocomplete(
-    interaction: APIApplicationCommandAutocompleteInteraction
-  ): Promise<APIInteractionResponse> {
+  async handleApplicationCommandAutocomplete(interaction: APIApplicationCommandAutocompleteInteraction): Promise<APIInteractionResponse> {
     const handler = this.commandMap[interaction.data.name];
     const context = new AutocompleteContext(this, interaction);
 

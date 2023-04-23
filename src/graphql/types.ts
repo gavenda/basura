@@ -42,7 +42,7 @@ export class ClientError extends Error {
     this.response = response;
     this.request = request;
 
-		Error.captureStackTrace(this, ClientError);
+    Error.captureStackTrace(this, ClientError);
   }
 
   private static extractMessage(response: GraphQLResponse): string {

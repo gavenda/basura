@@ -1,19 +1,8 @@
 import { Client } from '@client/client.js';
-import {
-	APIEmbed,
-	APIMessage,
-	MessageFlags,
-	RESTPostAPIInteractionFollowupJSONBody,
-	Routes,
-	Snowflake,
-} from 'discord-api-types/v10';
+import { APIEmbed, APIMessage, MessageFlags, RESTPostAPIInteractionFollowupJSONBody, Routes, Snowflake } from 'discord-api-types/v10';
 import { MessageComponent } from 'discord-interactions';
 
-const toFollowUp = (
-  message: string | APIEmbed[],
-  components: any[],
-  ephemeral: boolean
-): RESTPostAPIInteractionFollowupJSONBody => {
+const toFollowUp = (message: string | APIEmbed[], components: any[], ephemeral: boolean): RESTPostAPIInteractionFollowupJSONBody => {
   const body: RESTPostAPIInteractionFollowupJSONBody = {
     components,
   };
@@ -42,23 +31,14 @@ export class Webhook {
     this.rest = client;
   }
 
-  async followUp(
-    message: string | APIEmbed[],
-    components: MessageComponent[] = [],
-    ephemeral: boolean = false
-  ): Promise<APIMessage> {
+  async followUp(message: string | APIEmbed[], components: MessageComponent[] = [], ephemeral: boolean = false): Promise<APIMessage> {
     return this.rest.post<APIMessage>(Routes.webhook(this.id, this.token), {
       auth: false,
       body: toFollowUp(message, components, ephemeral),
     });
   }
 
-  async edit(
-    message: string | APIEmbed[],
-    messageId: string,
-    components: MessageComponent[] = [],
-    ephemeral: boolean = false
-  ): Promise<APIMessage> {
+  async edit(message: string | APIEmbed[], messageId: string, components: MessageComponent[] = [], ephemeral: boolean = false): Promise<APIMessage> {
     return this.rest.patch<APIMessage>(Routes.webhookMessage(this.id, this.token, messageId), {
       auth: false,
       body: toFollowUp(message, components, ephemeral),

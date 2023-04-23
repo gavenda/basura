@@ -18,6 +18,7 @@ export const FIND_SCORE_BY_MEDIA_ID_AND_USER_ID = `
 					id
 					name
 				}
+				userId
 				mediaId
 			}
 		}

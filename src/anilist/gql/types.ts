@@ -1397,29 +1397,29 @@ export type MediaExternalLinkInput = {
 /** The format the media was released in */
 export enum MediaFormat {
   /** Anime broadcast on television */
-  Tv = 'TV',
+  TV = 'TV',
   /** Anime which are under 15 minutes in length and broadcast on television */
-  TvShort = 'TV_SHORT',
+  TV_SHORT = 'TV_SHORT',
   /** Anime movies with a theatrical release */
-  Movie = 'MOVIE',
+  MOVIE = 'MOVIE',
   /** Special episodes that have been included in DVD/Blu-ray releases, picture dramas, pilots, etc */
-  Special = 'SPECIAL',
+  SPECIAL = 'SPECIAL',
   /**
    * (Original Video Animation) Anime that have been released directly on
    * DVD/Blu-ray without originally going through a theatrical release or
    * television broadcast
    */
-  Ova = 'OVA',
+  OVA = 'OVA',
   /** (Original Net Animation) Anime that have been originally released online or are only available through streaming services. */
-  Ona = 'ONA',
+  ONA = 'ONA',
   /** Short anime released as a music video */
-  Music = 'MUSIC',
+  MUSIC = 'MUSIC',
   /** Professionally published manga with more than one chapter */
-  Manga = 'MANGA',
+  MANGA = 'MANGA',
   /** Written books released as a series of light novels */
-  Novel = 'NOVEL',
+  NOVEL = 'NOVEL',
   /** Manga with just one chapter */
-  OneShot = 'ONE_SHOT',
+  ONE_SHOT = 'ONE_SHOT',
 }
 
 /** List of anime or manga */
@@ -1595,17 +1595,17 @@ export enum MediaListSort {
 /** Media list watching/reading status enum. */
 export enum MediaListStatus {
   /** Currently watching/reading */
-  Current = 'CURRENT',
+  CURRENT = 'CURRENT',
   /** Planning to watch/read */
-  Planning = 'PLANNING',
+  PLANNING = 'PLANNING',
   /** Finished watching/reading */
-  Completed = 'COMPLETED',
+  COMPLETED = 'COMPLETED',
   /** Stopped watching/reading before completing */
-  Dropped = 'DROPPED',
+  DROPPED = 'DROPPED',
   /** Paused watching/reading */
-  Paused = 'PAUSED',
+  PAUSED = 'PAUSED',
   /** Re-watching/reading */
-  Repeating = 'REPEATING',
+  REPEATING = 'REPEATING',
 }
 
 /** A user's list options for anime or manga lists */
@@ -1673,9 +1673,9 @@ export type MediaRank = {
 /** The type of ranking */
 export enum MediaRankType {
   /** Ranking is based on the media's ratings/score */
-  Rated = 'RATED',
+  RATED = 'RATED',
   /** Ranking is based on the media's popularity */
-  Popular = 'POPULAR',
+  POPULAR = 'POPULAR',
 }
 
 /** Type of relation media has to its parent. */
@@ -1710,13 +1710,13 @@ export enum MediaRelation {
 
 export enum MediaSeason {
   /** Months December to February */
-  Winter = 'WINTER',
+  WINTER = 'WINTER',
   /** Months March to May */
-  Spring = 'SPRING',
+  SPRING = 'SPRING',
   /** Months June to August */
-  Summer = 'SUMMER',
+  SUMMER = 'SUMMER',
   /** Months September to November */
-  Fall = 'FALL',
+  FALL = 'FALL',
 }
 
 /** Media sort enums */
@@ -2018,9 +2018,9 @@ export enum MediaTrendSort {
 /** Media type enum, anime or manga. */
 export enum MediaType {
   /** Japanese Anime */
-  Anime = 'ANIME',
+  ANIME = 'ANIME',
   /** Asian comic */
-  Manga = 'MANGA',
+  MANGA = 'MANGA',
 }
 
 /** User message activity */

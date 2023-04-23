@@ -1,4 +1,5 @@
 import { APIApplicationCommand, ApplicationCommandOptionType, ApplicationCommandType } from 'discord-api-types/v10';
+import { MediaFormat, MediaSeason } from '../anilist/gql/types.js';
 
 export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {
   name: 'about',
@@ -136,19 +137,19 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
       choices: [
         {
           name: 'Fall',
-          value: 'FALL',
+          value: MediaSeason.FALL,
         },
         {
           name: 'Spring',
-          value: 'SPRING',
+          value: MediaSeason.SPRING,
         },
         {
           name: 'Summer',
-          value: 'SUMMER',
+          value: MediaSeason.SUMMER,
         },
         {
           name: 'Winter',
-          value: 'WINTER',
+          value: MediaSeason.WINTER,
         },
       ],
     },
@@ -166,43 +167,43 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
       choices: [
         {
           name: 'Manga',
-          value: 'MANGA',
+          value: MediaFormat.MANGA,
         },
         {
           name: 'Movie',
-          value: 'MOVIE',
+          value: MediaFormat.MOVIE,
         },
         {
           name: 'Music',
-          value: 'MUSIC',
+          value: MediaFormat.MUSIC,
         },
         {
           name: 'Novel',
-          value: 'NOVEL',
+          value: MediaFormat.NOVEL,
         },
         {
           name: 'ONA',
-          value: 'ONA',
+          value: MediaFormat.ONA,
         },
         {
           name: 'Oneshot',
-          value: 'ONE_SHOT',
+          value: MediaFormat.ONE_SHOT,
         },
         {
           name: 'OVA',
-          value: 'OVA',
+          value: MediaFormat.OVA,
         },
         {
           name: 'Special',
-          value: 'SPECIAL',
+          value: MediaFormat.SPECIAL,
         },
         {
           name: 'TV',
-          value: 'TV',
+          value: MediaFormat.TV,
         },
         {
           name: 'TV Short',
-          value: 'TV_SHORT',
+          value: MediaFormat.TV_SHORT,
         },
       ],
     },
@@ -219,5 +220,5 @@ export const commandList = [
   COMMAND_LINK,
   COMMAND_UNLINK,
   COMMAND_RANKING,
-  COMMAND_CHARACTER
+  COMMAND_CHARACTER,
 ];

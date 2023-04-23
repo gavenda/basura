@@ -5,9 +5,9 @@ import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 export class StaffCommand implements CommandHandler<SlashCommandContext> {
-  ephemeral: boolean = false;
+  ephemeral: boolean = true;
   async handle(context: SlashCommandContext): Promise<void> {
-		await context.edit({
+    await context.edit({
       message: `Not supported yet!`,
     });
   }

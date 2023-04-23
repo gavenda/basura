@@ -59,15 +59,7 @@ export class Client {
     };
   }
 
-  set requestConfig({
-    headers,
-    retries,
-    timeout,
-  }: {
-    headers: Record<string, string>;
-    retries: number;
-    timeout: number;
-  }) {
+  set requestConfig({ headers, retries, timeout }: { headers: Record<string, string>; retries: number; timeout: number }) {
     this.#manager.config.headers = headers;
     this.#manager.config.retries = retries;
     this.#manager.config.timeout = timeout;
@@ -80,13 +72,7 @@ export class Client {
     };
   }
 
-  set sweepIntervals({
-    bucketSweepInterval,
-    queueSweepInterval,
-  }: {
-    bucketSweepInterval: number;
-    queueSweepInterval: number;
-  }) {
+  set sweepIntervals({ bucketSweepInterval, queueSweepInterval }: { bucketSweepInterval: number; queueSweepInterval: number }) {
     this.#manager.bucketSweepInterval = bucketSweepInterval;
     this.#manager.queueSweepInterval = queueSweepInterval;
   }

@@ -13,5 +13,5 @@ export interface Env {
   BUCKETS: KVNamespace;
   UPSTASH_REDIS_REST_TOKEN: string;
   UPSTASH_REDIS_REST_URL: string;
-	UPSTASH_DISABLE_TELEMETRY: string;
+  UPSTASH_DISABLE_TELEMETRY: string;
 }

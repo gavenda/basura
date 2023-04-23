@@ -12,10 +12,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
     const factory = context.app.env<Env>().DB_FACTORY;
     const db = factory.connection();
 
-    const userCheckQuery = await db.execute(
-      `SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`,
-      [context.guildId, context.userId]
-    );
+    const userCheckQuery = await db.execute(`SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`, [context.guildId, context.userId]);
 
     if (userCheckQuery.size > 0) {
       await context.edit({
@@ -34,10 +31,12 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
       return;
     }
 
-    const insertQuery = await db.execute(
-      `INSERT INTO anilist_user (discord_id, discord_guild_id, anilist_id, anilist_username) VALUES (?, ?, ?, ?)`,
-      [context.userId, context.guildId, user.id, user.name]
-    );
+    const insertQuery = await db.execute(`INSERT INTO anilist_user (discord_id, discord_guild_id, anilist_id, anilist_username) VALUES (?, ?, ?, ?)`, [
+      context.userId,
+      context.guildId,
+      user.id,
+      user.name,
+    ]);
 
     if (insertQuery.rowsAffected > 0) {
       await context.edit({

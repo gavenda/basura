@@ -6,8 +6,10 @@
   "scripts": {
     "start": "wrangler dev --local",
     "deploy": "wrangler publish",
+    "deploy:dev": "wrangler publish",
     "register": "ts-node --esm src/register-global.ts",
     "register:dev": "ts-node --esm src/register-dev.ts",
+		"prettier": "prettier --write ./src",
     "fix": "eslint --fix src/*.ts",
     "lint": "eslint src/*.ts"
   },

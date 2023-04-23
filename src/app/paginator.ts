@@ -118,9 +118,7 @@ export const handlePaginatorComponents = async (context: ComponentContext): Prom
 
   // Check for action row
   if (actionRow?.type === MessageComponentTypes.ACTION_ROW) {
-    const buttonLink = actionRow.components.find(
-      (x) => x.type === MessageComponentTypes.BUTTON && x.style === ButtonStyleTypes.LINK
-    );
+    const buttonLink = actionRow.components.find((x) => x.type === MessageComponentTypes.BUTTON && x.style === ButtonStyleTypes.LINK);
 
     if (buttonLink && buttonLink.type === MessageComponentTypes.BUTTON && page.link) {
       buttonLink.label = page.link.label;

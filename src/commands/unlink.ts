@@ -9,10 +9,7 @@ export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
     const factory = context.app.env<Env>().DB_FACTORY;
     const db = factory.connection();
 
-    const userCheckQuery = await db.execute(
-      `SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`,
-      [context.guildId, context.userId]
-    );
+    const userCheckQuery = await db.execute(`SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`, [context.guildId, context.userId]);
 
     if (userCheckQuery.size === 0) {
       await context.edit({
@@ -21,10 +18,7 @@ export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
       return;
     }
 
-    const deleteQuery = await db.execute(`DELETE FROM anilist_user WHERE discord_id = ? AND discord_guild_id = ?`, [
-      context.userId,
-      context.guildId,
-    ]);
+    const deleteQuery = await db.execute(`DELETE FROM anilist_user WHERE discord_id = ? AND discord_guild_id = ?`, [context.userId, context.guildId]);
 
     if (deleteQuery.rowsAffected > 0) {
       await context.edit({

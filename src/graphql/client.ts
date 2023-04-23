@@ -67,10 +67,7 @@ export class GraphQLClient {
       return { ...result, headers, status };
     } else {
       const errorResult = typeof result === 'string' ? { error: result } : result;
-      throw new ClientError(
-        { ...errorResult, status: response.status, headers: response.headers },
-        { query, variables }
-      );
+      throw new ClientError({ ...errorResult, status: response.status, headers: response.headers }, { query, variables });
     }
   }
 

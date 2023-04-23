@@ -1,20 +1,20 @@
 import {
-	APIApplicationCommandInteractionDataAttachmentOption,
-	APIApplicationCommandInteractionDataBasicOption,
-	APIApplicationCommandInteractionDataBooleanOption,
-	APIApplicationCommandInteractionDataChannelOption,
-	APIApplicationCommandInteractionDataMentionableOption,
-	APIApplicationCommandInteractionDataNumberOption,
-	APIApplicationCommandInteractionDataRoleOption,
-	APIApplicationCommandInteractionDataStringOption,
-	APIApplicationCommandInteractionDataUserOption,
-	APIAttachment,
-	APIChatInputApplicationCommandInteraction,
-	APIInteractionDataResolved,
-	APIInteractionDataResolvedChannel,
-	APIInteractionDataResolvedGuildMember,
-	APIRole,
-	APIUser,
+  APIApplicationCommandInteractionDataAttachmentOption,
+  APIApplicationCommandInteractionDataBasicOption,
+  APIApplicationCommandInteractionDataBooleanOption,
+  APIApplicationCommandInteractionDataChannelOption,
+  APIApplicationCommandInteractionDataMentionableOption,
+  APIApplicationCommandInteractionDataNumberOption,
+  APIApplicationCommandInteractionDataRoleOption,
+  APIApplicationCommandInteractionDataStringOption,
+  APIApplicationCommandInteractionDataUserOption,
+  APIAttachment,
+  APIChatInputApplicationCommandInteraction,
+  APIInteractionDataResolved,
+  APIInteractionDataResolvedChannel,
+  APIInteractionDataResolvedGuildMember,
+  APIRole,
+  APIUser,
 } from 'discord-api-types/v10';
 import { MessageComponent, MessageComponentTypes } from 'discord-interactions';
 import { v4 as uuidv4 } from 'uuid';
@@ -104,9 +104,7 @@ export class SlashCommandContext extends InteractionContext {
     return { user, member, ...option };
   }
 
-  getChannelOption(
-    name: string
-  ): APIApplicationCommandInteractionDataChannelOption & { channel: APIInteractionDataResolvedChannel } {
+  getChannelOption(name: string): APIApplicationCommandInteractionDataChannelOption & { channel: APIInteractionDataResolvedChannel } {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataChannelOption | undefined;
     if (option === undefined) {
       throw new Error(`Channel option ${name} does not exist.`);
@@ -130,9 +128,7 @@ export class SlashCommandContext extends InteractionContext {
     return { role, ...option };
   }
 
-  getMentionableOption(
-    name: string
-  ): APIApplicationCommandInteractionDataMentionableOption & { user?: APIUser; role?: APIRole } {
+  getMentionableOption(name: string): APIApplicationCommandInteractionDataMentionableOption & { user?: APIUser; role?: APIRole } {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataMentionableOption | undefined;
     if (option === undefined) {
       throw new Error(`Mentionable option ${name} does not exist.`);
@@ -151,9 +147,7 @@ export class SlashCommandContext extends InteractionContext {
     return { ...option };
   }
 
-  getAttachmentOption(
-    name: string
-  ): APIApplicationCommandInteractionDataAttachmentOption & { attachment: APIAttachment } {
+  getAttachmentOption(name: string): APIApplicationCommandInteractionDataAttachmentOption & { attachment: APIAttachment } {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataAttachmentOption | undefined;
     if (option === undefined) {
       throw new Error(`Attachment option ${name} does not exist.`);
