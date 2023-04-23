@@ -36,7 +36,7 @@ export class FindCommand implements CommandHandler<SlashCommandContext> {
 }
 
 export const handleFindMedia = async (context: SlashCommandContext, query: string, type?: MediaType): Promise<void> => {
-  const medias = await findMedia(query);
+  const medias = await findMedia(query, type);
 
   if (medias === undefined || medias.length === 0) {
     await context.reply({
