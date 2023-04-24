@@ -2,6 +2,7 @@ import { APIEmbed } from 'discord-api-types/v10';
 import { Button, ButtonStyleTypes, MessageComponent, MessageComponentTypes } from 'discord-interactions';
 import { ComponentContext } from './context/component-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
+import { EMOJI_NEXT, EMOJI_PREV } from './emoji.js';
 
 export enum PaginatorButton {
   NEXT_BUTTON_ID = 'next',
@@ -38,23 +39,15 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
   const defaultNextButton: Button = {
     type: MessageComponentTypes.BUTTON,
     style: ButtonStyleTypes.PRIMARY,
-    emoji: {
-      id: '905638284468830229',
-      name: 'next',
-      animated: false
-    },
-    label: ''
+    emoji: EMOJI_NEXT,
+    label: '',
   };
 
   const defaultPrevButton: Button = {
     type: MessageComponentTypes.BUTTON,
     style: ButtonStyleTypes.PRIMARY,
-    emoji: {
-      id: '905638284074557461',
-      name: 'previous',
-      animated: false
-    },
-    label: ''
+    emoji: EMOJI_PREV,
+    label: '',
   };
 
   const page = options.pages[0];
