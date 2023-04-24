@@ -4,9 +4,12 @@ import { CommandHandler } from '@app/command.js';
 import { ApplicationCommandContext } from '@app/context/application-command-context.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { toIntColor } from '@util/anilist.js';
+import { distinctByKey } from '@util/array.js';
+import { EMBED_FIELD_LIMIT } from '@util/discord.js';
+import { appendIfNotMax, trimIndent } from '@util/strings.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { ButtonStyleTypes, MessageComponentTypes } from 'discord-interactions';
-import { EMBED_FIELD_LIMIT, appendIfNotMax, distinctByKey, toIntColor, trimIndent } from './util.js';
 
 export class UserCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;

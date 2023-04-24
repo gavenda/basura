@@ -17,7 +17,8 @@
       "@app/*": ["src/app/*"],
       "@anilist/*": ["src/anilist/*"],
       "@client/*": ["src/client/*"],
-      "@graphql/*": ["src/graphql/*"]
+      "@graphql/*": ["src/graphql/*"],
+      "@util/*": ["src/util/*"]
     }
   },
   "include": ["src"],
