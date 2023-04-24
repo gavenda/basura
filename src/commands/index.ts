@@ -231,7 +231,7 @@ export const FIND_CHARACTER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
 }
 
 export const FIND_USER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
-  name: 'Search User',
+  name: 'Show AniList User',
   type: ApplicationCommandType.User,
 }
 
