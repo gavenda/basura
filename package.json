@@ -9,7 +9,7 @@
     "deploy:dev": "wrangler publish --env dev",
     "register": "ts-node --esm src/register-global.ts",
     "register:dev": "ts-node --esm src/register-dev.ts",
-		"prettier": "prettier --write ./src",
+    "prettier": "prettier --write ./src",
     "fix": "eslint --fix src/*.ts",
     "lint": "eslint src/*.ts"
   },
