@@ -1,7 +1,7 @@
 import { APIEmbed } from 'discord-api-types/v10';
 import { Button, ButtonStyleTypes, MessageComponent, MessageComponentTypes } from 'discord-interactions';
+import { ApplicationCommandContext } from './context/application-command-context.js';
 import { ComponentContext } from './context/component-context.js';
-import { SlashCommandContext } from './context/slash-command-context.js';
 import { EMOJI_NEXT, EMOJI_PREV } from './emoji.js';
 
 export enum PaginatorButton {
@@ -10,7 +10,7 @@ export enum PaginatorButton {
 }
 
 export interface PaginatorOptions {
-  context: SlashCommandContext;
+  context: ApplicationCommandContext;
   pages: Page[];
   nextButton?: Button;
   prevButton?: Button;

@@ -20,7 +20,7 @@ import {
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { Cache, DefaultCache, KVCache, RedisCache } from './cache.js';
-import { CommandHandler } from './command.js';
+import { CommandHandler, MessageCommandHandler } from './command.js';
 import { AutocompleteContext } from './context/autocomplete-context.js';
 import { ComponentContext } from './context/component-context.js';
 import { InteractionContext } from './context/interaction-context.js';
@@ -31,6 +31,10 @@ import { sleep } from './time.js';
 
 export interface CommandMap {
   [name: string]: CommandHandler<InteractionContext>;
+}
+
+export interface MessageCommandMap {
+  [name: string]: MessageCommandHandler;
 }
 
 export interface AppOptions {

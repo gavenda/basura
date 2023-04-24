@@ -1,10 +1,11 @@
-import { CommandMap } from '@app/app.js';
+import { CommandMap, MessageCommandMap } from '@app/app.js';
 import { AboutCommand } from './about.js';
 import { CharacterCommand } from './character.js';
 import { FindAnimeCommand } from './find-anime.js';
 import { FindMangaCommand } from './find-manga.js';
 import { FindCommand } from './find.js';
 import { LinkCommand } from './link.js';
+import { FindAnimeMessageCommand } from './message/anime.js';
 import { RankingCommand } from './ranking.js';
 import { StaffCommand } from './staff.js';
 import { UnlinkCommand } from './unlink.js';
@@ -21,4 +22,8 @@ export const commands: CommandMap = {
   unlink: new UnlinkCommand(),
   character: new CharacterCommand(),
   ranking: new RankingCommand(),
+};
+
+export const messageCommands: MessageCommandMap = {
+  'Search Anime': new FindAnimeMessageCommand(),
 };

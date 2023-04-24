@@ -2,6 +2,7 @@ import { Media, MediaFormat, MediaList, MediaListStatus, MediaRankType, MediaTyp
 import { findMedia, findMediaTitles, findScoreByUsersAndMedias } from '@anilist/media.js';
 import { App } from '@app/app.js';
 import { CommandHandler } from '@app/command.js';
+import { ApplicationCommandContext } from '@app/context/application-command-context.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { ComponentContext } from '@app/context/component-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
@@ -35,7 +36,7 @@ export class FindCommand implements CommandHandler<SlashCommandContext> {
   }
 }
 
-export const handleFindMedia = async (context: SlashCommandContext, query: string, type?: MediaType): Promise<void> => {
+export const handleFindMedia = async (context: ApplicationCommandContext, query: string, type?: MediaType): Promise<void> => {
   const medias = await findMedia(query, type);
 
   if (medias === undefined || medias.length === 0) {
@@ -48,7 +49,7 @@ export const handleFindMedia = async (context: SlashCommandContext, query: strin
   await sendMediaEmbed(context, medias);
 };
 
-export const sendMediaEmbed = async (context: SlashCommandContext, medias: Media[]) => {
+export const sendMediaEmbed = async (context: ApplicationCommandContext, medias: Media[]) => {
   const mediaIds = medias.map((x) => x.id);
   const mediaList = await lookupMediaList(context.app, mediaIds, context.guildId);
   const userIds = mediaList?.map((x) => x.userId);
