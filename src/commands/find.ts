@@ -45,7 +45,7 @@ export const handleFindMedia = async (context: SlashCommandContext, query: strin
     return;
   }
 
-  sendMediaEmbed(context, medias);
+  await sendMediaEmbed(context, medias);
 };
 
 export const sendMediaEmbed = async (context: SlashCommandContext, medias: Media[]) => {
