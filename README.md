@@ -8,7 +8,7 @@ This is now guaranteed an uptime of 24/7 until I ran out of cloudflare resources
 
 Highly consider this project a love child or bastard of [Annie](https://github.com/AlexanderColen/Annie-May-Discord-Bot).
 
-# I want to contribute!
+## I want to contribute!
 
 Sure. Feel free. If you want to check the changes for your pull requests, you can invite the development
 version of the bot by clicking [here](https://discord.com/oauth2/authorize?client_id=911875737999527956&scope=applications.commands).
@@ -16,7 +16,7 @@ version of the bot by clicking [here](https://discord.com/oauth2/authorize?clien
 For commands, they are automatically registered whenever a PR push is made, make sure to add
 your discord server id in [register-dev.ts](src/register-dev.ts) file.
 
-# I want to deploy my own!
+## I want to deploy my own!
 
 Go ahead. Feel free to clone or fork this repo and setup the necessary environmental variables. It should work as long as you signup
 for a [PlanetScale](https://planetscale.com/) database and an [UpStash](https://upstash.com/) redis server.
