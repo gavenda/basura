@@ -141,6 +141,7 @@ export class App {
     this.messageCache = new DefaultCache();
     this.rest = new Client().setToken(options.token);
 
+    // Priority redis > kv namespace, as kv writes are non instant
     if (options.redis) {
       const bucketManager = new RedisBucketManager(options.redis);
       this.rest = new Client({ bucketManager }).setToken(options.token);
@@ -191,6 +192,7 @@ export class App {
     }
 
     const interaction = await request.json<APIInteraction>();
+    // This should return almost immediately
     const interactionResponse = await this.handleInteraction(interaction);
 
     return new Response(JSON.stringify(interactionResponse), {
@@ -220,6 +222,7 @@ export class App {
       return this.handleApplicationCommandAutocomplete(interaction);
     }
 
+    // It is impossible to have another interaction type, we shouldn't go here at all
     return {
       type: InteractionResponseType.ChannelMessageWithSource,
       data: {
