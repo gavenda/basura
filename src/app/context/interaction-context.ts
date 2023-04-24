@@ -7,8 +7,17 @@ export abstract class InteractionContext {
   app: App;
   id: string;
   token: string;
+  /**
+   * The id of the invoking user.
+   */
   userId?: string;
+  /**
+   * The id of the guild where the command is invoked.
+   */
   guildId?: string;
+  /**
+   * Message id of the interaction when sent.
+   */
   messageId?: string;
   handled: boolean = false;
   webhook: Webhook;

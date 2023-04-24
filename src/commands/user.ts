@@ -1,6 +1,7 @@
 import { MediaFormat, MediaListStatus, User, UserGenreStatistic, UserTagStatistic } from '@anilist/gql/types.js';
 import { findUserName, findUserStatisticsByName } from '@anilist/user.js';
 import { CommandHandler } from '@app/command.js';
+import { ApplicationCommandContext } from '@app/context/application-command-context.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
@@ -11,55 +12,7 @@ export class UserCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
     const username = context.getRequiredString(`username`);
-    const user = await findUserStatisticsByName(username);
-
-    if (user === undefined) {
-      await context.edit({
-        message: `User not found.`,
-      });
-      return;
-    }
-    if (user.statistics === undefined) {
-      await context.edit({
-        message: `Statistics not found for this user.`,
-      });
-      return;
-    }
-
-    await context.edit({
-      message: [createUserEmbed(user)],
-      components: [
-        {
-          type: MessageComponentTypes.ACTION_ROW,
-          components: [
-            {
-              type: MessageComponentTypes.BUTTON,
-              style: ButtonStyleTypes.LINK,
-              label: `Profile`,
-              url: user.siteUrl,
-            },
-            {
-              type: MessageComponentTypes.BUTTON,
-              style: ButtonStyleTypes.LINK,
-              label: `Anime List`,
-              url: `${user.siteUrl}/animelist`,
-            },
-            {
-              type: MessageComponentTypes.BUTTON,
-              style: ButtonStyleTypes.LINK,
-              label: `Manga List`,
-              url: `${user.siteUrl}/mangalist`,
-            },
-            {
-              type: MessageComponentTypes.BUTTON,
-              style: ButtonStyleTypes.LINK,
-              label: `Stats`,
-              url: `${user.siteUrl}/stats/anime/overview`,
-            },
-          ],
-        },
-      ],
-    });
+    await handleFindUser(username, context);
   }
 
   async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
@@ -74,6 +27,58 @@ export class UserCommand implements CommandHandler<SlashCommandContext> {
     });
   }
 }
+
+export const handleFindUser = async (username: string, context: ApplicationCommandContext): Promise<void> => {
+  const user = await findUserStatisticsByName(username);
+
+  if (user === undefined) {
+    await context.edit({
+      message: `User not found.`,
+    });
+    return;
+  }
+  if (user.statistics === undefined) {
+    await context.edit({
+      message: `Statistics not found for this user.`,
+    });
+    return;
+  }
+
+  await context.edit({
+    message: [createUserEmbed(user)],
+    components: [
+      {
+        type: MessageComponentTypes.ACTION_ROW,
+        components: [
+          {
+            type: MessageComponentTypes.BUTTON,
+            style: ButtonStyleTypes.LINK,
+            label: `Profile`,
+            url: user.siteUrl,
+          },
+          {
+            type: MessageComponentTypes.BUTTON,
+            style: ButtonStyleTypes.LINK,
+            label: `Anime List`,
+            url: `${user.siteUrl}/animelist`,
+          },
+          {
+            type: MessageComponentTypes.BUTTON,
+            style: ButtonStyleTypes.LINK,
+            label: `Manga List`,
+            url: `${user.siteUrl}/mangalist`,
+          },
+          {
+            type: MessageComponentTypes.BUTTON,
+            style: ButtonStyleTypes.LINK,
+            label: `Stats`,
+            url: `${user.siteUrl}/stats/anime/overview`,
+          },
+        ],
+      },
+    ],
+  });
+};
 
 interface TopStats {
   name: string;

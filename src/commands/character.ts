@@ -1,6 +1,7 @@
 import { findCharacter, findCharacterNames } from '@anilist/character.js';
 import { Character, CharacterName, MediaType } from '@anilist/gql/types.js';
 import { CommandHandler } from '@app/command.js';
+import { ApplicationCommandContext } from '@app/context/application-command-context.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { ComponentContext } from '@app/context/component-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
@@ -13,30 +14,7 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
     const query = context.getRequiredString(`query`);
-    const characters = await findCharacter(query);
-
-    if (characters === undefined || characters.length === 0) {
-      await context.reply({
-        message: `No anime/manga character found.`,
-      });
-      return;
-    }
-
-    let pageNumber = 1;
-    const pages: Page[] = [];
-
-    for (const character of characters) {
-      pages.push({
-        embed: createCharacterEmbed(character, pageNumber, characters.length),
-        link: {
-          label: 'View on AniList',
-          url: character.siteUrl!!,
-        },
-      });
-      pageNumber = pageNumber + 1;
-    }
-
-    await paginator({ context, pages });
+    await handleFindCharacter(query, context);
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
@@ -55,6 +33,32 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
     await handlePaginatorComponents(context);
   }
 }
+
+export const handleFindCharacter = async (query: string, context: ApplicationCommandContext): Promise<void> => {
+  const characters = await findCharacter(query);
+  if (characters === undefined || characters.length === 0) {
+    await context.reply({
+      message: `No anime/manga character found.`,
+    });
+    return;
+  }
+
+  let pageNumber = 1;
+  const pages: Page[] = [];
+
+  for (const character of characters) {
+    pages.push({
+      embed: createCharacterEmbed(character, pageNumber, characters.length),
+      link: {
+        label: 'View on AniList',
+        url: character.siteUrl!!,
+      },
+    });
+    pageNumber = pageNumber + 1;
+  }
+
+  await paginator({ context, pages });
+};
 
 const createCharacterEmbed = (character: Character, pageNumber: number, pageMax: number): APIEmbed => {
   const title = characterName(character.name);

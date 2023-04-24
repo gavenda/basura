@@ -230,11 +230,17 @@ export const FIND_CHARACTER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   type: ApplicationCommandType.Message,
 }
 
+export const FIND_USER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
+  name: 'Search User',
+  type: ApplicationCommandType.User,
+}
+
 export const commandList = [
   FIND_ANIME_MESSAGE_COMMAND,
   FIND_MANGA_MESSAGE_COMMAND,
   FIND_STAFF_MESSAGE_COMMAND,
   FIND_CHARACTER_MESSAGE_COMMAND,
+  FIND_USER_MESSAGE_COMMAND,
   COMMAND_ABOUT,
   COMMAND_ANIME,
   COMMAND_FIND,

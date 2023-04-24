@@ -20,21 +20,17 @@ import {
 } from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { Cache, DefaultCache, KVCache, RedisCache } from './cache.js';
-import { CommandHandler, MessageCommandHandler } from './command.js';
+import { CommandHandler } from './command.js';
+import { ApplicationCommandContext } from './context/application-command-context.js';
 import { AutocompleteContext } from './context/autocomplete-context.js';
 import { ComponentContext } from './context/component-context.js';
-import { InteractionContext } from './context/interaction-context.js';
 import { MessageCommandContext } from './context/message-command-context.js';
 import { SlashCommandContext } from './context/slash-command-context.js';
 import { UserCommandContext } from './context/user-command-context.js';
 import { sleep } from './time.js';
 
 export interface CommandMap {
-  [name: string]: CommandHandler<InteractionContext>;
-}
-
-export interface MessageCommandMap {
-  [name: string]: MessageCommandHandler;
+  [name: string]: CommandHandler<ApplicationCommandContext>;
 }
 
 export interface AppOptions {
@@ -328,8 +324,8 @@ export class App {
       data: {},
     };
 
-    let handler: CommandHandler<InteractionContext>;
-    let context: InteractionContext;
+    let handler: CommandHandler<ApplicationCommandContext>;
+    let context: ApplicationCommandContext;
 
     // There are three different application command types, handle each of them with different contexts
     switch (interaction.data.type) {
