@@ -6,7 +6,7 @@ import { Env } from '@env/env';
 import { handleFindUser } from '../user.js';
 
 export class FindUserCommand implements CommandHandler<UserCommandContext> {
-  ephemeral: boolean = true;
+  ephemeral: boolean = false;
   async handle(context: UserCommandContext): Promise<void> {
     const userId = context.user.id;
     const factory = context.app.env<Env>().DB_FACTORY;

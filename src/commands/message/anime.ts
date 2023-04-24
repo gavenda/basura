@@ -6,7 +6,7 @@ import { handlePaginatorComponents } from '@app/paginator.js';
 import { handleFindMedia } from '../find.js';
 
 export class FindAnimeMessageCommand implements CommandHandler<MessageCommandContext> {
-  ephemeral: boolean = true;
+  ephemeral: boolean = false;
   async handle(context: MessageCommandContext): Promise<void> {
     const query = context.message.content;
     await handleFindMedia(context, query, MediaType.ANIME);

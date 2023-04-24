@@ -5,7 +5,7 @@ import { handlePaginatorComponents } from '@app/paginator.js';
 import { handleFindStaff } from '../staff.js';
 
 export class FindStaffMessageCommand implements CommandHandler<MessageCommandContext> {
-  ephemeral: boolean = true;
+  ephemeral: boolean = false;
   async handle(context: MessageCommandContext): Promise<void> {
     const query = context.message.content;
     await handleFindStaff(query, context);
