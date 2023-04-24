@@ -340,9 +340,11 @@ export class App {
       case ApplicationCommandType.Message:
         context = new MessageCommandContext(this, interaction as APIMessageApplicationCommandInteraction);
         handler = this.commandMap[interaction.data.name];
+        break;
       case ApplicationCommandType.User:
         context = new UserCommandContext(this, interaction as APIUserApplicationCommandInteraction);
         handler = this.commandMap[interaction.data.name];
+        break;
     }
 
     if (!handler) {
