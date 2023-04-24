@@ -5,10 +5,14 @@ import { commandList } from './commands/index.js';
 
 dotenv.config({ path: '.dev.vars' });
 
+const testGuildIds: string[] = [
+  // Developer server
+  `672642223942139915`,
+];
+
 const registerGuildCommands = async () => {
   const token = process.env.DISCORD_TOKEN;
   const applicationId = process.env.DISCORD_APPLICATION_ID;
-  const guildId = process.env.DISCORD_TEST_GUILD_ID;
 
   if (!token) {
     throw new Error('No token passed');
@@ -16,14 +20,13 @@ const registerGuildCommands = async () => {
   if (!applicationId) {
     throw new Error('No application id passed');
   }
-  if (!guildId) {
-    throw new Error('No test guild id passed');
-  }
 
   const client = new Client().setToken(token);
-  await client.put(Routes.applicationGuildCommands(applicationId, guildId), {
-    body: commandList,
-  });
+  for (const guildId of testGuildIds) {
+    await client.put(Routes.applicationGuildCommands(applicationId, guildId), {
+      body: commandList,
+    });
+  }
 };
 
 await registerGuildCommands();

@@ -8,6 +8,14 @@ This is now guaranteed an uptime of 24/7 until I ran out of cloudflare resources
 
 Highly consider this project a love child or bastard of [Annie](https://github.com/AlexanderColen/Annie-May-Discord-Bot).
 
+# I want to contribute!
+
+Sure. Feel free. If you want to check the changes for your pull requests, you can invite the development
+version of the bot by clicking [here](https://discord.com/oauth2/authorize?client_id=911875737999527956&scope=applications.commands).
+
+For commands, they are automatically registered whenever a PR push is made, make sure to add
+your discord server id in [register-dev.ts](src/register-dev.ts) file.
+
 # I want to deploy my own!
 
 Go ahead. Feel free to clone or fork this repo and setup the necessary environmental variables. It should work as long as you signup
@@ -39,6 +47,7 @@ everything you need to know.
 Interaction commands in my opinion, should mitigate the necessary need for a help command.
 
 ## What are the future plans for this?
+
 - Implement more ideas that **Annie** may come up (yes this is shamelessly a high priority, I highly respect the author
   for the incredible ideas)
 - Whatever my Discord server requests me to do that is weab related
