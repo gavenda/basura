@@ -38,13 +38,23 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
   const defaultNextButton: Button = {
     type: MessageComponentTypes.BUTTON,
     style: ButtonStyleTypes.PRIMARY,
-    label: 'Next',
+    emoji: {
+      id: '905638284468830229',
+      name: 'next',
+      animated: false
+    },
+    label: ''
   };
 
   const defaultPrevButton: Button = {
     type: MessageComponentTypes.BUTTON,
     style: ButtonStyleTypes.PRIMARY,
-    label: 'Prev',
+    emoji: {
+      id: '905638284074557461',
+      name: 'previous',
+      animated: false
+    },
+    label: ''
   };
 
   const page = options.pages[0];
