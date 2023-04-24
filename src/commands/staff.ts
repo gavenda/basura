@@ -1,6 +1,7 @@
 import { Staff, StaffName } from '@anilist/gql/types.js';
 import { findStaff, findStaffByName } from '@anilist/staff.js';
 import { CommandHandler } from '@app/command.js';
+import { ApplicationCommandContext } from '@app/context/application-command-context.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { ComponentContext } from '@app/context/component-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
@@ -13,30 +14,7 @@ export class StaffCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
     const query = context.getRequiredString(`query`);
-    const staffs = await findStaff(query);
-
-    if (staffs === undefined || staffs.length === 0) {
-      await context.reply({
-        message: `No matching staff found.`,
-      });
-      return;
-    }
-
-    let pageNumber = 1;
-    const pages: Page[] = [];
-
-    for (const staff of staffs) {
-      pages.push({
-        embed: createStaffEmbed(staff, pageNumber, staffs.length),
-        link: {
-          label: 'View on AniList',
-          url: staff.siteUrl!!,
-        },
-      });
-      pageNumber = pageNumber + 1;
-    }
-
-    await paginator({ context, pages });
+    await handleFindStaff(query, context);
   }
 
   async handleAutocomplete(ctx: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
@@ -55,6 +33,33 @@ export class StaffCommand implements CommandHandler<SlashCommandContext> {
     await handlePaginatorComponents(context);
   }
 }
+
+export const handleFindStaff = async (query: string, context: ApplicationCommandContext): Promise<void> => {
+  const staffs = await findStaff(query);
+
+  if (staffs === undefined || staffs.length === 0) {
+    await context.reply({
+      message: `No matching staff found.`,
+    });
+    return;
+  }
+
+  let pageNumber = 1;
+  const pages: Page[] = [];
+
+  for (const staff of staffs) {
+    pages.push({
+      embed: createStaffEmbed(staff, pageNumber, staffs.length),
+      link: {
+        label: 'View on AniList',
+        url: staff.siteUrl!!,
+      },
+    });
+    pageNumber = pageNumber + 1;
+  }
+
+  await paginator({ context, pages });
+};
 
 const createStaffEmbed = (staff: Staff, pageNumber: number, pageMax: number): APIEmbed => {
   const title = staffName(staff.name);
