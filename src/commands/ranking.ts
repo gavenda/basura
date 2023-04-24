@@ -7,7 +7,7 @@ import { handlePaginatorComponents } from '@app/paginator.js';
 import { sendMediaEmbed } from './find.js';
 
 export class RankingCommand implements CommandHandler<SlashCommandContext> {
-  ephemeral: boolean = true;
+  ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
     const amount = context.getNumber(`amount`) ?? 10;
     const format = context.getString(`format`) ? MediaFormat[context.getString(`format`) as keyof typeof MediaFormat] : MediaFormat.TV;

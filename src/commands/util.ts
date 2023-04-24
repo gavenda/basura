@@ -71,19 +71,22 @@ export const titleCase = (str: string): string => {
   return splitStr.join(' ');
 };
 
+// Naive html to markdown converter, turndown doesn't work in service workers
 export const htmlToMarkdown = (str: string): string => {
+  // Decode str
   str = decodeURI(str);
-  const linkMatch = str.matchAll(/<a href="(.*)">(.*)<\/a>/gm);
 
-  for (const match of linkMatch) {
-    console.log(`Match 0:`);
-    console.log(match[0]);
-    console.log(`Match 1:`);
-    console.log(match[1]);
-    console.log(`Match 2:`);
-    console.log(match[2]);
+  // Replace a href links
+  const matches = str.matchAll(/<a href="(.*?)">(.*?)<\/a>/gm);
+  for (const match of matches) {
+    const origStr = match[0];
+    const link = match[1];
+    const label = match[2];
+    const markdown = `[${label}](${link})`;
+    str = str.replace(origStr, markdown);
   }
 
+  // Replace common html tags
   return str
     .replaceAll('<b>', '**')
     .replaceAll('</b>', '**')

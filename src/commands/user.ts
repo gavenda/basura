@@ -330,6 +330,8 @@ const createUserEmbed = (user: User): APIEmbed => {
 
   let description = user.about || '';
   description = description.replaceAll('~!', '').replaceAll('!~', '').replaceAll('~~~', '');
+  // Remove profile images
+  description = description.replaceAll(/img\((.*?)\)/, '');
 
   return {
     author: {

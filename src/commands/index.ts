@@ -162,7 +162,7 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
     {
       type: ApplicationCommandOptionType.String,
       name: 'format',
-      description: 'The media format.',
+      description: 'The media format. Defaults to TV.',
       required: false,
       choices: [
         {

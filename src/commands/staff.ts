@@ -10,7 +10,7 @@ import { decode } from 'he';
 import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT, appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate, zip } from './util.js';
 
 export class StaffCommand implements CommandHandler<SlashCommandContext> {
-  ephemeral: boolean = true;
+  ephemeral: boolean = false;
   async handle(context: SlashCommandContext): Promise<void> {
     const query = context.getRequiredString(`query`);
     const staffs = await findStaff(query);
