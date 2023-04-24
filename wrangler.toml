@@ -1,16 +1,10 @@
 name = "basura"
 main = "./src/server.ts"
 compatibility_date = "2023-04-16"
-kv_namespaces = [
-	{ binding = "BUCKETS", id = "5834eb959af448d0b2f68a0abe2712f9", preview_id = "e57b7cdce0474ad8aa72be0924887460" },
-	{ binding = "CACHE", id = "84338b34ceda4151889deb42218eaa24", preview_id = "f5506d2c4b9d4b7fab09ccbbbfd580c0" },
-]
+route = "app.basura.gavenda.dev"
 
 [triggers]
 crons = []
 
 [env.dev]
-kv_namespaces = [
-	{ binding = "BUCKETS", id = "5834eb959af448d0b2f68a0abe2712f9", preview_id = "e57b7cdce0474ad8aa72be0924887460" },
-	{ binding = "CACHE", id = "84338b34ceda4151889deb42218eaa24", preview_id = "f5506d2c4b9d4b7fab09ccbbbfd580c0" },
-]
+route = "dev.basura.gavenda.dev"
