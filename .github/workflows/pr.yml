@@ -74,12 +74,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Deploy to cloudflare
-        run: pnpm run --if-present deploy
+        run: pnpm run --if-present deploy:dev
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Register commands
-        run: pnpm run --if-present register
+        run: pnpm run --if-present register:dev
         env:
           DISCORD_APPLICATION_ID: ${{ vars.DISCORD_APPLICATION_ID }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
