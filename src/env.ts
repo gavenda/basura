@@ -8,6 +8,7 @@ export interface Env {
   DATABASE_USERNAME: string;
   DATABASE_PASSWORD: string;
   DB_FACTORY: Client;
+  DB: D1Database;
   UPSTASH_REDIS_REST_TOKEN: string;
   UPSTASH_REDIS_REST_URL: string;
   UPSTASH_DISABLE_TELEMETRY: string;
