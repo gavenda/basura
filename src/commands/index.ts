@@ -213,27 +213,27 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
 export const FIND_ANIME_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Anime',
   type: ApplicationCommandType.Message,
-}
+};
 
 export const FIND_MANGA_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Manga',
   type: ApplicationCommandType.Message,
-}
+};
 
 export const FIND_STAFF_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Staff',
   type: ApplicationCommandType.Message,
-}
+};
 
 export const FIND_CHARACTER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Character',
   type: ApplicationCommandType.Message,
-}
+};
 
 export const FIND_USER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Show AniList User',
   type: ApplicationCommandType.User,
-}
+};
 
 export const commandList = [
   FIND_ANIME_MESSAGE_COMMAND,

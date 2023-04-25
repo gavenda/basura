@@ -9,12 +9,22 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
   async handle(context: SlashCommandContext): Promise<void> {
-    const factory = context.app.env<Env>().DB_FACTORY;
-    const db = factory.connection();
+    const db = context.app.env<Env>().DB;
+    if (!context.guildId) {
+      await context.edit({
+        message: `Must be executed inside a guild!`,
+      });
+      return;
+    }
 
-    const userCheckQuery = await db.execute(`SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`, [context.guildId, context.userId]);
+    const result = await db
+      .selectFrom(`anilist_user`)
+      .where(`discord_guild_id`, '=', context.guildId)
+      .where(`discord_id`, `=`, context.userId)
+      .selectAll()
+      .executeTakeFirst();
 
-    if (userCheckQuery.size > 0) {
+    if (result) {
       await context.edit({
         message: `Your account is already linked.`,
       });
@@ -31,14 +41,17 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
       return;
     }
 
-    const insertQuery = await db.execute(`INSERT INTO anilist_user (discord_id, discord_guild_id, anilist_id, anilist_username) VALUES (?, ?, ?, ?)`, [
-      context.userId,
-      context.guildId,
-      user.id,
-      user.name,
-    ]);
+    const insert = await db
+      .insertInto(`anilist_user`)
+      .values({
+        discord_id: context.userId,
+        discord_guild_id: context.guildId,
+        anilist_id: user.id,
+        anilist_username: user.name,
+      })
+      .executeTakeFirst();
 
-    if (insertQuery.rowsAffected > 0) {
+    if (insert.insertId) {
       await context.edit({
         message: `You have successfully linked your account.`,
       });

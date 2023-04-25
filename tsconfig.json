@@ -18,7 +18,8 @@
       "@anilist/*": ["src/anilist/*"],
       "@client/*": ["src/client/*"],
       "@graphql/*": ["src/graphql/*"],
-      "@util/*": ["src/util/*"]
+      "@util/*": ["src/util/*"],
+      "@db/*": ["src/db/*"]
     }
   },
   "include": ["src"],

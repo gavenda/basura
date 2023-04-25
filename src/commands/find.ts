@@ -9,7 +9,6 @@ import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { Env } from '@env/env';
 import { mediaFormatDisplay, toStars } from '@util/anilist.js';
-import { inStatement } from '@util/db.js';
 import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT } from '@util/discord.js';
 import { appendIfNotMax, htmlToMarkdown, titleCase, truncate } from '@util/strings.js';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
@@ -82,7 +81,13 @@ export const sendMediaEmbed = async (context: ApplicationCommandContext, medias:
   await paginator({ context, pages });
 };
 
-const createMediaEmbed = (options: { media: Media; mediaList?: MediaList[]; nameMap: Record<number, string>; pageNumber: number; pageMax: number }): APIEmbed => {
+const createMediaEmbed = (options: {
+  media: Media;
+  mediaList?: MediaList[];
+  nameMap: Record<number, string>;
+  pageNumber: number;
+  pageMax: number;
+}): APIEmbed => {
   const { media, mediaList, nameMap, pageNumber, pageMax } = options;
 
   const mediaFormat = media.format && mediaFormatDisplay(media.format);
@@ -360,25 +365,20 @@ const mapNameToDiscordName = async (app: App, userIds: number[] = []): Promise<R
     return {};
   }
 
-  const factory = app.env<Env>().DB_FACTORY;
-  const db = factory.connection();
-  const inStr = inStatement(userIds.length);
-  const result = await db.execute(`SELECT * FROM anilist_user WHERE anilist_ID ${inStr}`, userIds);
-
+  const db = app.env<Env>().DB;
+  const result = await db.selectFrom(`anilist_user`).where(`anilist_id`, `in`, userIds).selectAll().execute();
   const nameMap: Record<number, string> = {};
 
-  for (const row of result.rows) {
-    const record = row as Record<string, any>;
-    nameMap[record['anilist_id']] = `<@${record['discord_id']}>`;
+  for (const row of result) {
+    nameMap[row.anilist_id] = `<@${row.discord_id}>`;
   }
 
   return nameMap;
 };
 
 const lookupMediaList = async (app: App, mediaIds: number[], guildId: string = '-1'): Promise<MediaList[] | undefined> => {
-  const factory = app.env<Env>().DB_FACTORY;
-  const db = factory.connection();
-  const result = await db.execute(`SELECT * FROM anilist_user WHERE discord_guild_id = ?`, [guildId], { as: 'object' });
-  const userIds = result.rows.map((x) => (x as Record<string, any>)['anilist_id']);
+  const db = app.env<Env>().DB;
+  const result = await db.selectFrom(`anilist_user`).where(`discord_guild_id`, `=`, guildId).selectAll().execute();
+  const userIds = result.map((x) => x.anilist_id);
   return findScoreByUsersAndMedias(userIds, mediaIds);
 };

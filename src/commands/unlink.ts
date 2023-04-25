@@ -6,21 +6,35 @@ export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
   async handle(context: SlashCommandContext): Promise<void> {
-    const factory = context.app.env<Env>().DB_FACTORY;
-    const db = factory.connection();
+    if (!context.guildId) {
+      await context.edit({
+        message: `Must be executed inside a guild!`,
+      });
+      return;
+    }
 
-    const userCheckQuery = await db.execute(`SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`, [context.guildId, context.userId]);
+    const db = context.app.env<Env>().DB;
+    const result = await db
+      .selectFrom(`anilist_user`)
+      .where(`discord_guild_id`, '=', context.guildId)
+      .where(`discord_id`, `=`, context.userId)
+      .selectAll()
+      .executeTakeFirst();
 
-    if (userCheckQuery.size === 0) {
+    if (!result) {
       await context.edit({
         message: `Your account is not linked to this discord server.`,
       });
       return;
     }
 
-    const deleteQuery = await db.execute(`DELETE FROM anilist_user WHERE discord_id = ? AND discord_guild_id = ?`, [context.userId, context.guildId]);
+    const deleteQuery = await db
+      .deleteFrom(`anilist_user`)
+      .where(`discord_guild_id`, '=', context.guildId)
+      .where(`discord_id`, `=`, context.userId)
+      .executeTakeFirst();
 
-    if (deleteQuery.rowsAffected > 0) {
+    if (deleteQuery.numDeletedRows) {
       await context.edit({
         message: `Your have successfully unlinked your account.`,
       });
