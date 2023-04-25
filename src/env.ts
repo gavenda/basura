@@ -9,7 +9,6 @@ export interface Env {
   DATABASE_HOST: string;
   DATABASE_USERNAME: string;
   DATABASE_PASSWORD: string;
-  D1_DATABASE: D1Database;
   DB: Kysely<Database>;
   UPSTASH_REDIS_REST_TOKEN: string;
   UPSTASH_REDIS_REST_URL: string;
