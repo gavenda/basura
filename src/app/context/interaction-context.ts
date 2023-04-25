@@ -10,11 +10,11 @@ export abstract class InteractionContext {
   /**
    * The id of the invoking user.
    */
-  userId: number;
+  userId: string;
   /**
    * The id of the guild where the command is invoked.
    */
-  guildId?: number;
+  guildId?: string;
   /**
    * Message id of the interaction when sent.
    */
@@ -28,16 +28,14 @@ export abstract class InteractionContext {
     this.token = interaction.token;
 
     if (interaction.member?.user.id) {
-      this.userId = Number(interaction.member.user.id);
+      this.userId = interaction.member.user.id;
     } else if (interaction.user?.id) {
-      this.userId = Number(interaction.user.id);
+      this.userId = interaction.user.id;
     } else {
       throw new Error(`Cannot determine executing user for the interaction!`);
     }
 
-    if (interaction.guild_id) {
-      this.guildId = Number(interaction.guild_id);
-    }
+      this.guildId = interaction.guild_id;
 
     this.webhook = new Webhook(this.app.rest, this.app.id, this.token);
   }

@@ -16,7 +16,12 @@ export class FindUserCommand implements CommandHandler<UserCommandContext> {
     }
 
     const db = context.app.env<Env>().DB;
-    const result = await db.selectFrom(`anilist_user`).where(`discord_guild_id`, '=', context.guildId).where(`discord_id`, `=`, context.userId).selectAll().executeTakeFirst();
+    const result = await db
+      .selectFrom(`anilist_user`)
+      .where(`discord_guild_id`, '=', context.guildId)
+      .where(`discord_id`, `=`, context.userId)
+      .selectAll()
+      .executeTakeFirst();
 
     if (!result) {
       await context.edit({

@@ -376,7 +376,7 @@ const mapNameToDiscordName = async (app: App, userIds: number[] = []): Promise<R
   return nameMap;
 };
 
-const lookupMediaList = async (app: App, mediaIds: number[], guildId: number = -1): Promise<MediaList[] | undefined> => {
+const lookupMediaList = async (app: App, mediaIds: number[], guildId: string = '-1'): Promise<MediaList[] | undefined> => {
   const db = app.env<Env>().DB;
   const result = await db.selectFrom(`anilist_user`).where(`discord_guild_id`, `=`, guildId).selectAll().execute();
   const userIds = result.map((x) => x.anilist_id);

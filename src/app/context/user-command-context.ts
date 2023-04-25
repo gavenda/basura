@@ -4,11 +4,11 @@ import { ApplicationCommandContext } from './application-command-context.js';
 
 export class UserCommandContext extends ApplicationCommandContext {
   user: APIUser;
-  userId: number;
+  userId: string;
 
   constructor(app: App, interaction: APIUserApplicationCommandInteraction) {
     super(app, interaction);
     this.user = interaction.data.resolved.users[interaction.data.target_id];
-    this.userId = Number(this.user.id);
+    this.userId = this.user.id;
   }
 }
