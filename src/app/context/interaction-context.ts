@@ -35,7 +35,7 @@ export abstract class InteractionContext {
       throw new Error(`Cannot determine executing user for the interaction!`);
     }
 
-      this.guildId = interaction.guild_id;
+    this.guildId = interaction.guild_id;
 
     this.webhook = new Webhook(this.app.rest, this.app.id, this.token);
   }
