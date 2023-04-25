@@ -1,6 +1,9 @@
-import { Client } from '@planetscale/database';
+import { Database } from '@db/database.js';
 import { Redis } from '@upstash/redis/cloudflare';
 import { Router } from 'itty-router';
+import { Dialect, Kysely } from 'kysely';
+import { D1Dialect } from 'kysely-d1';
+import { PlanetScaleDialect } from 'kysely-planetscale';
 import { App } from './app/app.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
@@ -20,11 +23,19 @@ router.get('/', async (_, env) => {
 router.post('/', async (requestLike, env: Env, ctx: ExecutionContext) => {
   const request = requestLike as any as Request; // eslint-disable-line
 
-  env.DB_FACTORY = new Client({
-    host: env.DATABASE_HOST,
-    username: env.DATABASE_USERNAME,
-    password: env.DATABASE_PASSWORD,
-  });
+  if (env.ENVIRONMENT === 'development') {
+    // Use D1 in development
+    env.DB = new Kysely<Database>({ dialect: new D1Dialect({ database: env.D1_DATABASE }) as any as Dialect });
+  } else {
+    // Use PlanetScale for production, since D1 is in GA
+    env.DB = new Kysely<Database>({
+      dialect: new PlanetScaleDialect({
+        host: env.DATABASE_HOST,
+        username: env.DATABASE_USERNAME,
+        password: env.DATABASE_PASSWORD,
+      }),
+    });
+  }
 
   const redis = Redis.fromEnv(env);
 

@@ -8,20 +8,24 @@ import { handleFindUser } from '../user.js';
 export class FindUserCommand implements CommandHandler<UserCommandContext> {
   ephemeral: boolean = false;
   async handle(context: UserCommandContext): Promise<void> {
-    const userId = context.user.id;
-    const factory = context.app.env<Env>().DB_FACTORY;
-    const db = factory.connection();
-    const result = await db.execute(`SELECT * FROM anilist_user WHERE discord_guild_id = ? AND discord_id = ?`, [context.guildId, userId]);
+    if (!context.guildId) {
+      await context.edit({
+        message: `Must be executed inside a guild!`,
+      });
+      return;
+    }
 
-    if (result.size === 0) {
+    const db = context.app.env<Env>().DB;
+    const result = await db.selectFrom(`anilist_user`).where(`discord_guild_id`, '=', context.guildId).where(`discord_id`, `=`, context.userId).selectAll().executeTakeFirst();
+
+    if (!result) {
       await context.edit({
         message: `No linked AniList account found for this user.`,
       });
       return;
     }
 
-    const username = (result.rows[0] as Record<string, any>)['anilist_username'];
-    await handleFindUser(username, context);
+    await handleFindUser(result.anilist_username, context);
   }
 
   async handleComponent(context: ComponentContext): Promise<void> {

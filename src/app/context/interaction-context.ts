@@ -5,16 +5,16 @@ import { MessageOptions } from './message-options.js';
 
 export abstract class InteractionContext {
   app: App;
-  id: string;
+  id: bigint;
   token: string;
   /**
    * The id of the invoking user.
    */
-  userId?: string;
+  userId: number;
   /**
    * The id of the guild where the command is invoked.
    */
-  guildId?: string;
+  guildId?: number;
   /**
    * Message id of the interaction when sent.
    */
@@ -24,10 +24,21 @@ export abstract class InteractionContext {
 
   constructor(app: App, interaction: APIInteraction) {
     this.app = app;
-    this.id = interaction.id;
+    this.id = BigInt(interaction.id);
     this.token = interaction.token;
-    this.userId = interaction.member?.user.id ?? interaction.user?.id;
-    this.guildId = interaction.guild_id;
+
+    if (interaction.member?.user.id) {
+      this.userId = Number(interaction.member.user.id);
+    } else if (interaction.user?.id) {
+      this.userId = Number(interaction.user.id);
+    } else {
+      throw new Error(`Cannot determine executing user for the interaction!`);
+    }
+
+    if (interaction.guild_id) {
+      this.guildId = Number(interaction.guild_id);
+    }
+
     this.webhook = new Webhook(this.app.rest, this.app.id, this.token);
   }
 
