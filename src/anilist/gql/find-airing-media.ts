@@ -18,6 +18,7 @@ export const FIND_AIRING_MEDIA = `
 						romaji
 						native
 					}
+          status
 					coverImage {
 						extraLarge
 					}

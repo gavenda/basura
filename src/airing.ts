@@ -1,4 +1,4 @@
-import { AiringSchedule } from '@anilist/gql/types.js';
+import { AiringSchedule, MediaStatus } from '@anilist/gql/types.js';
 import { findAiringMedia } from '@anilist/media.js';
 import { Client } from '@client/client.js';
 import { RedisBucketManager } from '@client/redis-bucket-manager.js';
@@ -58,6 +58,24 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
   }
 };
 
+export const removeAiringAnimeData = async (redis: Redis, guildIds: number[], mediaId: number): Promise<void> => {
+  const mediaKey = `notification:anime-airing:media:${mediaId}`;
+
+  const deletedKeys: string[] = [mediaKey];
+
+  for (const guildId of guildIds) {
+    const requestKey = `notification:anime-airing:request:${guildId}:${mediaId}`;
+    const guildKey = `notification:anime-airing:guild:${guildId}`;
+
+    // Remove from media id set
+    await redis.srem(guildKey, mediaId);
+    deletedKeys.push(requestKey);
+  }
+
+  // Remove data
+  await redis.del(...deletedKeys);
+};
+
 export const checkAiringAnimes = async (environment: Env): Promise<void> => {
   const notificationKey = `notification:anime-airing`;
   const redis = Redis.fromEnv(environment);
@@ -89,6 +107,10 @@ export const checkAiringAnimes = async (environment: Env): Promise<void> => {
       });
       // Update episode count
       await redis.set(mediaKey, airingSchedule.episode);
+      // Check if ended
+      if (airingSchedule.media?.status === MediaStatus.Finished) {
+        await removeAiringAnimeData(redis, guildIds, mediaId);
+      }
     }
   }
 };
