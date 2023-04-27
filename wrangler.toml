@@ -5,7 +5,7 @@ route = "app.basura.gavenda.dev"
 vars = { ENVIRONMENT = "production" }
 
 [triggers]
-crons = []
+crons = ["*/2 * * * *"]
 
 [env.dev]
 route = "dev.basura.gavenda.dev"

@@ -7,6 +7,8 @@ import {
   APIApplicationCommandInteractionDataNumberOption,
   APIApplicationCommandInteractionDataRoleOption,
   APIApplicationCommandInteractionDataStringOption,
+  APIApplicationCommandInteractionDataSubcommandGroupOption,
+  APIApplicationCommandInteractionDataSubcommandOption,
   APIApplicationCommandInteractionDataUserOption,
   APIAttachment,
   APIChatInputApplicationCommandInteraction,
@@ -15,9 +17,12 @@ import {
   APIInteractionDataResolvedGuildMember,
   APIRole,
   APIUser,
+  ApplicationCommandOptionType,
 } from 'discord-api-types/v10';
 import { App } from '../app.js';
 import { ApplicationCommandContext } from './application-command-context.js';
+
+type CommandOption = APIApplicationCommandInteractionDataSubcommandOption | APIApplicationCommandInteractionDataSubcommandGroupOption;
 
 export class SlashCommandContext extends ApplicationCommandContext {
   private options = new Map<string, APIApplicationCommandInteractionDataBasicOption>();
@@ -30,14 +35,33 @@ export class SlashCommandContext extends ApplicationCommandContext {
     attachments: {},
   };
 
+  parent: string;
+  group: string | undefined;
+
   constructor(app: App, interaction: APIChatInputApplicationCommandInteraction) {
     super(app, interaction);
 
     if (interaction.data.resolved) {
       Object.assign(this.resolved, interaction.data.resolved);
     }
+    this.parent = this.command;
 
-    this.parseOptions(interaction.data.options as APIApplicationCommandInteractionDataBasicOption[]);
+    const rootOption = interaction.data.options?.[0];
+
+    switch (rootOption?.type) {
+      case ApplicationCommandOptionType.SubcommandGroup:
+        this.group = rootOption.name;
+        this.command = rootOption.options[0].name;
+        this.parseOptions(rootOption.options[0].options);
+        break;
+      case ApplicationCommandOptionType.Subcommand:
+        this.command = rootOption.name;
+        this.parseOptions(rootOption.options);
+        break;
+      default:
+        this.parseOptions(interaction.data.options as APIApplicationCommandInteractionDataBasicOption[]);
+        break;
+    }
   }
 
   private parseOptions(options: APIApplicationCommandInteractionDataBasicOption[] = []): void {
@@ -120,16 +144,26 @@ export class SlashCommandContext extends ApplicationCommandContext {
     return { user, member, ...option };
   }
 
-  getChannelOption(name: string): APIApplicationCommandInteractionDataChannelOption & { channel: APIInteractionDataResolvedChannel } {
-    const option = this.options.get(name) as APIApplicationCommandInteractionDataChannelOption | undefined;
-    if (option === undefined) {
-      throw new Error(`Channel option ${name} does not exist.`);
-    }
+  getRequiredChannel(name: string): APIInteractionDataResolvedChannel {
+    const option = this.getChannelOption(name);
     const channel = this.resolved.channels[option.value];
     if (channel === undefined) {
-      throw new Error(`Resolved channel not found.`);
+      throw new Error(`Required channel option ${name} does not exist.`);
     }
-    return { channel, ...option };
+    return channel;
+  }
+
+  getChannel(name: string): APIInteractionDataResolvedChannel | undefined {
+    const option = this.getChannelOption(name);
+    return this.resolved.channels[option.value];
+  }
+
+  getChannelOption(name: string): APIApplicationCommandInteractionDataChannelOption {
+    const option = this.options.get(name) as APIApplicationCommandInteractionDataChannelOption | undefined;
+    if (option == undefined) {
+      throw new Error(`Channel option ${name} does not exist.`);
+    }
+    return option;
   }
 
   getRoleOption(name: string): APIApplicationCommandInteractionDataRoleOption & { role: APIRole } {

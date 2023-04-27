@@ -7,7 +7,7 @@ export const findCharacterNames = async (query: string): Promise<string[]> => {
   const variables = {
     query,
     page: 1,
-    perPage: 10,
+    perPage: 25,
   };
 
   try {

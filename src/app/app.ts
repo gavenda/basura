@@ -124,6 +124,7 @@ export class App {
    * Component cache.
    */
   componentCache: Cache;
+
   /**
    * Message cache.
    */

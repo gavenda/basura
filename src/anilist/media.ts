@@ -1,9 +1,10 @@
 import { aniListRequest } from './anilist.js';
+import { FIND_AIRING_MEDIA } from './gql/find-airing-media.js';
 import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
 import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
 import { FIND_MEDIA } from './gql/find-media.js';
 import { FIND_SCORE_BY_MEDIA_ID_AND_USER_ID } from './gql/find-score-by-media-id-and-user-id.js';
-import { Media, MediaFormat, MediaList, MediaSeason, MediaSort, MediaType, Query } from './gql/types.js';
+import { AiringSchedule, Media, MediaFormat, MediaList, MediaSeason, MediaSort, MediaType, Query } from './gql/types.js';
 
 export interface FindMediaVars {
   query: string;
@@ -15,7 +16,21 @@ export interface FindMediaVars {
   seasonYear: number;
   formatIn: MediaFormat[];
   genreNotIn: string[];
+  mediaId: number;
 }
+
+export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[] | undefined> => {
+  const variables: Partial<FindMediaVars> = {
+    mediaId,
+  };
+
+  try {
+    const result = await aniListRequest<Query>(FIND_AIRING_MEDIA, variables);
+    return result.Page?.airingSchedules;
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 export const findMedia = async (query: string, type?: MediaType, hentai: boolean = true): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
@@ -65,12 +80,29 @@ export const findMediaByRanking = async (options: {
   }
 };
 
-export const findMediaTitles = async (query: string, type?: MediaType): Promise<string[]> => {
+export const findMediaIds = async (query: string, type?: MediaType): Promise<Media[]> => {
   const variables: Partial<FindMediaVars> = {
     query,
     type,
     page: 1,
     perPage: 10,
+  };
+
+  try {
+    const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
+    return result.Page?.media || [];
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+};
+
+export const findMediaTitles = async (query: string, type?: MediaType): Promise<string[]> => {
+  const variables: Partial<FindMediaVars> = {
+    query,
+    type,
+    page: 1,
+    perPage: 25,
   };
 
   try {

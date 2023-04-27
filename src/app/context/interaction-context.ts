@@ -67,13 +67,16 @@ export abstract class InteractionContext {
     if (this.messageId) {
       throw new Error(`Follow up message already sent!`);
     }
-    const followUp = await this.webhook.followUp(options.message, options.components);
+    const followUp = await this.webhook.followUp(options);
     this.messageId = followUp.id;
   }
 
   async edit(options: MessageOptions) {
     if (this.messageId) {
-      await this.webhook.edit(options.message, this.messageId, options.components);
+      await this.webhook.edit({
+        ...options,
+        messageId: this.messageId,
+      });
     } else {
       await this.reply(options);
     }
