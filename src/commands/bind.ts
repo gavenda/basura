@@ -35,7 +35,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
       // const avatar = `data:image/jpeg;base64,${base64}`;
 
       // Create webhook
-      const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channel.id), {
+      const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channel.parent_id ?? channel.id), {
         body: {
           name: `Anime Airing Notifications`,
         },
@@ -43,6 +43,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
 
       await redis.hset(key, {
         id: `@${webhook.id}`,
+        threadId: channel.parent_id ? channel.id : '',
         token: webhook.token,
       });
 

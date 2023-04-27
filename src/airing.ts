@@ -51,8 +51,15 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
         ],
       };
 
+      const query = new URLSearchParams();
+
+      if (webhookData.threadId) {
+        query.set(`thread_id`, webhookData.threadId);
+      }
+
       await options.client.post(Routes.webhook(webhookData.id.substring(1), webhookData.token), {
         body,
+        query,
       });
     }
   }
