@@ -25,23 +25,29 @@ export class Webhook {
   private token: string;
   private rest: Client;
 
-  constructor(client: Client, id: Snowflake, token: string) {
+  constructor(client: Client, id: Snowflake, token: string, auth: boolean = false) {
     this.id = id;
     this.token = token;
     this.rest = client;
   }
 
-  async followUp(message: string | APIEmbed[], components: MessageComponent[] = [], ephemeral: boolean = false): Promise<APIMessage> {
+  async followUp(options: { message: string | APIEmbed[]; components?: MessageComponent[]; ephemeral?: boolean; auth?: boolean }): Promise<APIMessage> {
     return this.rest.post<APIMessage>(Routes.webhook(this.id, this.token), {
-      auth: false,
-      body: toFollowUp(message, components, ephemeral),
+      auth: options.auth ?? false,
+      body: toFollowUp(options.message, options.components ?? [], options.ephemeral ?? false),
     });
   }
 
-  async edit(message: string | APIEmbed[], messageId: string, components: MessageComponent[] = [], ephemeral: boolean = false): Promise<APIMessage> {
-    return this.rest.patch<APIMessage>(Routes.webhookMessage(this.id, this.token, messageId), {
-      auth: false,
-      body: toFollowUp(message, components, ephemeral),
+  async edit(options: {
+    message: string | APIEmbed[];
+    messageId: string;
+    components?: MessageComponent[];
+    ephemeral?: boolean;
+    auth?: boolean;
+  }): Promise<APIMessage> {
+    return this.rest.patch<APIMessage>(Routes.webhookMessage(this.id, this.token, options.messageId), {
+      auth: options.auth ?? false,
+      body: toFollowUp(options.message, options.components ?? [], options.ephemeral ?? false),
     });
   }
 

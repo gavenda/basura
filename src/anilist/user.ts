@@ -16,7 +16,11 @@ export const findUserByName = async (name: string): Promise<User | undefined> =>
 };
 
 export const findUserName = async (name: string): Promise<string[]> => {
-  const variables = { name };
+  const variables = {
+    name,
+    page: 1,
+    perPage: 25,
+  };
 
   try {
     const result = await aniListRequest<Query>(FIND_USER_NAME, variables);

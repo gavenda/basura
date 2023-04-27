@@ -1,4 +1,4 @@
-import { APIApplicationCommand, ApplicationCommandOptionType, ApplicationCommandType } from 'discord-api-types/v10';
+import { APIApplicationCommand, ApplicationCommandOptionType, ApplicationCommandType, ChannelType } from 'discord-api-types/v10';
 import { MediaFormat, MediaSeason } from '../anilist/gql/types.js';
 
 export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {
@@ -210,6 +210,72 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
   ],
 };
 
+export const COMMAND_NOTIFICATION: Partial<APIApplicationCommand> = {
+  name: 'notification',
+  description: 'Setup notifications.',
+  type: ApplicationCommandType.ChatInput,
+  options: [
+    {
+      name: 'airing-anime',
+      description: 'Airing anime notifications.',
+      type: ApplicationCommandOptionType.SubcommandGroup,
+      options: [
+        {
+          name: 'add',
+          description: 'Add an anime to notifications for airing.',
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              type: ApplicationCommandOptionType.Integer,
+              name: 'media',
+              description: 'The anime media.',
+              required: true,
+              autocomplete: true,
+            },
+          ],
+        },
+        {
+          name: 'remove',
+          description: 'Remove an anime from notifications for airing.',
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              type: ApplicationCommandOptionType.Integer,
+              name: 'media',
+              description: 'The anime media.',
+              required: true,
+              autocomplete: true,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const COMMAND_BIND_NOTIFICATION: Partial<APIApplicationCommand> = {
+  name: 'bind',
+  description: 'Bind notifications to the selected channel.',
+  default_member_permissions: '0',
+  type: ApplicationCommandType.ChatInput,
+  options: [
+    {
+      type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread],
+      name: 'channel',
+      description: 'The channel to notify into.',
+      required: true,
+    },
+  ],
+};
+
+export const COMMAND_UNBIND_NOTIFICATION: Partial<APIApplicationCommand> = {
+  name: 'unbind',
+  description: 'Unbind notifications.',
+  default_member_permissions: '0',
+  type: ApplicationCommandType.ChatInput,
+};
+
 export const FIND_ANIME_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Anime',
   type: ApplicationCommandType.Message,
@@ -251,4 +317,7 @@ export const commandList = [
   COMMAND_UNLINK,
   COMMAND_RANKING,
   COMMAND_CHARACTER,
+  COMMAND_BIND_NOTIFICATION,
+  COMMAND_UNBIND_NOTIFICATION,
+  COMMAND_NOTIFICATION,
 ];

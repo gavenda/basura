@@ -1,6 +1,6 @@
 export const FIND_AIRING_MEDIA = `
-	query ($page: Int, $perPage: Int, $mediaIn: [Int]) {
-		Page(page: $page, perPage: $perPage) {
+	query ($mediaId: Int) {
+		Page(page: 1, perPage: 1) {
 			pageInfo {
 				total
 				currentPage
@@ -8,7 +8,7 @@ export const FIND_AIRING_MEDIA = `
 				hasNextPage
 				perPage
 			}
-			airingSchedules(mediaId_in: $mediaIn, sort: EPISODE_DESC, notYetAired: false) {
+			airingSchedules(mediaId: $mediaId, sort: EPISODE_DESC, notYetAired: false) {
 				id
 				episode
 				mediaId
