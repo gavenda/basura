@@ -25,7 +25,7 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
     const requestKey = `notification:anime-airing:request:${guildId}:${options.mediaId}`;
     const requester = await options.redis.get<string>(requestKey);
 
-    if (webhookData) {
+    if (requester && webhookData) {
       const mediaTitle = options.airingSchedule.media?.title?.english ?? options.airingSchedule.media?.title?.romaji ?? 'Unknown';
 
       const body: RESTPostAPIWebhookWithTokenJSONBody = {
@@ -54,7 +54,7 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
       const query = new URLSearchParams();
 
       if (webhookData.threadId) {
-        query.set(`thread_id`, webhookData.threadId);
+        query.set(`thread_id`, webhookData.threadId.substring(1));
       }
 
       await options.client.post(Routes.webhook(webhookData.id.substring(1), webhookData.token), {

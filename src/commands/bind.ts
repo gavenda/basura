@@ -43,7 +43,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
 
       await redis.hset(key, {
         id: `@${webhook.id}`,
-        threadId: channel.parent_id ? channel.id : '',
+        threadId: channel.parent_id ? `@${channel.id}` : '',
         token: webhook.token,
       });
 
