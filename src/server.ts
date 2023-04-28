@@ -1,5 +1,4 @@
 import { Database } from '@db/database.js';
-import { Redis } from '@upstash/redis/cloudflare';
 import { Kysely } from 'kysely';
 import { PlanetScaleDialect } from 'kysely-planetscale';
 import { checkAiringAnimes } from './airing.js';
@@ -31,7 +30,6 @@ export default {
         }),
       });
 
-      const redis = Redis.fromEnv(environment);
       const app = new App({
         token: environment.DISCORD_TOKEN,
         id: environment.DISCORD_APPLICATION_ID,
@@ -39,7 +37,8 @@ export default {
         commands,
         environment,
         executionContext,
-        redis,
+        cacheNamespace: environment.CACHE,
+        bucketNamespace: environment.BUCKET,
       });
 
       return await app.handle(request);

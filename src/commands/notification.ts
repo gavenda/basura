@@ -4,7 +4,6 @@ import { CommandHandler } from '@app/command.js';
 import { AutocompleteContext } from '@app/context/autocomplete-context.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Env } from '@env/env';
-import { Redis } from '@upstash/redis/cloudflare';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 export class NotificationCommand implements CommandHandler<SlashCommandContext> {
@@ -75,15 +74,21 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
   }
 
   async handleAdd(context: SlashCommandContext): Promise<void> {
-    const redis = new Redis({
-      url: context.app.env<Env>().UPSTASH_REDIS_REST_URL,
-      token: context.app.env<Env>().UPSTASH_REDIS_REST_TOKEN,
-    });
-
+    const kv = context.app.env<Env>().NOTIFICATION;
     const notificationKey = `notification:anime-airing`;
-    const key = `notification:anime-airing:guild:${context.guildId}`;
+    const guildKey = `notification:anime-airing:guild:${context.guildId}`;
     const mediaId = context.getInteger('media') || -1;
-    const exists = await redis.sismember(key, mediaId);
+    const mediaIds = new Set(await kv.get<number[]>(guildKey, 'json') || []);
+    const notificationGuilds = new Set(await kv.get<string[]>(guildKey, 'json') || []);
+
+    if (!context.guildId) {
+      await context.edit({
+        message: `You are not in a discord server.`,
+      });
+      return;
+    }
+
+    const exists = mediaIds.has(mediaId);
 
     if (exists) {
       await context.edit({
@@ -93,9 +98,15 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     }
 
     const requestKey = `notification:anime-airing:request:${context.guildId}:${mediaId}`;
-    await redis.set(requestKey, `@${context.userId}`);
-    await redis.sadd(notificationKey, context.guildId);
-    await redis.sadd(key, mediaId);
+
+    await kv.put(requestKey, context.userId);
+    // add to set
+    notificationGuilds.add(context.guildId);
+    mediaIds.add(mediaId);
+
+    // update kv
+    await kv.put(notificationKey, JSON.stringify([...notificationGuilds]));
+    await kv.put(guildKey, JSON.stringify([...mediaIds]));
 
     // Add current episode count
     const airingSchedules = await findAiringMedia(mediaId);
@@ -103,7 +114,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
 
     if (airingSchedule) {
       const mediaKey = `notification:anime-airing:media:${mediaId}`;
-      await redis.set(mediaKey, airingSchedule.episode);
+      await kv.put(mediaKey, airingSchedule.episode.toString());
     }
 
     await context.edit({
@@ -112,14 +123,11 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
   }
 
   async handleRemove(context: SlashCommandContext): Promise<void> {
-    const redis = new Redis({
-      url: context.app.env<Env>().UPSTASH_REDIS_REST_URL,
-      token: context.app.env<Env>().UPSTASH_REDIS_REST_TOKEN,
-    });
-
-    const key = `notification:anime-airing:guild:${context.guildId}`;
+    const kv = context.app.env<Env>().NOTIFICATION;
+    const guildKey = `notification:anime-airing:guild:${context.guildId}`;
     const mediaId = context.getInteger('media') || -1;
-    const exists = await redis.sismember(key, mediaId);
+    const mediaIds = new Set(await kv.get<number[]>(guildKey, 'json') || []);
+    const exists = mediaIds.has(mediaId);
 
     if (!exists) {
       await context.edit({
@@ -129,8 +137,12 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     }
 
     const requestKey = `notification:anime-airing:request:${context.guildId}:${mediaId}`;
-    await redis.del(requestKey);
-    await redis.srem(key, mediaId);
+
+
+    await kv.delete(requestKey);
+    mediaIds.delete(mediaId);
+    await kv.put(guildKey, JSON.stringify([...mediaIds]));
+    
     await context.edit({
       message: `Anime airing notification removed!`,
     });

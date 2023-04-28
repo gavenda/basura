@@ -9,8 +9,14 @@ export interface Env {
   DATABASE_HOST: string;
   DATABASE_USERNAME: string;
   DATABASE_PASSWORD: string;
+  CACHE: KVNamespace;
+  BUCKET: KVNamespace;
+  NOTIFICATION: KVNamespace;
   DB: Kysely<Database>;
-  UPSTASH_REDIS_REST_TOKEN: string;
-  UPSTASH_REDIS_REST_URL: string;
-  UPSTASH_DISABLE_TELEMETRY: string;
+}
+
+export interface KVWebhook {
+  id: string;
+  threadId: string;
+  token: string;
 }

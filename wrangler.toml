@@ -3,6 +3,11 @@ main = "./src/server.ts"
 compatibility_date = "2023-04-16"
 route = "app.basura.gavenda.dev"
 vars = { ENVIRONMENT = "production" }
+kv_namespaces = [
+  { binding = "BUCKET", id = "5834eb959af448d0b2f68a0abe2712f9", preview_id = "e57b7cdce0474ad8aa72be0924887460" },
+  { binding = "CACHE", id = "84338b34ceda4151889deb42218eaa24", preview_id = "f5506d2c4b9d4b7fab09ccbbbfd580c0" },
+  { binding = "NOTIFICATION", id = "70a6246c3ebe427cbe8a70b02027176b", preview_id = "7f3ab3b58ef5434bb0a16519a89c56e9" },
+]
 
 [triggers]
 crons = ["*/2 * * * *"]
@@ -10,3 +15,8 @@ crons = ["*/2 * * * *"]
 [env.dev]
 route = "dev.basura.gavenda.dev"
 vars = { ENVIRONMENT = "development" }
+kv_namespaces = [
+  { binding = "BUCKET", id = "c9a96a1662104ef48470f393d2de7d6d", preview_id = "e57b7cdce0474ad8aa72be0924887460" },
+  { binding = "CACHE", id = "e5f97ca8929a488fa4da77a412a23b5a", preview_id = "f5506d2c4b9d4b7fab09ccbbbfd580c0" },
+  { binding = "NOTIFICATION", id = "f16c9aaa6db2483c9d5b7687f7446f79", preview_id = "7f3ab3b58ef5434bb0a16519a89c56e9" },
+]
