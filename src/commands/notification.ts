@@ -79,7 +79,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     const guildKey = `notification:anime-airing:guild:${context.guildId}`;
     const mediaId = context.getInteger('media') || -1;
     const mediaIds = new Set(await kv.get<number[]>(guildKey, 'json') || []);
-    const notificationGuilds = new Set(await kv.get<string[]>(guildKey, 'json') || []);
+    const notificationGuilds = new Set(await kv.get<string[]>(notificationKey, 'json') || []);
 
     if (!context.guildId) {
       await context.edit({
@@ -142,7 +142,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     await kv.delete(requestKey);
     mediaIds.delete(mediaId);
     await kv.put(guildKey, JSON.stringify([...mediaIds]));
-    
+
     await context.edit({
       message: `Anime airing notification removed!`,
     });
