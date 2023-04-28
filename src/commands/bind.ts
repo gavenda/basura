@@ -1,7 +1,7 @@
 import { CommandHandler } from '@app/command.js';
 import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Env, KVWebhook } from '@env/env';
-import { APIWebhook, Routes } from 'discord-api-types/v10';
+import { APIWebhook, ChannelType, Routes } from 'discord-api-types/v10';
 
 export class BindCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
@@ -20,8 +20,11 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
       return;
     }
     try {
+      const channelId = channel.type === (ChannelType.PublicThread || ChannelType.PrivateThread) && channel.parent_id ? channel.parent_id : channel.id;
+      const threadId = (ChannelType.PublicThread || ChannelType.PrivateThread) ? channel.parent_id : '';
+
       // Create webhook
-      const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channel.parent_id ?? channel.id), {
+      const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channelId), {
         body: {
           name: `Anime Airing Notifications`,
         },
@@ -29,7 +32,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
 
       await kv.put(key, JSON.stringify({
         id: webhook.id,
-        threadId: channel.parent_id ? channel.id : '',
+        threadId,
         token: webhook.token,
       }));
 
