@@ -128,6 +128,8 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
       return;
     }
 
+    const requestKey = `notification:anime-airing:request:${context.guildId}:${mediaId}`;
+    await redis.del(requestKey);
     await redis.srem(key, mediaId);
     await context.edit({
       message: `Anime airing notification removed!`,
