@@ -15,7 +15,7 @@ export class KVBucketManager implements BucketManager {
     const buckets: [string, Bucket][] = [];
 
     for (const key of result.keys) {
-      const bucket = await this.kv.get<Bucket>(key.name, { type: 'json' });
+      const bucket = await this.kv.get<Bucket>(key.name, 'json');
       if (bucket) {
         buckets.push([key.name, bucket]);
       }

@@ -21,7 +21,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
     }
     try {
       const channelId = channel.type === (ChannelType.PublicThread || ChannelType.PrivateThread) && channel.parent_id ? channel.parent_id : channel.id;
-      const threadId = (ChannelType.PublicThread || ChannelType.PrivateThread) ? channel.parent_id : '';
+      const threadId = ChannelType.PublicThread || ChannelType.PrivateThread ? channel.parent_id : '';
 
       // Create webhook
       const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channelId), {
@@ -30,11 +30,14 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
         },
       });
 
-      await kv.put(key, JSON.stringify({
-        id: webhook.id,
-        threadId,
-        token: webhook.token,
-      }));
+      await kv.put(
+        key,
+        JSON.stringify({
+          id: webhook.id,
+          threadId,
+          token: webhook.token,
+        })
+      );
 
       await context.edit({
         message: `Notifications now bound to <#${channel.id}>.`,

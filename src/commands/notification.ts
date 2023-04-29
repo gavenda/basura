@@ -78,8 +78,8 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     const notificationKey = `notification:anime-airing`;
     const guildKey = `notification:anime-airing:guild:${context.guildId}`;
     const mediaId = context.getInteger('media') || -1;
-    const mediaIds = new Set(await kv.get<number[]>(guildKey, 'json') || []);
-    const notificationGuilds = new Set(await kv.get<string[]>(notificationKey, 'json') || []);
+    const mediaIds = new Set((await kv.get<number[]>(guildKey, 'json')) || []);
+    const notificationGuilds = new Set((await kv.get<string[]>(notificationKey, 'json')) || []);
 
     if (!context.guildId) {
       await context.edit({
@@ -126,7 +126,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     const kv = context.app.env<Env>().NOTIFICATION;
     const guildKey = `notification:anime-airing:guild:${context.guildId}`;
     const mediaId = context.getInteger('media') || -1;
-    const mediaIds = new Set(await kv.get<number[]>(guildKey, 'json') || []);
+    const mediaIds = new Set((await kv.get<number[]>(guildKey, 'json')) || []);
     const exists = mediaIds.has(mediaId);
 
     if (!exists) {
@@ -137,7 +137,6 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     }
 
     const requestKey = `notification:anime-airing:request:${context.guildId}:${mediaId}`;
-
 
     await kv.delete(requestKey);
     mediaIds.delete(mediaId);

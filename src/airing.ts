@@ -9,7 +9,7 @@ interface AnnounceOptions {
   kv: KVNamespace;
   client: Client;
   mediaId: number;
-  guildIds: Set<number>;
+  guildIds: Set<string>;
   airingSchedule: AiringSchedule;
 }
 
@@ -64,7 +64,7 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
   }
 };
 
-export const removeAiringAnimeData = async (kv: KVNamespace, guildIds: Set<number>, mediaId: number): Promise<void> => {
+export const removeAiringAnimeData = async (kv: KVNamespace, guildIds: Set<string>, mediaId: number): Promise<void> => {
   const mediaKey = `notification:anime-airing:media:${mediaId}`;
 
   // Delete media key
@@ -74,7 +74,7 @@ export const removeAiringAnimeData = async (kv: KVNamespace, guildIds: Set<numbe
     const requestKey = `notification:anime-airing:request:${guildId}:${mediaId}`;
     const guildKey = `notification:anime-airing:guild:${guildId}`;
 
-    const mediaIds = new Set(await kv.get<number[]>(guildKey, 'json') || []);
+    const mediaIds = new Set((await kv.get<number[]>(guildKey, 'json')) || []);
 
     mediaIds.delete(mediaId);
 
@@ -87,9 +87,9 @@ export const removeAiringAnimeData = async (kv: KVNamespace, guildIds: Set<numbe
 export const checkAiringAnimes = async (environment: Env): Promise<void> => {
   const notificationKey = `notification:anime-airing`;
   const kv = environment.NOTIFICATION;
-  const guildIdsArr = await kv.get<number[]>(notificationKey) || [];
-  const guildIds = new Set(guildIdsArr);
+  const guildIdsArr = (await kv.get<string[]>(notificationKey, 'json')) || [];
   const guildKeys = guildIdsArr.map((guildId) => `notification:anime-airing:guild:${guildId}`);
+  const guildIds = new Set(guildIdsArr);
   const bucketManager = new KVBucketManager(environment.BUCKET);
   const client = new Client({ bucketManager }).setToken(environment.DISCORD_TOKEN);
 
@@ -101,7 +101,7 @@ export const checkAiringAnimes = async (environment: Env): Promise<void> => {
 
   // Manual union, using without redis
   for (const guildKey of guildKeys) {
-    const guildMediaIds = await kv.get<number[]>(guildKey) || [];
+    const guildMediaIds = (await kv.get<number[]>(guildKey, 'json')) || [];
     for (const mediaId of guildMediaIds) {
       mediaIds.add(mediaId);
     }
@@ -109,7 +109,7 @@ export const checkAiringAnimes = async (environment: Env): Promise<void> => {
 
   for (const mediaId of mediaIds) {
     const mediaKey = `notification:anime-airing:media:${mediaId}`;
-    const episode = Number(await kv.get(mediaKey, 'text') || '0');
+    const episode = Number((await kv.get(mediaKey, 'text')) || '0');
     const airingSchedules = await findAiringMedia(mediaId);
     const airingSchedule = airingSchedules?.[0];
 
