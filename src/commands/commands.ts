@@ -36,5 +36,5 @@ export const commands: CommandMap = {
   'Search Manga': new FindMangaMessageCommand(),
   'Search Character': new FindCharacterMessageCommand(),
   'Search Staff': new FindStaffMessageCommand(),
-  'Search User': new FindUserCommand(),
+  'Show AniList User': new FindUserCommand(),
 };
