@@ -21,7 +21,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
     }
     try {
       const channelId = channel.type === (ChannelType.PublicThread || ChannelType.PrivateThread) && channel.parent_id ? channel.parent_id : channel.id;
-      const threadId = ChannelType.PublicThread || ChannelType.PrivateThread ? channel.id : '';
+      const threadId = channel.type === (ChannelType.PublicThread || ChannelType.PrivateThread) ? channel.id : '';
 
       // Create webhook
       const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channelId), {
