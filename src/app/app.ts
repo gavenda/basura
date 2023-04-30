@@ -289,17 +289,18 @@ export class App {
           context.handled = true;
           await handler.handleComponent(context);
         } else {
+          logger.error(`No component handlers found`, { interaction });
           await context.edit({
             message: `No component handlers found.`,
             ephmeral: true,
           });
         }
-      } catch (err) {
+      } catch (error) {
         await context.edit({
           message: `An error occured during the interaction.`,
           ephmeral: true,
         });
-        logger.error(err);
+        logger.error(`Error occured during interaction`, { error, interaction });
       }
       resolve();
     });
@@ -345,10 +346,10 @@ export class App {
         break;
     }
 
-    logger.trace(`Handling application command: ${interaction.data.name}`);
+    logger.trace(`Handling application command: ${interaction.data.name}`, { interaction });
 
     if (!handler) {
-      logger.error(`No handlers found for command: ${interaction.data.name}`);
+      logger.error(`No handlers found for command: ${interaction.data.name}`, { interaction });
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -367,6 +368,7 @@ export class App {
       await sleep(this.timeoutMs);
       // We send a message if not handled
       if (!context.handled) {
+        logger.warn(`Interaction timed out`, { interaction });
         await context.edit({
           message: `The interaction timed out.`,
           ephmeral: true,
@@ -380,13 +382,13 @@ export class App {
       try {
         await handler.handle(context);
         context.handled = true;
-      } catch (err) {
+      } catch (error) {
         await context.edit({
           message: `An error occured during the interaction.`,
           ephmeral: true,
         });
         context.handled = true;
-        logger.error(err);
+        logger.error(`Error occured during interaction`, { error, interaction });
       }
       resolve();
     });

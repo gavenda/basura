@@ -29,8 +29,8 @@ export const findCharacterNames = async (query: string): Promise<string[]> => {
     }
 
     return names;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding character names`, { error });
     return [];
   }
 };
@@ -45,7 +45,7 @@ export const findCharacter = async (query: string): Promise<Character[] | undefi
   try {
     const result = await aniListRequest<Query>(FIND_CHARACTER, variables);
     return result.Page?.characters;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding character by name`, { error });
   }
 };

@@ -11,8 +11,8 @@ export const findUserByName = async (name: string): Promise<User | undefined> =>
   try {
     const result = await aniListRequest<Query>(FIND_USER_BY_NAME, variables);
     return result.User;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding user by name`, { error });
   }
 };
 
@@ -33,8 +33,8 @@ export const findUserName = async (name: string): Promise<string[]> => {
     }
 
     return names;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding usernames`, { error });
   }
   return [];
 };
@@ -45,7 +45,7 @@ export const findUserStatisticsByName = async (name: string): Promise<User | und
   try {
     const result = await aniListRequest<Query>(FIND_STATISTICS_BY_USER_NAME, variables);
     return result.User;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding user statistics by name`, { error });
   }
 };

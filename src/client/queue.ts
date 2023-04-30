@@ -127,7 +127,10 @@ export class Queue {
     const ttl = reset ? Math.floor(Number(reset) + OFFSET) : OFFSET;
 
     if (key != null && key !== this.id) {
-      logger.verbose(`Received new bucket hash. ${this.id} -> ${key}`);
+      logger.verbose(`Received new bucket hash.`, {
+        id: this.id,
+        key,
+      });
 
       await this.manager.buckets.set(
         identifier,
@@ -168,7 +171,9 @@ export class Queue {
 
       this.manager.onRateLimit?.(rateLimitData);
 
-      logger.verbose(`Encountered 429 rate limit. ${JSON.stringify(rateLimitData)}.`);
+      logger.verbose(`Encountered 429 rate limit`, {
+        rateLimit: rateLimitData,
+      });
       await sleep(retryAfter, this.#shutdownSignal);
 
       // Don't bump retries for a non-server issue (the request is expected to succeed)

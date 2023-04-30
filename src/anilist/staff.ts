@@ -14,8 +14,8 @@ export const findStaff = async (query: string): Promise<Staff[] | undefined> => 
   try {
     const result = await aniListRequest<Query>(FIND_STAFF, variables);
     return result.Page?.staff;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding staff by name`, { error });
   }
 };
 
@@ -43,8 +43,8 @@ export const findStaffByName = async (query: string): Promise<string[]> => {
       }
     }
     return names;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding staff names`, { error });
   }
   return [];
 };

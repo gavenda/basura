@@ -16,32 +16,28 @@ export class Logger {
     this.transports = options.transports;
   }
 
-  log(level: LogLevel, msg: any, obj?: any) {
-    let message: string;
-
-    if (typeof msg === 'string') {
-      message = msg;
-    } else {
-      message = JSON.stringify(msg);
-    }
-
+  log(level: LogLevel, message: string, obj?: any) {
     this.transports.forEach((t) => t.log({ level, message }, obj));
   }
 
-  error(err: any, obj?: any) {
-    this.log('error', err, obj);
+  error(msg: string, obj?: any) {
+    this.log('error', msg, obj);
   }
 
-  info(err: any, obj?: any) {
-    this.log('info', err, obj);
+  info(msg: string, obj?: any) {
+    this.log('info', msg, obj);
   }
 
-  verbose(err: any, obj?: any) {
-    this.log('trace', err, obj);
+  verbose(msg: string, obj?: any) {
+    this.log('trace', msg, obj);
   }
 
-  trace(err: any, obj?: any) {
-    this.log('trace', err, obj);
+  trace(msg: string, obj?: any) {
+    this.log('trace', msg, obj);
+  }
+
+  warn(msg: string, obj?: any) {
+    this.log('warn', msg, obj);
   }
 
   add(transport: Transport) {

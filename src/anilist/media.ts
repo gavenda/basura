@@ -28,8 +28,8 @@ export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[]
   try {
     const result = await aniListRequest<Query>(FIND_AIRING_MEDIA, variables);
     return result.Page?.airingSchedules;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding airing media`, { error });
   }
 };
 
@@ -48,8 +48,8 @@ export const findMedia = async (query: string, type?: MediaType, hentai: boolean
   try {
     const result = await aniListRequest<Query>(FIND_MEDIA, variables);
     return result.Page?.media;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding media`, { error });
   }
 };
 
@@ -76,8 +76,8 @@ export const findMediaByRanking = async (options: {
   try {
     const result = await aniListRequest<Query>(FIND_MEDIA_BY_RANKING, variables);
     return result.Page?.media;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding media by ranking`, { error });
   }
 };
 
@@ -92,8 +92,8 @@ export const findMediaIds = async (query: string, type?: MediaType): Promise<Med
   try {
     const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
     return result.Page?.media || [];
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding media ids`, { error });
     return [];
   }
 };
@@ -126,8 +126,8 @@ export const findMediaTitles = async (query: string, type?: MediaType): Promise<
     }
 
     return titles;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when finding media titles`, { error });
     return [];
   }
 };
@@ -138,7 +138,7 @@ export const findScoreByUsersAndMedias = async (userIds: number[], mediaIds: num
   try {
     const result = await aniListRequest<Query>(FIND_SCORE_BY_MEDIA_ID_AND_USER_ID, variables);
     return result.Page?.mediaList;
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(`Error when score by user and media`, { error });
   }
 };
