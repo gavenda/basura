@@ -17,7 +17,7 @@ export class LogtailTransport extends Transport {
     this.context = context;
   }
 
-  public log(info: any, next: () => void) {
+  public log(entry: winston.LogEntry, next: () => void) {
     const writeRemote = new Promise<void>(async (resolve, _) => {
       await fetch(LOGTAIL_REMOTE, {
         headers: {
@@ -25,7 +25,7 @@ export class LogtailTransport extends Transport {
           Authorization: `Bearer ${this.token}`,
         },
         body: JSON.stringify({
-          message: info,
+          message: `[${entry.level}] ${entry.message}`,
         }),
       });
       next();
