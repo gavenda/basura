@@ -6,7 +6,7 @@ export interface LogEntry {
 }
 
 export interface Transport {
-  log(entry: LogEntry): void;
+  log(entry: LogEntry, obj?: any): void;
 }
 
 export class Logger {
@@ -16,7 +16,7 @@ export class Logger {
     this.transports = options.transports;
   }
 
-  log(level: LogLevel, msg: any) {
+  log(level: LogLevel, msg: any, obj?: any) {
     let message: string;
 
     if (typeof msg === 'string') {
@@ -25,28 +25,23 @@ export class Logger {
       message = JSON.stringify(msg);
     }
 
-    this.transports.forEach((t) =>
-      t.log({
-        level,
-        message,
-      })
-    );
+    this.transports.forEach((t) => t.log({ level, message }, obj));
   }
 
-  error(err: any) {
-    this.log('error', err);
+  error(err: any, obj?: any) {
+    this.log('error', err, obj);
   }
 
-  info(err: any) {
-    this.log('info', err);
+  info(err: any, obj?: any) {
+    this.log('info', err, obj);
   }
 
-  verbose(err: any) {
-    this.log('trace', err);
+  verbose(err: any, obj?: any) {
+    this.log('trace', err, obj);
   }
 
-  trace(err: any) {
-    this.log('trace', err);
+  trace(err: any, obj?: any) {
+    this.log('trace', err, obj);
   }
 
   add(transport: Transport) {
@@ -93,7 +88,7 @@ export class LogtailTransport implements Transport {
     this.context = context;
   }
 
-  log(entry: LogEntry) {
+  log(entry: LogEntry, obj?: any) {
     this.context.passThroughOnException();
     this.context.waitUntil(
       fetch(LOGTAIL_REMOTE, {
@@ -105,6 +100,7 @@ export class LogtailTransport implements Transport {
         body: JSON.stringify({
           level: entry.level,
           message: entry.message,
+          ...obj,
         }),
       })
     );
