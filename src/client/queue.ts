@@ -126,7 +126,7 @@ export class Queue {
     const inBucket = await this.manager.buckets.has(identifier);
     const ttl = reset ? Math.floor(Number(reset) + OFFSET) : OFFSET;
 
-    if (key != null && key !== this.id) {
+    if (key !== null && key !== undefined && key !== this.id) {
       logger.verbose(`Received new bucket hash.`, {
         id: this.id,
         key,
