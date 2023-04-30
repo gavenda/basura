@@ -46,25 +46,25 @@ export class Logger {
 }
 
 export class ConsoleTransport implements Transport {
-  log(entry: LogEntry): void {
+  log(entry: LogEntry, obj?: any): void {
     switch (entry.level) {
       case 'info':
-        console.info(entry.message);
+        console.info(entry.message, obj);
         break;
       case 'debug':
-        console.debug(entry.message);
+        console.debug(entry.message, obj);
         break;
       case 'trace':
-        console.trace(entry.message);
+        console.trace(entry.message, obj);
         break;
       case 'warn':
-        console.warn(entry.message);
+        console.warn(entry.message, obj);
         break;
       case 'error':
-        console.error(entry.message);
+        console.error(entry.message, obj);
         break;
       default:
-        console.log(entry.message);
+        console.log(entry.message, obj);
     }
   }
 }
@@ -96,7 +96,9 @@ export class LogtailTransport implements Transport {
         body: JSON.stringify({
           level: entry.level,
           message: entry.message,
-          ...obj,
+          context: {
+            ...obj,
+          },
         }),
       })
     );
