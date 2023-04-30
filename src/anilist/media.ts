@@ -1,3 +1,4 @@
+import { logger } from '@logging/logger';
 import { aniListRequest } from './anilist.js';
 import { FIND_AIRING_MEDIA } from './gql/find-airing-media.js';
 import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
@@ -28,7 +29,7 @@ export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[]
     const result = await aniListRequest<Query>(FIND_AIRING_MEDIA, variables);
     return result.Page?.airingSchedules;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 };
 
@@ -48,7 +49,7 @@ export const findMedia = async (query: string, type?: MediaType, hentai: boolean
     const result = await aniListRequest<Query>(FIND_MEDIA, variables);
     return result.Page?.media;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 };
 
@@ -76,7 +77,7 @@ export const findMediaByRanking = async (options: {
     const result = await aniListRequest<Query>(FIND_MEDIA_BY_RANKING, variables);
     return result.Page?.media;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 };
 
@@ -92,7 +93,7 @@ export const findMediaIds = async (query: string, type?: MediaType): Promise<Med
     const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
     return result.Page?.media || [];
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     return [];
   }
 };
@@ -126,7 +127,7 @@ export const findMediaTitles = async (query: string, type?: MediaType): Promise<
 
     return titles;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     return [];
   }
 };
@@ -138,6 +139,6 @@ export const findScoreByUsersAndMedias = async (userIds: number[], mediaIds: num
     const result = await aniListRequest<Query>(FIND_SCORE_BY_MEDIA_ID_AND_USER_ID, variables);
     return result.Page?.mediaList;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 };

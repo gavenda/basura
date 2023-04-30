@@ -19,7 +19,8 @@
       "@client/*": ["src/client/*"],
       "@graphql/*": ["src/graphql/*"],
       "@util/*": ["src/util/*"],
-      "@db/*": ["src/db/*"]
+      "@db/*": ["src/db/*"],
+      "@logging/logger": ["src/logger.ts"]
     }
   },
   "include": ["src"],
