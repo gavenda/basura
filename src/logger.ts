@@ -99,7 +99,8 @@ export class LogtailTransport implements Transport {
           Authorization: `Bearer ${this.token}`,
         },
         body: JSON.stringify({
-          message: `[${entry.level}] ${entry.message}`,
+          level: entry.level,
+          message: entry.message,
         }),
       })
     );
