@@ -5,6 +5,7 @@ import { checkAiringAnimes } from './airing.js';
 import { App } from './app/app.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
+import { LogtailTransport, logger } from './logger.js';
 
 export default {
   /**
@@ -21,6 +22,9 @@ export default {
     }
     // We handle interactions through here.
     if (request.method === 'POST') {
+      // Add logtail
+      logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));
+
       // Initialize our database
       environment.DB = new Kysely<Database>({
         dialect: new PlanetScaleDialect({
