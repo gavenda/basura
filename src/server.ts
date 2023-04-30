@@ -5,7 +5,7 @@ import { checkAiringAnimes } from './airing.js';
 import { App } from './app/app.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
-import { logger } from './logger.js';
+import { LogtailTransport, logger } from './logger.js';
 
 export default {
   /**
