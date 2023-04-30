@@ -19,7 +19,6 @@ export class RedisBucketManager implements BucketManager {
     const buckets: [string, Bucket][] = [];
 
     for (const key of keys) {
-      console.log(key);
       const bucket = await this.redis.get<Bucket>(key);
       if (bucket) {
         buckets.push([key.slice(this.namespace.length + 1), bucket]);

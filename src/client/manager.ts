@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { logger } from '@logging/logger';
 import { Queue } from './queue.js';
 import { RateLimitData, RequestData, Route } from './types.js';
 import { getRouteInformation } from './util/routes.js';
@@ -217,7 +218,7 @@ export class Manager {
 
         if (Math.floor(Date.now() - bucket.lastRequest) > ONE_DAY) {
           swept.set(key, bucket);
-          console.log(`Swept the ${key} bucket`);
+          logger.verbose(`Swept the ${key} bucket`);
           await this.buckets.delete(key);
         }
       }
@@ -236,7 +237,7 @@ export class Manager {
 
       for (const [key, queue] of this.queues.entries()) {
         if (queue.inactive) {
-          console.log(`Swept the ${key} queue`);
+          logger.verbose(`Swept the ${key} queue`);
           swept.set(key, queue);
           this.queues.delete(key);
         }

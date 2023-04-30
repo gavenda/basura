@@ -1,6 +1,7 @@
 import { Client } from '@client/client.js';
 import { KVBucketManager } from '@client/kv-bucket-manager.js';
 import { RedisBucketManager } from '@client/redis-bucket-manager.js';
+import { logger } from '@logging/logger';
 import { Redis } from '@upstash/redis';
 import {
   APIApplicationCommandAutocompleteInteraction,
@@ -298,7 +299,7 @@ export class App {
           message: `An error occured during the interaction.`,
           ephmeral: true,
         });
-        console.error(err);
+        logger.error(err);
       }
       resolve();
     });
@@ -345,7 +346,7 @@ export class App {
     }
 
     if (!handler) {
-      console.error(`No handlers found for command: ${interaction.data.name}`);
+      logger.error(`No handlers found for command: ${interaction.data.name}`);
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -383,7 +384,7 @@ export class App {
           ephmeral: true,
         });
         context.handled = true;
-        console.error(err);
+        logger.error(err);
       }
       resolve();
     });
