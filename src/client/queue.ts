@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { logger } from '@logging/logger';
+import { logger } from '../logger.js';
 import { DiscordError, ErrorBody, isDiscordError } from './errors/discord-error.js';
 import { RequestError } from './errors/request-error.js';
 import { Manager } from './manager.js';

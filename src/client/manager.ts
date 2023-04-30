@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { logger } from '@logging/logger';
+import { logger } from '../logger.js';
 import { Queue } from './queue.js';
 import { RateLimitData, RequestData, Route } from './types.js';
 import { getRouteInformation } from './util/routes.js';
