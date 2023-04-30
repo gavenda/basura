@@ -90,6 +90,7 @@ export class LogtailTransport implements Transport {
   }
 
   log(entry: LogEntry) {
+    this.context.passThroughOnException();
     this.context.waitUntil(
       fetch(LOGTAIL_REMOTE, {
         headers: {
