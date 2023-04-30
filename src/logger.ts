@@ -1,4 +1,4 @@
-export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug';
+export type LogLevel = 'error' | 'warn' | 'info' | 'trace' | 'debug';
 
 export interface LogEntry {
   level: LogLevel;
@@ -42,7 +42,11 @@ export class Logger {
   }
 
   verbose(err: any) {
-    this.log('verbose', err);
+    this.log('trace', err);
+  }
+
+  trace(err: any) {
+    this.log('trace', err);
   }
 
   add(transport: Transport) {
