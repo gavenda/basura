@@ -93,6 +93,7 @@ export class LogtailTransport implements Transport {
     this.context.passThroughOnException();
     this.context.waitUntil(
       fetch(LOGTAIL_REMOTE, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.token}`,
