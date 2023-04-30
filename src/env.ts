@@ -9,7 +9,6 @@ export interface Env {
   DATABASE_HOST: string;
   DATABASE_USERNAME: string;
   DATABASE_PASSWORD: string;
-  LOGTAIL_TOKEN: string;
   CACHE: KVNamespace;
   BUCKET: KVNamespace;
   NOTIFICATION: KVNamespace;
