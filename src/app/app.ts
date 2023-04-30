@@ -205,8 +205,6 @@ export class App {
   }
 
   async handleInteraction(interaction: APIInteraction): Promise<APIInteractionResponse> {
-    logger.info(`Handling interaction type: ${interaction.type}`);
-
     if (interaction.type === InteractionType.Ping) {
       // The `Ping` message is used during the initial webhook handshake, and is
       // required to configure the webhook in the developer portal.
@@ -346,6 +344,8 @@ export class App {
         handler = this.commandMap[interaction.data.name];
         break;
     }
+
+    logger.trace(`Handling application command: ${interaction.data.name}`);
 
     if (!handler) {
       logger.error(`No handlers found for command: ${interaction.data.name}`);

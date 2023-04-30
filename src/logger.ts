@@ -63,7 +63,7 @@ export class ConsoleTransport implements Transport {
       case 'debug':
         console.debug(entry.message);
         break;
-      case 'verbose':
+      case 'trace':
         console.trace(entry.message);
         break;
       case 'warn':
