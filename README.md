@@ -7,7 +7,7 @@
 This is the cloudflare service worker version of the original. To view the gateway version of this bot,
 please click [here](https://github.com/gavenda/studio-helper/tree/main/bot/basura).
 
-To add this bot to your server, click [here](https://discord.com/oauth2/authorize?client_id=870014073197170799&scope=applications.commands).
+To add this bot to your server, click [here](https://discord.com/api/oauth2/authorize?client_id=870014073197170799&permissions=536870912&scope=applications.commands%20bot).
 This is now guaranteed an uptime of 24/7 until I ran out of cloudflare resources.
 
 Highly consider this project a love child or bastard of [Annie](https://github.com/AlexanderColen/Annie-May-Discord-Bot).
