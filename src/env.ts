@@ -1,8 +1,10 @@
 import { Database } from '@db/database.js';
 import { Kysely } from 'kysely';
 
+export type Environment = 'development' | 'production';
+
 export interface Env {
-  ENVIRONMENT: string;
+  ENVIRONMENT: Environment;
   DISCORD_TOKEN: string;
   DISCORD_PUBLIC_KEY: string;
   DISCORD_APPLICATION_ID: string;
@@ -13,6 +15,7 @@ export interface Env {
   CACHE: KVNamespace;
   BUCKET: KVNamespace;
   NOTIFICATION: KVNamespace;
+  D1: D1Database;
   DB: Kysely<Database>;
 }
 

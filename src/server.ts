@@ -1,4 +1,5 @@
 import { Database } from '@db/database.js';
+import { D1Dialect } from '@db/kysely-d1.js';
 import { App } from '@studio-bogus/discord-interaction-app';
 import { LogtailTransport } from '@studio-bogus/logging/logtail';
 import { Kysely } from 'kysely';
@@ -23,13 +24,24 @@ export default {
     // We handle interactions through here.
     if (request.method === 'POST') {
       // Initialize our database
-      environment.DB = new Kysely<Database>({
-        dialect: new PlanetScaleDialect({
-          host: environment.DATABASE_HOST,
-          username: environment.DATABASE_USERNAME,
-          password: environment.DATABASE_PASSWORD,
-        }),
-      });
+
+      // PlanetScale
+      if (environment.ENVIRONMENT === 'production') {
+        environment.DB = new Kysely<Database>({
+          dialect: new PlanetScaleDialect({
+            host: environment.DATABASE_HOST,
+            username: environment.DATABASE_USERNAME,
+            password: environment.DATABASE_PASSWORD,
+          }),
+        });
+      }
+
+      // D1
+      if (environment.ENVIRONMENT === 'development') {
+        environment.DB = new Kysely<Database>({
+          dialect: new D1Dialect({ database: environment.D1 }),
+        });
+      }
 
       const app = new App({
         token: environment.DISCORD_TOKEN,
