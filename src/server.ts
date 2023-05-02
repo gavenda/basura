@@ -1,11 +1,11 @@
 import { Database } from '@db/database.js';
+import { App } from '@studio-bogus/discord-interaction-app';
+import { LogtailTransport } from '@studio-bogus/logging/logtail';
 import { Kysely } from 'kysely';
 import { PlanetScaleDialect } from 'kysely-planetscale';
 import { checkAiringAnimes } from './airing.js';
-import { App } from './app/app.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
-import { LogtailTransport, logger } from './logger.js';
 
 export default {
   /**
@@ -22,9 +22,6 @@ export default {
     }
     // We handle interactions through here.
     if (request.method === 'POST') {
-      // Add logtail
-      logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));
-
       // Initialize our database
       environment.DB = new Kysely<Database>({
         dialect: new PlanetScaleDialect({
@@ -44,6 +41,9 @@ export default {
         cacheNamespace: environment.CACHE,
         bucketNamespace: environment.BUCKET,
       });
+
+      // Add logtail
+      app.logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));
 
       return await app.handle(request);
     }

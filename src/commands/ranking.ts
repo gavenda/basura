@@ -1,9 +1,7 @@
 import { MediaFormat, MediaSeason } from '@anilist/gql/types.js';
 import { findMediaByRanking } from '@anilist/media.js';
-import { CommandHandler } from '@app/command.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
-import { handlePaginatorComponents } from '@app/paginator.js';
+import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
+import { ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { sendMediaEmbed } from './find.js';
 
 export class RankingCommand implements CommandHandler<SlashCommandContext> {

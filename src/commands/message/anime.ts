@@ -1,8 +1,6 @@
 import { MediaType } from '@anilist/gql/types.js';
-import { CommandHandler } from '@app/command.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { MessageCommandContext } from '@app/context/message-command-context.js';
-import { handlePaginatorComponents } from '@app/paginator.js';
+import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
+import { ComponentContext, MessageCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { handleFindMedia } from '../find.js';
 
 export class FindAnimeMessageCommand implements CommandHandler<MessageCommandContext> {

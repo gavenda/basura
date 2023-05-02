@@ -1,4 +1,3 @@
-import { logger } from '@logging/logger';
 import { aniListRequest } from './anilist.js';
 import { FIND_STAFF_NAME } from './gql/find-staff-name.js';
 import { FIND_STAFF } from './gql/find-staff.js';
@@ -15,7 +14,7 @@ export const findStaff = async (query: string): Promise<Staff[] | undefined> => 
     const result = await aniListRequest<Query>(FIND_STAFF, variables);
     return result.Page?.staff;
   } catch (error) {
-    logger.error(`Error when finding staff by name`, { error });
+    console.error(`Error when finding staff by name`, { error });
   }
 };
 
@@ -44,7 +43,7 @@ export const findStaffByName = async (query: string): Promise<string[]> => {
     }
     return names;
   } catch (error) {
-    logger.error(`Error when finding staff names`, { error });
+    console.error(`Error when finding staff names`, { error });
   }
   return [];
 };

@@ -1,11 +1,7 @@
 import { findCharacter, findCharacterNames } from '@anilist/character.js';
 import { Character, CharacterName, MediaType } from '@anilist/gql/types.js';
-import { CommandHandler } from '@app/command.js';
-import { ApplicationCommandContext } from '@app/context/application-command-context.js';
-import { AutocompleteContext } from '@app/context/autocomplete-context.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
-import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
+import { CommandHandler, Page, handlePaginatorComponents, paginator } from '@studio-bogus/discord-interaction-app';
+import { ApplicationCommandContext, AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { zip } from '@util/array.js';
 import { EMBED_DESCRIPTION_LIMIT } from '@util/discord.js';
 import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate } from '@util/strings.js';

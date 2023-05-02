@@ -1,10 +1,7 @@
 import { MediaType } from '@anilist/gql/types.js';
 import { findMediaTitles } from '@anilist/media.js';
-import { CommandHandler } from '@app/command.js';
-import { AutocompleteContext } from '@app/context/autocomplete-context.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
-import { handlePaginatorComponents } from '@app/paginator.js';
+import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
+import { AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 import { handleFindMedia } from './find.js';
 

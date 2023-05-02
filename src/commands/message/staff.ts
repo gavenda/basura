@@ -1,7 +1,5 @@
-import { CommandHandler } from '@app/command.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { MessageCommandContext } from '@app/context/message-command-context.js';
-import { handlePaginatorComponents } from '@app/paginator.js';
+import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
+import { ComponentContext, MessageCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { handleFindStaff } from '../staff.js';
 
 export class FindStaffMessageCommand implements CommandHandler<MessageCommandContext> {

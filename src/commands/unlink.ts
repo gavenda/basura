@@ -1,6 +1,6 @@
-import { CommandHandler } from '@app/command.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Env } from '@env/env';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 
 export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;

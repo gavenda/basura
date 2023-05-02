@@ -1,4 +1,4 @@
-import { CommandMap } from '@app/app.js';
+import { CommandMap } from '@studio-bogus/discord-interaction-app';
 import { AboutCommand } from './about.js';
 import { BindCommand } from './bind.js';
 import { CharacterCommand } from './character.js';

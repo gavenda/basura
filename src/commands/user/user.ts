@@ -1,8 +1,6 @@
-import { CommandHandler } from '@app/command.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { UserCommandContext } from '@app/context/user-command-context.js';
-import { handlePaginatorComponents } from '@app/paginator.js';
 import { Env } from '@env/env';
+import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
+import { ComponentContext, UserCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { handleFindUser } from '../user.js';
 
 export class FindUserCommand implements CommandHandler<UserCommandContext> {

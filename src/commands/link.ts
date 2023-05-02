@@ -1,7 +1,6 @@
 import { findUserByName, findUserName } from '@anilist/user.js';
-import { CommandHandler } from '@app/command.js';
-import { AutocompleteContext } from '@app/context/autocomplete-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { AutocompleteContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 import { Env } from '../env.js';
 

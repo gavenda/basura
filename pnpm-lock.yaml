@@ -4,6 +4,15 @@ dependencies:
   '@planetscale/database':
     specifier: 1.6.0
     version: 1.6.0
+  '@studio-bogus/discord-interaction-app':
+    specifier: ^1.0.1
+    version: 1.0.1
+  '@studio-bogus/discord-interaction-client':
+    specifier: ^1.0.1
+    version: 1.0.1
+  '@studio-bogus/logging':
+    specifier: ^1.0.3
+    version: 1.0.3
   '@upstash/redis':
     specifier: ^1.20.4
     version: 1.20.4
@@ -28,9 +37,6 @@ dependencies:
   kysely-planetscale:
     specifier: ^1.3.0
     version: 1.3.0(@planetscale/database@1.6.0)(kysely@0.24.2)
-  uuid:
-    specifier: ^9.0.0
-    version: 9.0.0
 
 devDependencies:
   '@cloudflare/workers-types':
@@ -45,9 +51,6 @@ devDependencies:
   '@types/node':
     specifier: ^18.15.11
     version: 18.16.2
-  '@types/uuid':
-    specifier: ^9.0.1
-    version: 9.0.1
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.58.0
     version: 5.59.1(@typescript-eslint/parser@5.59.1)(eslint@8.39.0)(typescript@5.0.4)
@@ -784,6 +787,27 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
+  /@studio-bogus/discord-interaction-app@1.0.1:
+    resolution: {integrity: sha512-jMTbvRDSvr5ZHYcNa6lqP5eIYmATGIehvab0WB6hi6VE3G4dJLDogk7JtYIZLaboVfQx687qo3M/+TaEC1p0pQ==}
+    dependencies:
+      '@studio-bogus/discord-interaction-client': 1.0.1
+      '@studio-bogus/logging': 1.0.3
+      discord-api-types: 0.37.41
+      discord-interactions: 3.3.0
+      uuid: 9.0.0
+    dev: false
+
+  /@studio-bogus/discord-interaction-client@1.0.1:
+    resolution: {integrity: sha512-G7AMALwkZ11PCSQLdpRJHJQB82LgJobAYJucTopxE7o6AM7d7qYchVo/ghblXqBjBs30Tzlp/VYqt7OkFA6yzg==}
+    dependencies:
+      '@studio-bogus/logging': 1.0.3
+      discord-snowflake: 2.0.0
+    dev: false
+
+  /@studio-bogus/logging@1.0.3:
+    resolution: {integrity: sha512-sviAyecj+2X18AQ568V4qAS+IWMERr/5elYGcPIC/+A2+ZXjSHrpM1I3gI3m4/PBYfAmA57aM5IK8uDlHhtKrA==}
+    dev: false
+
   /@tsconfig/node18@1.0.3:
     resolution: {integrity: sha512-RbwvSJQsuN9TB04AQbGULYfOGE/RnSFk/FLQ5b0NmDf5Kx2q/lABZbHQPKCO1vZ6Fiwkplu+yb9pGdLy1iGseQ==}
     dev: true
@@ -812,10 +836,6 @@ packages:
 
   /@types/stack-trace@0.0.29:
     resolution: {integrity: sha512-TgfOX+mGY/NyNxJLIbDWrO9DjGoVSW9+aB8H2yy1fy32jsvxijhmyJI9fDFgvz3YP4lvJaq9DzdR/M1bOgVc9g==}
-    dev: true
-
-  /@types/uuid@9.0.1:
-    resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
     dev: true
 
   /@typescript-eslint/eslint-plugin@5.59.1(@typescript-eslint/parser@5.59.1)(eslint@8.39.0)(typescript@5.0.4):
@@ -1143,6 +1163,10 @@ packages:
 
   /discord-api-types@0.37.40:
     resolution: {integrity: sha512-LMALvtO+p6ERK8rwWoaI490NfIE/egbqjR4/rfLL1z9gQE1gqLiTpIUUDIunfAtKYzeH6ucyXhaXXWpfZh/Q6g==}
+    dev: false
+
+  /discord-api-types@0.37.41:
+    resolution: {integrity: sha512-FaPGBK9hx3zqSRX1x3KQWj+OElAJKmcyyfcdCy+U4AKv+gYuIkRySM7zd1So2sE4gc1DikkghkSBgBgKh6pe4Q==}
     dev: false
 
   /discord-interactions@3.3.0:

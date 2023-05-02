@@ -1,9 +1,8 @@
 import { AiringSchedule, MediaStatus } from '@anilist/gql/types.js';
 import { findAiringMedia } from '@anilist/media.js';
-import { Client } from '@client/client.js';
+import { Client, KVBucketManager } from '@studio-bogus/discord-interaction-client';
 import { APIUser, RESTPostAPIWebhookWithTokenJSONBody, Routes } from 'discord-api-types/v10';
 import { Env, KVWebhook } from './env.js';
-import { KVBucketManager } from '@client/kv-bucket-manager.js';
 
 interface AnnounceOptions {
   kv: KVNamespace;

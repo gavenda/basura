@@ -1,13 +1,8 @@
 import { Media, MediaFormat, MediaList, MediaListStatus, MediaRankType, MediaType } from '@anilist/gql/types.js';
 import { findMedia, findMediaTitles, findScoreByUsersAndMedias } from '@anilist/media.js';
-import { App } from '@app/app.js';
-import { CommandHandler } from '@app/command.js';
-import { ApplicationCommandContext } from '@app/context/application-command-context.js';
-import { AutocompleteContext } from '@app/context/autocomplete-context.js';
-import { ComponentContext } from '@app/context/component-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
-import { Page, handlePaginatorComponents, paginator } from '@app/paginator.js';
 import { Env } from '@env/env';
+import { App, CommandHandler, Page, handlePaginatorComponents, paginator } from '@studio-bogus/discord-interaction-app';
+import { ApplicationCommandContext, AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { mediaFormatDisplay, toStars } from '@util/anilist.js';
 import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT } from '@util/discord.js';
 import { appendIfNotMax, htmlToMarkdown, titleCase, truncate } from '@util/strings.js';

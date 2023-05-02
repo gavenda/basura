@@ -1,5 +1,5 @@
-import { CommandHandler } from '@app/command.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { APIUser, Routes } from 'discord-api-types/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
 

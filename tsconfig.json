@@ -11,18 +11,15 @@
     "preserveConstEnums": true,
     "moduleResolution": "node16",
     "sourceMap": true,
-    "types": ["@types/node", "@cloudflare/workers-types", "@types/uuid", "@types/he"],
+    "types": ["@types/node", "@cloudflare/workers-types", "@types/he"],
     "paths": {
       "@env/env": ["src/env.ts"],
-      "@app/*": ["src/app/*"],
       "@anilist/*": ["src/anilist/*"],
-      "@client/*": ["src/client/*"],
       "@graphql/*": ["src/graphql/*"],
       "@util/*": ["src/util/*"],
-      "@db/*": ["src/db/*"],
-      "@logging/logger": ["src/logger.ts"]
+      "@db/*": ["src/db/*"]
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "test"]
+  "exclude": ["node_modules", "dist"]
 }

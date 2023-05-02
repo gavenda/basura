@@ -1,9 +1,7 @@
 import { MediaFormat, MediaListStatus, User, UserGenreStatistic, UserTagStatistic } from '@anilist/gql/types.js';
 import { findUserName, findUserStatisticsByName } from '@anilist/user.js';
-import { CommandHandler } from '@app/command.js';
-import { ApplicationCommandContext } from '@app/context/application-command-context.js';
-import { AutocompleteContext } from '@app/context/autocomplete-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { ApplicationCommandContext, AutocompleteContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { toIntColor } from '@util/anilist.js';
 import { distinctByKey } from '@util/array.js';
 import { EMBED_FIELD_LIMIT } from '@util/discord.js';

@@ -1,6 +1,6 @@
-import { CommandHandler } from '@app/command.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Env, KVWebhook } from '@env/env';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { Routes } from 'discord-api-types/v10';
 
 export class UnbindCommand implements CommandHandler<SlashCommandContext> {

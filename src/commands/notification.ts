@@ -1,9 +1,8 @@
 import { MediaType } from '@anilist/gql/types.js';
 import { findAiringMedia, findMediaIds } from '@anilist/media.js';
-import { CommandHandler } from '@app/command.js';
-import { AutocompleteContext } from '@app/context/autocomplete-context.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Env } from '@env/env';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { AutocompleteContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 export class NotificationCommand implements CommandHandler<SlashCommandContext> {

@@ -1,7 +1,6 @@
-import { CommandHandler } from '@app/command.js';
-import { SlashCommandContext } from '@app/context/slash-command-context.js';
 import { Env, KVWebhook } from '@env/env';
-import { logger } from '@logging/logger';
+import { CommandHandler } from '@studio-bogus/discord-interaction-app';
+import { SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { APIWebhook, ChannelType, Routes } from 'discord-api-types/v10';
 
 export class BindCommand implements CommandHandler<SlashCommandContext> {
@@ -44,7 +43,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
         message: `Notifications now bound to <#${channel.id}>.`,
       });
     } catch (error) {
-      logger.error(`Error during bind`, { error });
+      context.app.logger.error(`Error during bind`, { error });
       await context.edit({
         message: `I need the \`Manage Webhooks\` permission to be able to send notifications.`,
       });
