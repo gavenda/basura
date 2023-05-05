@@ -13,73 +13,56 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
+      - uses: pnpm/action-setup@v2
         with:
           version: 7
           run_install: false
-      - name: Set up pnpm store path
+      - shell: bash
         id: pnpm-cache
-        shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v3
-        name: Set up pnpm cache
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - name: Install dependencies
-        run: pnpm install
-      - name: Lint
-        run: pnpm run --if-present lint
+      - run: pnpm install
+      - run: pnpm run --if-present lint
   release:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
     needs: build
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
+      - uses: pnpm/action-setup@v2
         with:
           version: 7
           run_install: false
-      - name: Set up pnpm store path
+      - shell: bash
         id: pnpm-cache
-        shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v3
-        name: Set up pnpm cache
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - name: Install dependencies
-        run: pnpm install
-      - name: Deploy to cloudflare
-        run: pnpm run --if-present deploy
+      - run: pnpm install
+      - run: pnpm run --if-present deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Register commands
-        run: pnpm run --if-present register
+      - run: pnpm run --if-present register
         env:
           DISCORD_APPLICATION_ID: ${{ vars.DISCORD_APPLICATION_ID }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
