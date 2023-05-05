@@ -89,16 +89,12 @@ class D1Driver implements Driver {
 
 class D1Connection implements DatabaseConnection {
   #config: D1DialectConfig;
-  //   #transactionClient?: D1Connection
 
   constructor(config: D1DialectConfig) {
     this.#config = config;
   }
 
   async executeQuery<O>(compiledQuery: CompiledQuery): Promise<QueryResult<O>> {
-    // Transactions are not supported yet.
-    // if (this.#transactionClient) return this.#transactionClient.executeQuery(compiledQuery)
-
     const results = await this.#config.database
       .prepare(compiledQuery.sql)
       .bind(...compiledQuery.parameters)
@@ -119,23 +115,15 @@ class D1Connection implements DatabaseConnection {
   }
 
   async beginTransaction() {
-    // this.#transactionClient = this.#transactionClient ?? new PlanetScaleConnection(this.#config)
-    // this.#transactionClient.#conn.execute('BEGIN')
-    throw new Error('Transactions are not supported yet.');
+    throw new Error('Transactions are not supported.');
   }
 
   async commitTransaction() {
-    // if (!this.#transactionClient) throw new Error('No transaction to commit')
-    // this.#transactionClient.#conn.execute('COMMIT')
-    // this.#transactionClient = undefined
-    throw new Error('Transactions are not supported yet.');
+    throw new Error('Transactions are not supported.');
   }
 
   async rollbackTransaction() {
-    // if (!this.#transactionClient) throw new Error('No transaction to rollback')
-    // this.#transactionClient.#conn.execute('ROLLBACK')
-    // this.#transactionClient = undefined
-    throw new Error('Transactions are not supported yet.');
+    throw new Error('Transactions are not supported.');
   }
 
   async *streamQuery<O>(_compiledQuery: CompiledQuery, _chunkSize: number): AsyncIterableIterator<QueryResult<O>> {

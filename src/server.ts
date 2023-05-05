@@ -7,6 +7,7 @@ import { PlanetScaleDialect } from 'kysely-planetscale';
 import { checkAiringAnimes } from './airing.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
+import { logger } from './logger.js';
 
 export default {
   /**
@@ -43,19 +44,20 @@ export default {
         });
       }
 
+      // Add logtail
+      logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));
+
       const app = new App({
         token: environment.DISCORD_TOKEN,
         id: environment.DISCORD_APPLICATION_ID,
         publicKey: environment.DISCORD_PUBLIC_KEY,
         commands,
         environment,
+        logger,
         executionContext,
         cacheNamespace: environment.CACHE,
         bucketNamespace: environment.BUCKET,
       });
-
-      // Add logtail
-      app.logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));
 
       return await app.handle(request);
     }

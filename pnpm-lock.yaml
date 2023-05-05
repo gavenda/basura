@@ -5,8 +5,8 @@ dependencies:
     specifier: 1.6.0
     version: 1.6.0
   '@studio-bogus/discord-interaction-app':
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.1.0
+    version: 1.1.0
   '@studio-bogus/discord-interaction-client':
     specifier: ^1.0.1
     version: 1.0.1
@@ -54,6 +54,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^5.58.0
     version: 5.59.1(eslint@8.39.0)(typescript@5.0.4)
+  cross-env:
+    specifier: ^7.0.3
+    version: 7.0.3
   dotenv:
     specifier: ^16.0.3
     version: 16.0.3
@@ -784,8 +787,8 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
-  /@studio-bogus/discord-interaction-app@1.0.1:
-    resolution: {integrity: sha512-jMTbvRDSvr5ZHYcNa6lqP5eIYmATGIehvab0WB6hi6VE3G4dJLDogk7JtYIZLaboVfQx687qo3M/+TaEC1p0pQ==}
+  /@studio-bogus/discord-interaction-app@1.1.0:
+    resolution: {integrity: sha512-0/tFEejci4V8ahjG+0UDjqouuUlDKG6nglRky+x4yKFejJZ5DHvw58h6Ow146b+Kl+PtuhfSwlFjJGHCxh5ilw==}
     dependencies:
       '@studio-bogus/discord-interaction-client': 1.0.1
       '@studio-bogus/logging': 1.0.3
@@ -1119,6 +1122,14 @@ packages:
 
   /cron-schedule@3.0.6:
     resolution: {integrity: sha512-izfGgKyzzIyLaeb1EtZ3KbglkS6AKp9cv7LxmiyoOu+fXfol1tQDC0Cof0enVZGNtudTHW+3lfuW9ZkLQss4Wg==}
+    dev: true
+
+  /cross-env@7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
     dev: true
 
   /cross-spawn@7.0.3:

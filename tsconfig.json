@@ -13,6 +13,7 @@
     "sourceMap": true,
     "types": ["@types/node", "@cloudflare/workers-types", "@types/he"],
     "paths": {
+      "@logger/logger": ["src/logger.ts"],
       "@env/env": ["src/env.ts"],
       "@anilist/*": ["src/anilist/*"],
       "@graphql/*": ["src/graphql/*"],
