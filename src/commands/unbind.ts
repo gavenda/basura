@@ -20,7 +20,7 @@ export class UnbindCommand implements CommandHandler<SlashCommandContext> {
     }
 
     await kv.delete(key);
-    await context.app.rest.delete(Routes.webhook(webhook.id));
+    await context.app.client.delete(Routes.webhook(webhook.id));
 
     await context.edit({
       message: `Notifications unbound.`,

@@ -24,7 +24,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
       const threadId = channel.type === (ChannelType.PublicThread || ChannelType.PrivateThread) ? channel.id : '';
 
       // Create webhook
-      const webhook = await context.app.rest.post<APIWebhook>(Routes.channelWebhooks(channelId), {
+      const webhook = await context.app.client.post<APIWebhook>(Routes.channelWebhooks(channelId), {
         body: {
           name: `Anime Airing Notifications`,
         },
