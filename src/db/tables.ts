@@ -7,3 +7,9 @@ export interface UserTable {
   anilist_id: number;
   anilist_username: string;
 }
+
+export interface GuildTable {
+  id: Generated<number>;
+  discord_guild_id: string;
+  hentai: boolean;
+}

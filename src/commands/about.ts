@@ -7,7 +7,7 @@ export class AboutCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
 
   async handle(context: SlashCommandContext): Promise<void> {
-    const user = await context.app.rest.get<APIUser>(Routes.user());
+    const user = await context.app.client.get<APIUser>(Routes.user());
     const dateCreated = getDate(user.id as Snowflake);
     const selfAvatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`;
 
