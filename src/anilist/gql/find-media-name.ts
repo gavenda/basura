@@ -1,6 +1,6 @@
 export const FIND_MEDIA_NAME = `
-	query ($type: MediaType, $query: String, $genreNotIn: [String]) {
-		Page(perPage: 12) {
+	query ($page: Int, $perPage: Int, $type: MediaType, $query: String, $genreNotIn: [String]) {
+		Page(page: $page, perPage: $perPage) {
 			pageInfo {
 				total
 				currentPage

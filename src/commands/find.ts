@@ -17,15 +17,7 @@ export class FindCommand implements CommandHandler<SlashCommandContext> {
   }
 
   async handleAutocomplete(context: AutocompleteContext): Promise<APIApplicationCommandOptionChoice[]> {
-    const query = context.getRequiredString(`query`);
-    const titles = await findMediaTitles(query);
-
-    return titles.map((x) => {
-      return {
-        name: x,
-        value: x,
-      };
-    });
+    return await handleMediaTitleAutocomplete(context);
   }
 
   async handleComponent(context: ComponentContext): Promise<void> {
@@ -33,8 +25,38 @@ export class FindCommand implements CommandHandler<SlashCommandContext> {
   }
 }
 
+export const handleMediaTitleAutocomplete = async (context: AutocompleteContext, type?: MediaType): Promise<APIApplicationCommandOptionChoice[]> => {
+  // Grab hentai setting
+  let hentai = false;
+
+  if (context.guildId) {
+    const db = context.app.env<Env>().DB;
+    const result = await db.selectFrom(`anilist_guild`).where(`discord_guild_id`, '=', context.guildId).selectAll().executeTakeFirst();
+    hentai = result?.hentai || false;
+  }
+
+  const query = context.getRequiredString(`query`);
+  const titles = await findMediaTitles(query, type, hentai);
+
+  return titles.map((x) => {
+    return {
+      name: x,
+      value: x,
+    };
+  });
+};
+
 export const handleFindMedia = async (context: ApplicationCommandContext, query: string, type?: MediaType): Promise<void> => {
-  const medias = await findMedia(query, type);
+  // Grab hentai setting
+  let hentai = false;
+
+  if (context.guildId) {
+    const db = context.app.env<Env>().DB;
+    const result = await db.selectFrom(`anilist_guild`).where(`discord_guild_id`, '=', context.guildId).selectAll().executeTakeFirst();
+    hentai = result?.hentai || false;
+  }
+
+  const medias = await findMedia(query, type, hentai);
 
   if (medias === undefined || medias.length === 0) {
     await context.reply({

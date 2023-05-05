@@ -98,13 +98,17 @@ export const findMediaIds = async (query: string, type?: MediaType): Promise<Med
   }
 };
 
-export const findMediaTitles = async (query: string, type?: MediaType): Promise<string[]> => {
+export const findMediaTitles = async (query: string, type?: MediaType, hentai: boolean = false): Promise<string[]> => {
   const variables: Partial<FindMediaVars> = {
     query,
     type,
     page: 1,
     perPage: 25,
   };
+
+  if (!hentai) {
+    variables.genreNotIn = ['hentai'];
+  }
 
   try {
     const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
