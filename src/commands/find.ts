@@ -40,8 +40,8 @@ export const handleMediaTitleAutocomplete = async (context: AutocompleteContext,
 
   return titles.map((x) => {
     return {
-      name: x,
-      value: x,
+      name: truncate(x, 100),
+      value: truncate(x, 100),
     };
   });
 };

@@ -13,3 +13,5 @@ CREATE TABLE anilist_guild (
   discord_guild_id VARCHAR(255) NOT NULL,
   hentai BOOLEAN NOT NULL DEFAULT false,
 );
+CREATE INDEX IF NOT EXISTS idx_anilist_user_discord_id_discord_guild_id ON anilist_user (discord_guild_id, discord_id);
+CREATE INDEX IF NOT EXISTS idx_anilist_guild_discord_guild_id ON anilist_guild (discord_guild_id);

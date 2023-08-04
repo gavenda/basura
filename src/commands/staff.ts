@@ -21,8 +21,8 @@ export class StaffCommand implements CommandHandler<SlashCommandContext> {
 
     return names.map((x) => {
       return {
-        name: x,
-        value: x,
+        name: truncate(x, 100),
+        value: truncate(x, 100),
       };
     });
   }

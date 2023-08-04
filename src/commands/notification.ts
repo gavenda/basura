@@ -3,6 +3,7 @@ import { findAiringMedia, findMediaIds } from '@anilist/media.js';
 import { Env } from '@env/env';
 import { CommandHandler } from '@studio-bogus/discord-interaction-app';
 import { AutocompleteContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
+import { truncate } from '@util/strings.js';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 export class NotificationCommand implements CommandHandler<SlashCommandContext> {
@@ -43,26 +44,26 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     for (const media of medias) {
       if (media?.title?.native) {
         result.push({
-          name: media.title.native,
+          name: truncate(media.title.native, 100),
           value: media.id,
         });
       }
       if (media?.title?.romaji) {
         result.push({
-          name: media.title.romaji,
+          name: truncate(media.title.romaji, 100),
           value: media.id,
         });
       }
       if (media?.title?.english) {
         result.push({
-          name: media.title.english,
+          name: truncate(media.title.english, 100),
           value: media.id,
         });
       }
       if (media.synonyms) {
         for (const synonym of media.synonyms) {
           result.push({
-            name: synonym,
+            name: truncate(synonym, 100),
             value: media.id,
           });
         }
