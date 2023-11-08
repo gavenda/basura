@@ -3,24 +3,47 @@
   "compilerOptions": {
     "baseUrl": ".",
     "noEmit": true,
-    "module": "es2022",
+    "module": "node16",
     "target": "es2021",
-    "lib": ["es2021"],
+    "lib": [
+      "es2021"
+    ],
     "strict": true,
     "alwaysStrict": true,
     "preserveConstEnums": true,
     "moduleResolution": "node16",
     "sourceMap": true,
-    "types": ["@types/node", "@cloudflare/workers-types", "@types/he"],
+    "types": [
+      "@types/node",
+      "@cloudflare/workers-types",
+      "@types/he"
+    ],
     "paths": {
-      "@logger/logger": ["src/logger.ts"],
-      "@env/env": ["src/env.ts"],
-      "@anilist/*": ["src/anilist/*"],
-      "@graphql/*": ["src/graphql/*"],
-      "@util/*": ["src/util/*"],
-      "@db/*": ["src/db/*"]
+      "@logger/logger": [
+        "src/logger.ts"
+      ],
+      "@env/env": [
+        "src/env.ts"
+      ],
+      "@anilist/*": [
+        "src/anilist/*"
+      ],
+      "@graphql/*": [
+        "src/graphql/*"
+      ],
+      "@util/*": [
+        "src/util/*"
+      ],
+      "@db/*": [
+        "src/db/*"
+      ]
     }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

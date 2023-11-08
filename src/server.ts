@@ -3,7 +3,6 @@ import { D1Dialect } from '@db/kysely-d1.js';
 import { App } from '@studio-bogus/discord-interaction-app';
 import { LogtailTransport } from '@studio-bogus/logging/logtail';
 import { Kysely } from 'kysely';
-import { PlanetScaleDialect } from 'kysely-planetscale';
 import { checkAiringAnimes } from './airing.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
@@ -25,24 +24,9 @@ export default {
     // We handle interactions through here.
     if (request.method === 'POST') {
       // Initialize our database
-
-      // PlanetScale
-      if (environment.ENVIRONMENT === 'production') {
-        environment.DB = new Kysely<Database>({
-          dialect: new PlanetScaleDialect({
-            host: environment.DATABASE_HOST,
-            username: environment.DATABASE_USERNAME,
-            password: environment.DATABASE_PASSWORD,
-          }),
-        });
-      }
-
-      // D1
-      if (environment.ENVIRONMENT === 'development') {
-        environment.DB = new Kysely<Database>({
-          dialect: new D1Dialect({ database: environment.D1 }),
-        });
-      }
+      environment.DB = new Kysely<Database>({
+        dialect: new D1Dialect({ database: environment.D1 }),
+      });
 
       // Add logtail
       logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));

@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@planetscale/database':
     specifier: 1.6.0
@@ -31,9 +35,9 @@ dependencies:
   kysely:
     specifier: ^0.24.2
     version: 0.24.2
-  kysely-planetscale:
-    specifier: ^1.3.0
-    version: 1.3.0(@planetscale/database@1.6.0)(kysely@0.24.2)
+  kysely-d1:
+    specifier: ^0.3.0
+    version: 0.3.0(kysely@0.24.2)
 
 devDependencies:
   '@cloudflare/workers-types':
@@ -1141,11 +1145,6 @@ packages:
       which: 2.0.2
     dev: true
 
-  /date-fns@2.29.3:
-    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
-    engines: {node: '>=0.11'}
-    dev: false
-
   /debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -1683,14 +1682,11 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /kysely-planetscale@1.3.0(@planetscale/database@1.6.0)(kysely@0.24.2):
-    resolution: {integrity: sha512-lAldOF+Yg2raVvRfyXjBqlZ63ONpNZRpfWUK9WrtEdVUIYJxOhbgzihYaRtb4lHVFNyAZyuSCvatEsK7hszcJg==}
+  /kysely-d1@0.3.0(kysely@0.24.2):
+    resolution: {integrity: sha512-9wTbE6ooLiYtBa4wPg9e4fjfcmvRtgE/2j9pAjYrIq+iz+EsH/Hj9YbtxpEXA6JoRgfulVQ1EtGj6aycGGRpYw==}
     peerDependencies:
-      '@planetscale/database': '*'
       kysely: '*'
     dependencies:
-      '@planetscale/database': 1.6.0
-      date-fns: 2.29.3
       kysely: 0.24.2
     dev: false
 
