@@ -27,9 +27,9 @@ export default {
       });
 
       const app = new App({
-        token: environment.DISCORD_TOKEN,
-        id: environment.DISCORD_APPLICATION_ID,
-        publicKey: environment.DISCORD_PUBLIC_KEY,
+        token: environment.DISCORD_TOKEN?.trim(),
+        id: environment.DISCORD_APPLICATION_ID?.trim(),
+        publicKey: environment.DISCORD_PUBLIC_KEY?.trim(),
         commands,
         environment,
         executionContext,

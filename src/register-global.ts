@@ -6,8 +6,8 @@ import { commandList } from './commands/index.js';
 dotenv.config({ path: '.prod.vars' });
 
 const registerCommands = async () => {
-  const token = process.env.DISCORD_TOKEN;
-  const applicationId = process.env.DISCORD_APPLICATION_ID;
+  const token = process.env.DISCORD_TOKEN?.trim();
+  const applicationId = process.env.DISCORD_APPLICATION_ID?.trim();
 
   if (!token) {
     throw new Error('No token passed');
