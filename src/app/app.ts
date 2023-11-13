@@ -1,5 +1,4 @@
 import { Client, KVBucketManager } from '@studio-bogus/discord-interaction-client';
-import { ConsoleTransport, Logger } from '@studio-bogus/logging';
 import {
   APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
@@ -79,10 +78,6 @@ export interface AppOptions {
    * Component cache ttl, defaults to 86400
    */
   componentTtl?: number;
-  /**
-   * Optional provided logger.
-   */
-  logger?: Logger;
 }
 
 /**
@@ -134,11 +129,6 @@ export class App {
    */
   messageCache: Cache;
 
-  /**
-   * Logger instance.
-   */
-  #logger: Logger;
-
   constructor(options: AppOptions) {
     this.#environment = options.environment;
     this.id = options.id;
@@ -149,11 +139,6 @@ export class App {
     this.componentCache = new DefaultCache();
     this.messageCache = new DefaultCache();
     this.#client = new Client().setToken(options.token);
-    this.#logger =
-      options.logger ??
-      new Logger({
-        transports: [new ConsoleTransport()],
-      });
 
     if (options.bucketNamespace) {
       const bucketManager = new KVBucketManager(options.bucketNamespace);
@@ -179,13 +164,6 @@ export class App {
    */
   get client(): Client {
     return this.#client;
-  }
-
-  /**
-   * Returns logger instance.
-   */
-  get logger(): Logger {
-    return this.#logger;
   }
 
   /**
@@ -308,7 +286,7 @@ export class App {
           context.handled = true;
           await handler.handleComponent(context);
         } else {
-          this.console.error(`No component handlers found`, { interaction });
+          console.error(`No component handlers found`, { interaction });
           await context.edit({
             message: `No component handlers found.`,
             ephmeral: true,
@@ -319,7 +297,7 @@ export class App {
           message: `An error occured during the interaction.`,
           ephmeral: true,
         });
-        this.console.error(`Error occured during interaction`, {
+        console.error(`Error occured during interaction`, {
           error,
           interaction,
         });
@@ -368,10 +346,10 @@ export class App {
         break;
     }
 
-    this.logger.trace(`Handling application command: ${interaction.data.name}`, { interaction });
+    console.debug(`Handling application command: ${interaction.data.name}`, { interaction });
 
     if (!handler) {
-      this.console.error(`No handlers found for command: ${interaction.data.name}`, { interaction });
+      console.error(`No handlers found for command: ${interaction.data.name}`, { interaction });
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -390,7 +368,7 @@ export class App {
       await sleep(this.#timeoutMs);
       // We send a message if not handled
       if (!context.handled) {
-        this.logger.warn(`Interaction timed out`, { interaction });
+        console.warn(`Interaction timed out`, { interaction });
         await context.edit({
           message: `The interaction timed out.`,
           ephmeral: true,
@@ -410,7 +388,7 @@ export class App {
           ephmeral: true,
         });
         context.handled = true;
-        this.console.error(`Error occured during interaction`, {
+        console.error(`Error occured during interaction`, {
           error,
           interaction,
         });
