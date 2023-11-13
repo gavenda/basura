@@ -1,4 +1,4 @@
-import { MediaFormat } from '@anilist/gql/types.js';
+import { MediaFormat } from '@anilist/gql';
 
 export const toIntColor = (color: string): number => {
   switch (color) {

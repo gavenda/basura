@@ -43,7 +43,7 @@ export class BindCommand implements CommandHandler<SlashCommandContext> {
         message: `Notifications now bound to <#${channel.id}>.`,
       });
     } catch (error) {
-      context.app.logger.error(`Error during bind`, { error });
+      console.error(`Error during bind`, { error });
       await context.edit({
         message: `I need the \`Manage Webhooks\` permission to be able to send notifications.`,
       });

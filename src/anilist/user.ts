@@ -1,4 +1,3 @@
-import { logger } from '@logger/logger';
 import { aniListRequest } from './anilist.js';
 import { FIND_STATISTICS_BY_USER_NAME } from './gql/find-statistics-by-user-name.js';
 import { FIND_USER_BY_NAME } from './gql/find-user-by-name.js';
@@ -12,7 +11,7 @@ export const findUserByName = async (name: string): Promise<User | undefined> =>
     const result = await aniListRequest<Query>(FIND_USER_BY_NAME, variables);
     return result.User;
   } catch (error) {
-    logger.error(`Error when finding user by name`, { error });
+    console.error(`Error when finding user by name`, { error });
   }
 };
 
@@ -34,7 +33,7 @@ export const findUserName = async (name: string): Promise<string[]> => {
 
     return names;
   } catch (error) {
-    logger.error(`Error when finding usernames`, { error });
+    console.error(`Error when finding usernames`, { error });
   }
   return [];
 };
@@ -46,6 +45,6 @@ export const findUserStatisticsByName = async (name: string): Promise<User | und
     const result = await aniListRequest<Query>(FIND_STATISTICS_BY_USER_NAME, variables);
     return result.User;
   } catch (error) {
-    logger.error(`Error when finding user statistics by name`, { error });
+    console.error(`Error when finding user statistics by name`, { error });
   }
 };

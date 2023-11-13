@@ -1,12 +1,10 @@
 import { Database } from '@db/database.js';
 import { D1Dialect } from '@db/kysely-d1.js';
 import { App } from '@studio-bogus/discord-interaction-app';
-import { LogtailTransport } from '@studio-bogus/logging/logtail';
 import { Kysely } from 'kysely';
 import { checkAiringAnimes } from './airing.js';
 import { commands } from './commands/commands.js';
 import { Env } from './env.js';
-import { logger } from './logger.js';
 
 export default {
   /**
@@ -28,16 +26,12 @@ export default {
         dialect: new D1Dialect({ database: environment.D1 }),
       });
 
-      // Add logtail
-      logger.add(new LogtailTransport(environment.LOGTAIL_TOKEN, executionContext));
-
       const app = new App({
         token: environment.DISCORD_TOKEN,
         id: environment.DISCORD_APPLICATION_ID,
         publicKey: environment.DISCORD_PUBLIC_KEY,
         commands,
         environment,
-        logger,
         executionContext,
         cacheNamespace: environment.CACHE,
         bucketNamespace: environment.BUCKET,
