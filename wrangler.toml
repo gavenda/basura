@@ -1,6 +1,6 @@
 name = "basura"
 main = "./src/server.ts"
-compatibility_date = "2023-04-16"
+compatibility_date = "2023-12-01"
 route = "app.basura.gavenda.dev"
 vars = { ENVIRONMENT = "production" }
 kv_namespaces = [
@@ -9,7 +9,7 @@ kv_namespaces = [
   { binding = "NOTIFICATION", id = "70a6246c3ebe427cbe8a70b02027176b", preview_id = "7f3ab3b58ef5434bb0a16519a89c56e9" },
 ]
 d1_databases = [
-  { binding = "D1", database_name = "basura", database_id = "d93aefbd-1066-4198-82e8-7e50fd151ac0" }
+  { binding = "D1", database_name = "basura", database_id = "d93aefbd-1066-4198-82e8-7e50fd151ac0" },
 ]
 
 [triggers]
@@ -24,5 +24,5 @@ kv_namespaces = [
   { binding = "NOTIFICATION", id = "f16c9aaa6db2483c9d5b7687f7446f79", preview_id = "7f3ab3b58ef5434bb0a16519a89c56e9" },
 ]
 d1_databases = [
-  { binding = "D1", database_name = "basura_dev", database_id = "11ac762d-38dc-40da-8590-54726828b281" }
+  { binding = "D1", database_name = "basura_dev", database_id = "11ac762d-38dc-40da-8590-54726828b281" },
 ]
