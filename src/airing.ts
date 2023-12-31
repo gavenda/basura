@@ -112,7 +112,10 @@ export const checkAiringAnimes = async (environment: Env): Promise<void> => {
     const airingSchedules = await findAiringMedia(mediaId);
     const airingSchedule = airingSchedules?.[0];
 
-    if (airingSchedule && airingSchedule.episode > episode) {
+    if (!airingSchedule) return;
+
+    // If current episode > last known episode
+    if (airingSchedule.episode > episode) {
       // Announce to guilds
       await announceAiringMedia({
         kv,
@@ -123,10 +126,11 @@ export const checkAiringAnimes = async (environment: Env): Promise<void> => {
       });
       // Update episode count
       await kv.put(mediaKey, airingSchedule.episode.toString());
-      // Check if ended
-      if (airingSchedule.media?.status === MediaStatus.Finished) {
-        await removeAiringAnimeData(kv, guildIds, mediaId);
-      }
+    }
+
+    // Check if ended
+    if (airingSchedule.media?.status === MediaStatus.Finished) {
+      await removeAiringAnimeData(kv, guildIds, mediaId);
     }
   }
 };
