@@ -50,12 +50,14 @@ export const handleMediaTitleAutocomplete = async (
   const query = context.getRequiredString(`query`);
   const titles = await findMediaTitles(query, type, hentai);
 
-  return titles.map((x) => {
-    return {
-      name: truncate(x, 100),
-      value: truncate(x, 100)
-    };
-  });
+  return titles
+    .filter((value, index, array) => array.indexOf(value) === index)
+    .map((x) => {
+      return {
+        name: truncate(x, 100),
+        value: truncate(x, 100)
+      };
+    });
 };
 
 export const handleFindMedia = async (
