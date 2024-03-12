@@ -1,8 +1,8 @@
 # Basura
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-![Production](https://github.com/gavenda/basura-cloudflare-worker/actions/workflows/ci.yml/badge.svg)
-![Development](https://github.com/gavenda/basura-cloudflare-worker/actions/workflows/pr.yml/badge.svg)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/gavenda/basura?style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/gavenda/basura?style=for-the-badge)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/gavenda/basura/deploy.yml?style=for-the-badge)
 
 This is the cloudflare service worker version of the original. To view the gateway version of this bot,
 please click [here](https://github.com/gavenda/studio-helper/tree/main/bot/basura).
