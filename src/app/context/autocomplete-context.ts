@@ -1,12 +1,12 @@
-import { App } from '../app.js';
 import {
   APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteractionDataIntegerOption,
   APIApplicationCommandInteractionDataNumberOption,
   APIApplicationCommandInteractionDataStringOption,
-  ApplicationCommandOptionType,
+  ApplicationCommandOptionType
 } from 'discord-api-types/v10';
-import { InteractionContext } from './interaction-context.js';
+import { App } from '../app';
+import { InteractionContext } from './interaction-context';
 
 export type AutocompleteOption =
   | APIApplicationCommandInteractionDataStringOption

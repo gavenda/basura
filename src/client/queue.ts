@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { DiscordError, ErrorBody, isDiscordError } from './errors/discord-error.js';
-import { RequestError } from './errors/request-error.js';
-import { Manager } from './manager.js';
-import { RequestMethod, Route } from './types.js';
-import { parse } from './util/response.js';
-import { OFFSET, ONE_HOUR, sleep } from './util/time.js';
+import { DiscordError, ErrorBody, isDiscordError } from './errors/discord-error';
+import { RequestError } from './errors/request-error';
+import { Manager } from './manager';
+import { RequestMethod, Route } from './types';
+import { parse } from './util/response';
+import { OFFSET, ONE_HOUR, sleep } from './util/time';
 
 export class Queue {
   lastRequest = -1;
@@ -128,14 +128,14 @@ export class Queue {
     if (key !== null && key !== undefined && key !== this.id) {
       console.debug(`Received new bucket hash.`, {
         id: this.id,
-        key,
+        key
       });
 
       await this.manager.buckets.set(
         identifier,
         {
           key,
-          lastRequest: Date.now(),
+          lastRequest: Date.now()
         },
         ttl
       );
@@ -144,7 +144,7 @@ export class Queue {
         identifier,
         {
           key,
-          lastRequest: Date.now(),
+          lastRequest: Date.now()
         },
         ttl
       );
@@ -165,13 +165,13 @@ export class Queue {
         route: route.path,
         identifier: route.identifier,
         global,
-        method: init.method as RequestMethod,
+        method: init.method as RequestMethod
       };
 
       this.manager.onRateLimit?.(rateLimitData);
 
       console.debug(`Encountered 429 rate limit`, {
-        rateLimit: rateLimitData,
+        rateLimit: rateLimitData
       });
       await sleep(retryAfter, this.#shutdownSignal);
 
@@ -203,7 +203,7 @@ export class Queue {
       }
 
       // Handle unknown API errors
-      const data = (await response.json()) as ErrorBody;
+      const data: ErrorBody = await response.json();
       const label = isDiscordError(data) ? data.code : data.error;
 
       throw new DiscordError(label, data);

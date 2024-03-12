@@ -1,10 +1,22 @@
 import { Client } from '@studio-bogus/discord-interaction-client';
-import { APIEmbed, APIMessage, MessageFlags, RESTPostAPIInteractionFollowupJSONBody, Routes, Snowflake } from 'discord-api-types/v10';
-import { MessageComponent } from 'discord-interactions';
+import {
+  APIActionRowComponent,
+  APIEmbed,
+  APIMessage,
+  APIMessageActionRowComponent,
+  MessageFlags,
+  RESTPostAPIInteractionFollowupJSONBody,
+  Routes,
+  Snowflake
+} from 'discord-api-types/v10';
 
-const toFollowUp = (options: { message: string | APIEmbed[]; components: any[]; ephemeral: boolean }): RESTPostAPIInteractionFollowupJSONBody => {
+const toFollowUp = (options: {
+  message: string | APIEmbed[];
+  components: APIActionRowComponent<APIMessageActionRowComponent>[];
+  ephemeral: boolean;
+}): RESTPostAPIInteractionFollowupJSONBody => {
   const body: RESTPostAPIInteractionFollowupJSONBody = {
-    components: options.components,
+    components: options.components
   };
 
   if (typeof options.message === 'string') {
@@ -31,21 +43,26 @@ export class Webhook {
     this.#rest = client;
   }
 
-  async followUp(options: { message: string | APIEmbed[]; components?: MessageComponent[]; ephemeral?: boolean; auth?: boolean }): Promise<APIMessage> {
+  async followUp(options: {
+    message: string | APIEmbed[];
+    components?: APIActionRowComponent<APIMessageActionRowComponent>[];
+    ephemeral?: boolean;
+    auth?: boolean;
+  }): Promise<APIMessage> {
     return this.#rest.post<APIMessage>(Routes.webhook(this.#id, this.#token), {
       auth: options.auth ?? false,
       body: toFollowUp({
         message: options.message,
         components: options.components ?? [],
-        ephemeral: options.ephemeral ?? false,
-      }),
+        ephemeral: options.ephemeral ?? false
+      })
     });
   }
 
   async edit(options: {
     message: string | APIEmbed[];
     messageId: string;
-    components?: MessageComponent[];
+    components?: APIActionRowComponent<APIMessageActionRowComponent>[];
     ephemeral?: boolean;
     auth?: boolean;
   }): Promise<APIMessage> {
@@ -54,8 +71,8 @@ export class Webhook {
       body: toFollowUp({
         message: options.message,
         components: options.components ?? [],
-        ephemeral: options.ephemeral ?? false,
-      }),
+        ephemeral: options.ephemeral ?? false
+      })
     });
   }
 

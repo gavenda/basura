@@ -1,8 +1,8 @@
-import { aniListRequest } from './anilist.js';
-import { FIND_STATISTICS_BY_USER_NAME } from './gql/find-statistics-by-user-name.js';
-import { FIND_USER_BY_NAME } from './gql/find-user-by-name.js';
-import { FIND_USER_NAME } from './gql/find-user-name.js';
-import { Query, User } from './gql/types.js';
+import { aniListRequest } from './anilist';
+import { FIND_STATISTICS_BY_USER_NAME } from './gql/find-statistics-by-user-name';
+import { FIND_USER_BY_NAME } from './gql/find-user-by-name';
+import { FIND_USER_NAME } from './gql/find-user-name';
+import { Query, User } from './gql/types';
 
 export const findUserByName = async (name: string): Promise<User | undefined> => {
   const variables = { name };
@@ -19,7 +19,7 @@ export const findUserName = async (name: string): Promise<string[]> => {
   const variables = {
     name,
     page: 1,
-    perPage: 25,
+    perPage: 25
   };
 
   try {

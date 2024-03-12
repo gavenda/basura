@@ -1,0 +1,50 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'wrangler.toml'
+      - 'tsconfig.json'
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          run_install: true
+      - uses: actions/setup-node@v4
+        name: Install Node.js
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - run: pnpm lint
+        name: Lint
+  release:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+      - uses: cloudflare/wrangler-action@v3
+        name: Deploy
+        with:
+          packageManager: pnpm
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        env:
+          NO_D1_WARNING: true
+      - run: pnpm run --if-present register
+        name: Register application commands
+        continue-on-error: true
+        env:
+          DISCORD_APPLICATION_ID: ${{ vars.DISCORD_APPLICATION_ID }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}

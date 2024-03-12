@@ -1,8 +1,10 @@
-export const getValue = (data: any, path: string, defaultValue?: any): any => {
+export const getValue = <T>(data: T, path: string, defaultValue?: T): T | undefined => {
   const value = path
     .split(/[.[\]]/)
     .filter(Boolean)
-    .reduce((value, key) => (value as any)?.[key], data as any);
+    // @ts-expect-error hacky way to get deep value
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    .reduce((value, key) => value?.[key], data);
 
   return value !== undefined ? value : defaultValue;
 };

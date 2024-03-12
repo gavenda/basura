@@ -1,8 +1,8 @@
-import { findUserByName, findUserName } from '@anilist/user.js';
+import { findUserByName, findUserName } from '@anilist/user';
 import { CommandHandler } from '@studio-bogus/discord-interaction-app';
 import { AutocompleteContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
-import { Env } from '../env.js';
+import { Env } from '../env';
 
 export class LinkCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = true;
@@ -11,7 +11,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
     const db = context.app.env<Env>().DB;
     if (!context.guildId) {
       await context.edit({
-        message: `Must be executed inside a guild!`,
+        message: `Must be executed inside a guild!`
       });
       return;
     }
@@ -25,7 +25,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
 
     if (result) {
       await context.edit({
-        message: `Your account is already linked.`,
+        message: `Your account is already linked.`
       });
       return;
     }
@@ -35,7 +35,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
 
     if (!user) {
       await context.edit({
-        message: `Cannot find AniList user \`${username}\`.`,
+        message: `Cannot find AniList user \`${username}\`.`
       });
       return;
     }
@@ -46,19 +46,19 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
         discord_id: context.userId,
         discord_guild_id: context.guildId,
         anilist_id: user.id,
-        anilist_username: user.name,
+        anilist_username: user.name
       })
       .executeTakeFirst();
 
     if (insert.insertId) {
       await context.edit({
-        message: `You have successfully linked your account.`,
+        message: `You have successfully linked your account.`
       });
       return;
     }
 
     await context.edit({
-      message: `There was an error linking your account.`,
+      message: `There was an error linking your account.`
     });
   }
 
@@ -69,7 +69,7 @@ export class LinkCommand implements CommandHandler<SlashCommandContext> {
     return names.map((x) => {
       return {
         name: x,
-        value: x,
+        value: x
       };
     });
   }

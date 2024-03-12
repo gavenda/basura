@@ -1,4 +1,4 @@
-import { GuildTable, UserTable } from './tables.js';
+import { GuildTable, UserTable } from './tables';
 
 export interface Database {
   anilist_user: UserTable;

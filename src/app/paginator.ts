@@ -1,19 +1,26 @@
-import { APIEmbed } from 'discord-api-types/v10';
-import { Button, ButtonStyleTypes, MessageComponent, MessageComponentTypes } from 'discord-interactions';
-import { ApplicationCommandContext } from './context/application-command-context.js';
-import { ComponentContext } from './context/component-context.js';
-import { EMOJI_NEXT, EMOJI_PREV } from './emoji.js';
+import {
+  APIActionRowComponent,
+  APIButtonComponent,
+  APIButtonComponentWithCustomId,
+  APIEmbed,
+  APIMessageActionRowComponent,
+  ButtonStyle,
+  ComponentType
+} from 'discord-api-types/v10';
+import { ApplicationCommandContext } from './context/application-command-context';
+import { ComponentContext } from './context/component-context';
+import { EMOJI_NEXT, EMOJI_PREV } from './emoji';
 
 export enum PaginatorButton {
-  NEXT_BUTTON_ID = 'next',
-  PREV_BUTTON_ID = 'prev',
+  NextButton = 'next',
+  PrevButton = 'prev'
 }
 
 export interface PaginatorOptions {
   context: ApplicationCommandContext;
   pages: Page[];
-  nextButton?: Button;
-  prevButton?: Button;
+  nextButton?: APIButtonComponentWithCustomId;
+  prevButton?: APIButtonComponentWithCustomId;
 }
 
 interface LinkOptions {
@@ -36,31 +43,33 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
     throw new Error('No pages added!');
   }
 
-  const defaultNextButton: Button = {
-    type: MessageComponentTypes.BUTTON,
-    style: ButtonStyleTypes.PRIMARY,
+  const defaultNextButton: APIButtonComponentWithCustomId = {
+    custom_id: '',
+    type: ComponentType.Button,
+    style: ButtonStyle.Primary,
     emoji: EMOJI_NEXT,
-    label: '',
+    label: ''
   };
 
-  const defaultPrevButton: Button = {
-    type: MessageComponentTypes.BUTTON,
-    style: ButtonStyleTypes.PRIMARY,
+  const defaultPrevButton: APIButtonComponentWithCustomId = {
+    custom_id: '',
+    type: ComponentType.Button,
+    style: ButtonStyle.Primary,
     emoji: EMOJI_PREV,
-    label: '',
+    label: ''
   };
 
   const page = options.pages[0];
-  const buttons: Button[] = [];
+  const buttons: APIButtonComponent[] = [];
 
-  const nextButton = await options.context.createComponent<Button>({
-    id: PaginatorButton.NEXT_BUTTON_ID,
-    component: options.nextButton ?? defaultNextButton,
+  const nextButton = await options.context.createComponent<APIButtonComponentWithCustomId>({
+    id: PaginatorButton.NextButton,
+    component: options.nextButton ?? defaultNextButton
   });
 
-  const prevButton = await options.context.createComponent<Button>({
-    id: PaginatorButton.PREV_BUTTON_ID,
-    component: options.prevButton ?? defaultPrevButton,
+  const prevButton = await options.context.createComponent<APIButtonComponentWithCustomId>({
+    id: PaginatorButton.PrevButton,
+    component: options.prevButton ?? defaultPrevButton
   });
 
   if (options.pages.length > 1) {
@@ -70,28 +79,28 @@ export const paginator = async (options: PaginatorOptions): Promise<void> => {
 
   if (page.link) {
     buttons.push({
-      type: MessageComponentTypes.BUTTON,
-      style: ButtonStyleTypes.LINK,
+      type: ComponentType.Button,
+      style: ButtonStyle.Link,
       label: page.link.label,
-      url: page.link.url,
+      url: page.link.url
     });
   }
 
-  const components: MessageComponent[] = [
+  const components: APIActionRowComponent<APIMessageActionRowComponent>[] = [
     {
-      type: MessageComponentTypes.ACTION_ROW,
-      components: buttons,
-    },
+      type: ComponentType.ActionRow,
+      components: buttons
+    }
   ];
 
   const pagesData: Pages = {
     current: 0,
-    pages: options.pages,
+    pages: options.pages
   };
 
   await options.context.edit({
     message: [page.embed],
-    components,
+    components
   });
   await options.context.bindData(pagesData);
 };
@@ -101,13 +110,15 @@ export const handlePaginatorComponents = async (context: ComponentContext): Prom
   const pages = await context.messageData<Pages>();
   if (pages === null) return;
 
-  if (context.customId === PaginatorButton.NEXT_BUTTON_ID) {
+  const button = <PaginatorButton>context.customId;
+
+  if (button === PaginatorButton.NextButton) {
     if (pages.current >= pages.pages.length - 1) {
       pages.current = 0;
     } else {
       pages.current = pages.current + 1;
     }
-  } else if (context.customId === PaginatorButton.PREV_BUTTON_ID) {
+  } else if (button === PaginatorButton.PrevButton) {
     if (pages.current === 0) {
       pages.current = pages.pages.length - 1;
     } else {
@@ -117,13 +128,15 @@ export const handlePaginatorComponents = async (context: ComponentContext): Prom
 
   const page = pages.pages[pages.current];
 
-  const actionRow = components.find((x) => x.type === MessageComponentTypes.ACTION_ROW);
+  const actionRow = components.find((x) => x.type === ComponentType.ActionRow);
 
   // Check for action row
-  if (actionRow?.type === MessageComponentTypes.ACTION_ROW) {
-    const buttonLink = actionRow.components.find((x) => x.type === MessageComponentTypes.BUTTON && x.style === ButtonStyleTypes.LINK);
+  if (actionRow?.type === ComponentType.ActionRow) {
+    const buttonLink = actionRow.components.find(
+      (x) => x.type === ComponentType.Button && x.style === ButtonStyle.Link
+    );
 
-    if (buttonLink && buttonLink.type === MessageComponentTypes.BUTTON && page.link) {
+    if (buttonLink && buttonLink.type === ComponentType.Button && buttonLink.style === ButtonStyle.Link && page.link) {
       buttonLink.label = page.link.label;
       buttonLink.url = page.link.url;
     }
@@ -131,7 +144,7 @@ export const handlePaginatorComponents = async (context: ComponentContext): Prom
 
   await context.edit({
     message: [page.embed],
-    components,
+    components
   });
   await context.bindData(pages);
 };

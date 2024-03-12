@@ -44,7 +44,7 @@ export enum RequestMethod {
   Get = 'GET',
   Patch = 'PATCH',
   Post = 'POST',
-  Put = 'PUT',
+  Put = 'PUT'
 }
 
 export interface Route {

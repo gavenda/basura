@@ -1,7 +1,7 @@
 import { APIInteraction } from 'discord-api-types/v10';
-import { App } from '../app.js';
-import { Webhook } from '../webhook.js';
-import { MessageOptions } from './message-options.js';
+import { App } from '../app';
+import { Webhook } from '../webhook';
+import { MessageOptions } from './message-options';
 
 export abstract class InteractionContext {
   app: App;
@@ -48,7 +48,7 @@ export abstract class InteractionContext {
    * Binds a data to the message. You need to have sent a message before binding.
    * @param data data to be bound when the message is sent
    */
-  async bindData(data: any): Promise<void> {
+  async bindData(data: unknown): Promise<void> {
     if (this.messageId) {
       await this.app.messageCache.put(this.messageKey, data);
       return;
@@ -75,7 +75,7 @@ export abstract class InteractionContext {
     if (this.messageId) {
       await this.webhook.edit({
         ...options,
-        messageId: this.messageId,
+        messageId: this.messageId
       });
     } else {
       await this.reply(options);

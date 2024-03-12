@@ -1,10 +1,10 @@
-import { aniListRequest } from './anilist.js';
-import { FIND_AIRING_MEDIA } from './gql/find-airing-media.js';
-import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking.js';
-import { FIND_MEDIA_NAME } from './gql/find-media-name.js';
-import { FIND_MEDIA } from './gql/find-media.js';
-import { FIND_SCORE_BY_MEDIA_ID_AND_USER_ID } from './gql/find-score-by-media-id-and-user-id.js';
-import { AiringSchedule, Media, MediaFormat, MediaList, MediaSeason, MediaSort, MediaType, Query } from './gql/types.js';
+import { aniListRequest } from './anilist';
+import { FIND_AIRING_MEDIA } from './gql/find-airing-media';
+import { FIND_MEDIA } from './gql/find-media';
+import { FIND_MEDIA_BY_RANKING } from './gql/find-media-by-ranking';
+import { FIND_MEDIA_NAME } from './gql/find-media-name';
+import { FIND_SCORE_BY_MEDIA_ID_AND_USER_ID } from './gql/find-score-by-media-id-and-user-id';
+import { AiringSchedule, Media, MediaFormat, MediaList, MediaSeason, MediaSort, MediaType, Query } from './gql/types';
 
 export interface FindMediaVars {
   query: string;
@@ -21,7 +21,7 @@ export interface FindMediaVars {
 
 export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
-    mediaId,
+    mediaId
   };
 
   try {
@@ -32,12 +32,16 @@ export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[]
   }
 };
 
-export const findMedia = async (query: string, type?: MediaType, hentai: boolean = true): Promise<Media[] | undefined> => {
+export const findMedia = async (
+  query: string,
+  type?: MediaType,
+  hentai: boolean = true
+): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     query,
     type,
     page: 1,
-    perPage: 10,
+    perPage: 10
   };
 
   if (!hentai) {
@@ -57,7 +61,7 @@ export const findMediaByRanking = async (options: {
   formatIn: MediaFormat[];
   season?: MediaSeason;
   seasonYear?: number;
-  hentai?: Boolean;
+  hentai?: boolean;
 }): Promise<Media[] | undefined> => {
   const variables: Partial<FindMediaVars> = {
     page: 1,
@@ -65,7 +69,7 @@ export const findMediaByRanking = async (options: {
     sort: [MediaSort.SCORE_DESC],
     formatIn: options.formatIn,
     season: options.season,
-    seasonYear: options.seasonYear,
+    seasonYear: options.seasonYear
   };
 
   if (!options.hentai) {
@@ -85,7 +89,7 @@ export const findMediaIds = async (query: string, type?: MediaType): Promise<Med
     query,
     type,
     page: 1,
-    perPage: 10,
+    perPage: 10
   };
 
   try {
@@ -102,7 +106,7 @@ export const findMediaTitles = async (query: string, type?: MediaType, hentai: b
     query,
     type,
     page: 1,
-    perPage: 25,
+    perPage: 25
   };
 
   if (!hentai) {
@@ -135,7 +139,10 @@ export const findMediaTitles = async (query: string, type?: MediaType, hentai: b
   }
 };
 
-export const findScoreByUsersAndMedias = async (userIds: number[], mediaIds: number[]): Promise<MediaList[] | undefined> => {
+export const findScoreByUsersAndMedias = async (
+  userIds: number[],
+  mediaIds: number[]
+): Promise<MediaList[] | undefined> => {
   const variables = { userIds, mediaIds };
 
   try {

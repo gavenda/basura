@@ -1,11 +1,16 @@
-import { Media, MediaFormat, MediaList, MediaListStatus, MediaRankType, MediaType } from '@anilist/gql/types.js';
-import { findMedia, findMediaTitles, findScoreByUsersAndMedias } from '@anilist/media.js';
+import { Media, MediaFormat, MediaList, MediaListStatus, MediaRankType, MediaType } from '@anilist/gql/types';
+import { findMedia, findMediaTitles, findScoreByUsersAndMedias } from '@anilist/media';
 import { Env } from '@env/env';
 import { App, CommandHandler, Page, handlePaginatorComponents, paginator } from '@studio-bogus/discord-interaction-app';
-import { ApplicationCommandContext, AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { mediaFormatDisplay, toStars } from '@util/anilist.js';
-import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT } from '@util/discord.js';
-import { appendIfNotMax, htmlToMarkdown, titleCase, truncate } from '@util/strings.js';
+import {
+  ApplicationCommandContext,
+  AutocompleteContext,
+  ComponentContext,
+  SlashCommandContext
+} from '@studio-bogus/discord-interaction-app/context';
+import { mediaFormatDisplay, toStars } from '@util/anilist';
+import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT } from '@util/discord';
+import { appendIfNotMax, htmlToMarkdown, titleCase, truncate } from '@util/strings';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
 
@@ -25,13 +30,20 @@ export class FindCommand implements CommandHandler<SlashCommandContext> {
   }
 }
 
-export const handleMediaTitleAutocomplete = async (context: AutocompleteContext, type?: MediaType): Promise<APIApplicationCommandOptionChoice[]> => {
+export const handleMediaTitleAutocomplete = async (
+  context: AutocompleteContext,
+  type?: MediaType
+): Promise<APIApplicationCommandOptionChoice[]> => {
   // Grab hentai setting
   let hentai = false;
 
   if (context.guildId) {
     const db = context.app.env<Env>().DB;
-    const result = await db.selectFrom(`anilist_guild`).where(`discord_guild_id`, '=', context.guildId).selectAll().executeTakeFirst();
+    const result = await db
+      .selectFrom(`anilist_guild`)
+      .where(`discord_guild_id`, '=', context.guildId)
+      .selectAll()
+      .executeTakeFirst();
     hentai = result?.hentai || false;
   }
 
@@ -41,18 +53,26 @@ export const handleMediaTitleAutocomplete = async (context: AutocompleteContext,
   return titles.map((x) => {
     return {
       name: truncate(x, 100),
-      value: truncate(x, 100),
+      value: truncate(x, 100)
     };
   });
 };
 
-export const handleFindMedia = async (context: ApplicationCommandContext, query: string, type?: MediaType): Promise<void> => {
+export const handleFindMedia = async (
+  context: ApplicationCommandContext,
+  query: string,
+  type?: MediaType
+): Promise<void> => {
   // Grab hentai setting
   let hentai = false;
 
   if (context.guildId) {
     const db = context.app.env<Env>().DB;
-    const result = await db.selectFrom(`anilist_guild`).where(`discord_guild_id`, '=', context.guildId).selectAll().executeTakeFirst();
+    const result = await db
+      .selectFrom(`anilist_guild`)
+      .where(`discord_guild_id`, '=', context.guildId)
+      .selectAll()
+      .executeTakeFirst();
     hentai = result?.hentai || false;
   }
 
@@ -60,7 +80,7 @@ export const handleFindMedia = async (context: ApplicationCommandContext, query:
 
   if (medias === undefined || medias.length === 0) {
     await context.reply({
-      message: `No matching anime/manga media found.`,
+      message: `No matching anime/manga media found.`
     });
     return;
   }
@@ -76,7 +96,7 @@ export const sendMediaEmbed = async (context: ApplicationCommandContext, medias:
 
   const pages: Page[] = [];
   let pageNumber = 1;
-  let pageMax = medias.length;
+  const pageMax = medias.length;
 
   for (const media of medias) {
     pages.push({
@@ -85,12 +105,12 @@ export const sendMediaEmbed = async (context: ApplicationCommandContext, medias:
         mediaList,
         nameMap,
         pageNumber,
-        pageMax,
+        pageMax
       }),
       link: {
         label: 'View on AniList',
-        url: media.siteUrl!!,
-      },
+        url: media.siteUrl!
+      }
     });
     pageNumber = pageNumber + 1;
   }
@@ -167,27 +187,27 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Type`,
       value: titleCase(media.type),
-      inline: true,
+      inline: true
     });
 
   media.status &&
     fields.push({
       name: `Status`,
       value: titleCase(media.status),
-      inline: true,
+      inline: true
     });
 
   if (season == '-' && seasonYear == '-') {
     fields.push({
       name: `Season`,
       value: `?`,
-      inline: true,
+      inline: true
     });
   } else {
     fields.push({
       name: `Season`,
       value: `${season} ${seasonYear}`,
-      inline: true,
+      inline: true
     });
   }
 
@@ -195,35 +215,35 @@ const createMediaEmbed = (options: {
   fields.push({
     name: `Rating`,
     value: media.meanScore ? `${score} (${media.meanScore})` : `-`,
-    inline: true,
+    inline: true
   });
   fields.push({
     name: `Popularity`,
     value: `${media.popularity}`,
-    inline: true,
+    inline: true
   });
   fields.push({
     name: `Favorites`,
     value: `${media.favourites}`,
-    inline: true,
+    inline: true
   });
 
   // Third row
   fields.push({
     name: `Episodes`,
     value: episodes,
-    inline: true,
+    inline: true
   });
   fields.push({
     name: `Duration`,
     value: duration,
-    inline: true,
+    inline: true
   });
   media.format &&
     fields.push({
       name: `Format`,
       value: mediaFormatDisplay(media.format),
-      inline: true,
+      inline: true
     });
 
   // Fourth row
@@ -231,7 +251,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Genres`,
       value: media.genres.map((x) => `\`${x}\``).join(` - `),
-      inline: false,
+      inline: false
     });
   }
 
@@ -251,10 +271,12 @@ const createMediaEmbed = (options: {
         discordName: nameMap[mediaList.userId],
         status: mediaList.status,
         score: mediaList.score,
-        progress: mediaList.progress,
+        progress: mediaList.progress
       };
     });
-  const mediaListSorted = mediaListFiltered?.sort((a, b) => (a.progress || 0) - (b.progress || 0) || a.discordName.localeCompare(b.discordName));
+  const mediaListSorted = mediaListFiltered?.sort(
+    (a, b) => (a.progress || 0) - (b.progress || 0) || a.discordName.localeCompare(b.discordName)
+  );
 
   if (mediaListSorted) {
     for (const embedMedia of mediaListSorted) {
@@ -268,7 +290,11 @@ const createMediaEmbed = (options: {
           break;
         }
         case MediaListStatus.CURRENT: {
-          inProgress = appendIfNotMax(inProgress, `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`, EMBED_FIELD_LIMIT);
+          inProgress = appendIfNotMax(
+            inProgress,
+            `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`,
+            EMBED_FIELD_LIMIT
+          );
           break;
         }
         case MediaListStatus.DROPPED: {
@@ -284,7 +310,11 @@ const createMediaEmbed = (options: {
           break;
         }
         case MediaListStatus.REPEATING: {
-          repeating = appendIfNotMax(repeating, `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`, EMBED_FIELD_LIMIT);
+          repeating = appendIfNotMax(
+            repeating,
+            `- ${embedMedia.discordName} ‣ ${score} ${progress}\n`,
+            EMBED_FIELD_LIMIT
+          );
           break;
         }
         default: {
@@ -300,7 +330,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Paused`,
       value: paused,
-      inline: false,
+      inline: false
     });
   }
 
@@ -308,7 +338,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `In Progress`,
       value: inProgress,
-      inline: false,
+      inline: false
     });
   }
 
@@ -316,7 +346,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Rewatching`,
       value: repeating,
-      inline: false,
+      inline: false
     });
   }
 
@@ -324,7 +354,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Completed`,
       value: completed,
-      inline: false,
+      inline: false
     });
   }
 
@@ -332,7 +362,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Dropped`,
       value: dropped,
-      inline: false,
+      inline: false
     });
   }
 
@@ -340,7 +370,7 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Planned`,
       value: planned,
-      inline: false,
+      inline: false
     });
   }
 
@@ -348,29 +378,29 @@ const createMediaEmbed = (options: {
     fields.push({
       name: `Not On List`,
       value: notOnList,
-      inline: false,
+      inline: false
     });
   }
 
   const embed: APIEmbed = {
     author: {
-      name: author,
+      name: author
     },
     title: media.title?.english ?? media.title?.romaji,
     description,
     thumbnail: {
-      url: media.coverImage?.extraLarge ?? '',
+      url: media.coverImage?.extraLarge ?? ''
     },
     color: 16711680,
     footer: {
-      text: `Page ${pageNumber} / ${pageMax}`,
+      text: `Page ${pageNumber} / ${pageMax}`
     },
-    fields,
+    fields
   };
 
   if (media.bannerImage) {
     embed.image = {
-      url: media.bannerImage,
+      url: media.bannerImage
     };
   }
 
@@ -393,7 +423,11 @@ const mapNameToDiscordName = async (app: App, userIds: number[] = []): Promise<R
   return nameMap;
 };
 
-const lookupMediaList = async (app: App, mediaIds: number[], guildId: string = '-1'): Promise<MediaList[] | undefined> => {
+const lookupMediaList = async (
+  app: App,
+  mediaIds: number[],
+  guildId: string = '-1'
+): Promise<MediaList[] | undefined> => {
   const db = app.env<Env>().DB;
   const result = await db.selectFrom(`anilist_user`).where(`discord_guild_id`, `=`, guildId).selectAll().execute();
   const userIds = result.map((x) => x.anilist_id);

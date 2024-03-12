@@ -15,10 +15,10 @@ import {
   APIInteractionDataResolvedGuildMember,
   APIRole,
   APIUser,
-  ApplicationCommandOptionType,
+  ApplicationCommandOptionType
 } from 'discord-api-types/v10';
-import { App } from '../app.js';
-import { ApplicationCommandContext } from './application-command-context.js';
+import { App } from '../app';
+import { ApplicationCommandContext } from './application-command-context';
 
 export class SlashCommandContext extends ApplicationCommandContext {
   private options = new Map<string, APIApplicationCommandInteractionDataBasicOption>();
@@ -28,7 +28,7 @@ export class SlashCommandContext extends ApplicationCommandContext {
     members: {},
     roles: {},
     channels: {},
-    attachments: {},
+    attachments: {}
   };
 
   parent: string;
@@ -174,7 +174,9 @@ export class SlashCommandContext extends ApplicationCommandContext {
     return { role, ...option };
   }
 
-  getMentionableOption(name: string): APIApplicationCommandInteractionDataMentionableOption & { user?: APIUser; role?: APIRole } {
+  getMentionableOption(
+    name: string
+  ): APIApplicationCommandInteractionDataMentionableOption & { user?: APIUser; role?: APIRole } {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataMentionableOption | undefined;
     if (option === undefined) {
       throw new Error(`Mentionable option ${name} does not exist.`);
@@ -204,7 +206,9 @@ export class SlashCommandContext extends ApplicationCommandContext {
     return { ...option };
   }
 
-  getAttachmentOption(name: string): APIApplicationCommandInteractionDataAttachmentOption & { attachment: APIAttachment } {
+  getAttachmentOption(
+    name: string
+  ): APIApplicationCommandInteractionDataAttachmentOption & { attachment: APIAttachment } {
     const option = this.options.get(name) as APIApplicationCommandInteractionDataAttachmentOption | undefined;
     if (option === undefined) {
       throw new Error(`Attachment option ${name} does not exist.`);

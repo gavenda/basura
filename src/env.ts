@@ -1,4 +1,4 @@
-import { Database } from '@db/database.js';
+import { Database } from '@db/database';
 import { Kysely } from 'kysely';
 
 export type Environment = 'development' | 'production';

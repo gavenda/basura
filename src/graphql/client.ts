@@ -1,5 +1,5 @@
-import { ClientError, GraphQLError, Headers as HttpHeaders, Options, Variables } from './types.js';
-export { ClientError } from './types.js';
+import { ClientError, GraphQLResponse, Headers as HttpHeaders, Options, Variables } from './types';
+export { ClientError } from './types';
 
 export class GraphQLClient {
   private url: string;
@@ -10,7 +10,7 @@ export class GraphQLClient {
     this.options = options || {};
   }
 
-  async rawRequest<T extends any>(
+  async rawRequest<T>(
     query: string,
     variables?: Variables,
     options: {
@@ -18,9 +18,9 @@ export class GraphQLClient {
       cacheKey?: string;
       cacheTtl?: number;
     } = {
-      cache: false,
+      cache: false
     }
-  ): Promise<{ data?: T; extensions?: any; headers: Headers; status: number; errors?: GraphQLError[] }> {
+  ): Promise<GraphQLResponse<T>> {
     if (options.cache && !options.cacheTtl) {
       throw new Error('GraphQLClient request: cache is set true but no cacheTtl is specified.');
     }
@@ -29,7 +29,7 @@ export class GraphQLClient {
 
     const body = JSON.stringify({
       query,
-      variables: variables ? variables : undefined,
+      variables: variables ? variables : undefined
     });
 
     let response: Response | undefined;
@@ -45,9 +45,9 @@ export class GraphQLClient {
           cacheTtl: options.cacheTtl,
           cacheEverything: options.cache,
           //Enterprise only feature, see Cache API for other plans
-          cacheKey: options.cacheKey,
+          cacheKey: options.cacheKey
         },
-        ...others,
+        ...others
       });
       response = new Response(response.body, response);
       response.headers.append('Cache-Control', `max-age=${options.cacheTtl}`);
@@ -56,22 +56,24 @@ export class GraphQLClient {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
         body,
-        ...others,
+        ...others
       });
     }
 
-    const result = await getResult(response);
+    const result = await getResult<T>(response);
 
-    if (response.ok && !result.errors && result.data) {
-      const { headers, status } = response;
-      return { ...result, headers, status };
+    if (response.ok && typeof result !== 'string') {
+      return result;
     } else {
-      const errorResult = typeof result === 'string' ? { error: result } : result;
-      throw new ClientError({ ...errorResult, status: response.status, headers: response.headers }, { query, variables });
+      const errorResult = { error: result };
+      throw new ClientError(
+        { ...errorResult, status: response.status, headers: response.headers },
+        { query, variables }
+      );
     }
   }
 
-  async request<T extends any>(
+  async request<T>(
     query: string,
     variables?: Variables,
     options: {
@@ -79,7 +81,7 @@ export class GraphQLClient {
       cacheKey?: string;
       cacheTtl?: number;
     } = {
-      cache: false,
+      cache: false
     }
   ): Promise<T> {
     const { data } = await this.rawRequest<T>(query, variables, options);
@@ -106,26 +108,22 @@ export class GraphQLClient {
   }
 }
 
-export async function rawRequest<T extends any>(
-  url: string,
-  query: string,
-  variables?: Variables
-): Promise<{ data?: T; extensions?: any; headers: Headers; status: number; errors?: GraphQLError[] }> {
+export async function rawRequest<T>(url: string, query: string, variables?: Variables): Promise<GraphQLResponse<T>> {
   const client = new GraphQLClient(url);
-
   return client.rawRequest<T>(query, variables);
 }
 
-export async function request<T extends any>(url: string, query: string, variables?: Variables): Promise<T> {
+export async function request<T>(url: string, query: string, variables?: Variables): Promise<T> {
   const client = new GraphQLClient(url);
 
   return client.request<T>(query, variables);
 }
 
-async function getResult(response: Response): Promise<any> {
+async function getResult<T>(response: Response): Promise<GraphQLResponse<T> | string> {
   const contentType = response.headers.get('Content-Type');
   if (contentType && contentType.startsWith('application/json')) {
-    return response.json();
+    const result = await response.json();
+    return result as GraphQLResponse<T>;
   } else {
     return response.text();
   }

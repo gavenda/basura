@@ -1,16 +1,18 @@
+import { Awaitable } from '@util/awaitable';
+
 export interface Cache {
-  get<T>(key: string): Promise<T | null>;
-  put<T>(key: string, value: T): Promise<void>;
+  get<T>(key: string): Awaitable<T | null>;
+  put<T>(key: string, value: T): Awaitable<void>;
 }
 
 export class DefaultCache implements Cache {
   map = new Map();
 
-  async get<T>(key: string): Promise<T | null> {
+  get<T>(key: string) {
     return this.map.get(key) as T;
   }
 
-  async put<T>(key: string, value: T): Promise<void> {
+  put<T>(key: string, value: T) {
     this.map.set(key, value);
   }
 }
@@ -23,13 +25,14 @@ export class KVCache implements Cache {
     this.cache = cache;
     this.ttl = ttl;
   }
-  async get<T>(key: string): Promise<T | null> {
-    return this.cache.get<T>(key, 'json');
+
+  async get<T>(key: string) {
+    return await this.cache.get<T>(key, 'json');
   }
 
-  async put<T>(key: string, value: T): Promise<void> {
+  async put<T>(key: string, value: T) {
     await this.cache.put(key, JSON.stringify(value), {
-      expirationTtl: this.ttl > 60 ? this.ttl : 60,
+      expirationTtl: this.ttl > 60 ? this.ttl : 60
     });
   }
 }

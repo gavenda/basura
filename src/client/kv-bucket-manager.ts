@@ -1,4 +1,4 @@
-import { Bucket, BucketManager } from './manager.js';
+import { Bucket, BucketManager } from './manager';
 
 /**
  * A KV version of the bucket manager.
@@ -37,7 +37,7 @@ export class KVBucketManager implements BucketManager {
   }
   async set(key: string, bucket: Bucket, ttl: number): Promise<void> {
     await this.kv.put(key, JSON.stringify(bucket), {
-      expirationTtl: ttl > 60 ? ttl : 60,
+      expirationTtl: ttl > 60 ? ttl : 60
     });
   }
 }

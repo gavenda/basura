@@ -1,10 +1,15 @@
-import { findCharacter, findCharacterNames } from '@anilist/character.js';
-import { Character, CharacterName, MediaType } from '@anilist/gql/types.js';
+import { findCharacter, findCharacterNames } from '@anilist/character';
+import { Character, CharacterName, MediaType } from '@anilist/gql/types';
 import { CommandHandler, Page, handlePaginatorComponents, paginator } from '@studio-bogus/discord-interaction-app';
-import { ApplicationCommandContext, AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { zip } from '@util/array.js';
-import { EMBED_DESCRIPTION_LIMIT } from '@util/discord.js';
-import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate } from '@util/strings.js';
+import {
+  ApplicationCommandContext,
+  AutocompleteContext,
+  ComponentContext,
+  SlashCommandContext
+} from '@studio-bogus/discord-interaction-app/context';
+import { zip } from '@util/array';
+import { EMBED_DESCRIPTION_LIMIT } from '@util/discord';
+import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate } from '@util/strings';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
 
@@ -22,7 +27,7 @@ export class CharacterCommand implements CommandHandler<SlashCommandContext> {
     return names.map((x) => {
       return {
         name: truncate(x, 100),
-        value: truncate(x, 100),
+        value: truncate(x, 100)
       };
     });
   }
@@ -36,7 +41,7 @@ export const handleFindCharacter = async (query: string, context: ApplicationCom
   const characters = await findCharacter(query);
   if (characters === undefined || characters.length === 0) {
     await context.reply({
-      message: `No anime/manga character found.`,
+      message: `No anime/manga character found.`
     });
     return;
   }
@@ -49,8 +54,8 @@ export const handleFindCharacter = async (query: string, context: ApplicationCom
       embed: createCharacterEmbed(character, pageNumber, characters.length),
       link: {
         label: 'View on AniList',
-        url: character.siteUrl!!,
-      },
+        url: character.siteUrl!
+      }
     });
     pageNumber = pageNumber + 1;
   }
@@ -96,44 +101,44 @@ const createCharacterEmbed = (character: Character, pageNumber: number, pageMax:
   if (isNotBlank(animeAppearances)) {
     fields.push({
       name: `Anime Appearances`,
-      value: animeAppearances,
+      value: animeAppearances
     });
   }
 
   if (isNotBlank(mangaAppearances)) {
     fields.push({
       name: `Manga Appearances`,
-      value: mangaAppearances,
+      value: mangaAppearances
     });
   }
 
   if (isNotBlank(aliases)) {
     fields.push({
       name: 'Aliases',
-      value: aliases,
+      value: aliases
     });
   }
 
   fields.push({
     name: `Favorites`,
     value: `${character.favourites}`,
-    inline: true,
+    inline: true
   });
 
   return {
     title,
     description,
     thumbnail: {
-      url: character.image?.large ?? character.image?.medium ?? '',
+      url: character.image?.large ?? character.image?.medium ?? ''
     },
     author: {
-      name: `ID#${character.id}`,
+      name: `ID#${character.id}`
     },
     color: 16711680,
     fields,
     footer: {
-      text: `Page ${pageNumber} / ${pageMax}`,
-    },
+      text: `Page ${pageNumber} / ${pageMax}`
+    }
   };
 };
 

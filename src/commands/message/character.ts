@@ -1,6 +1,6 @@
 import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
 import { ComponentContext, MessageCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { handleFindCharacter } from '../character.js';
+import { handleFindCharacter } from '../character';
 
 export class FindCharacterMessageCommand implements CommandHandler<MessageCommandContext> {
   ephemeral: boolean = false;

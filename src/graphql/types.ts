@@ -1,4 +1,4 @@
-export type Variables = { [key: string]: any };
+export type Variables = { [key: string]: unknown };
 
 export interface Headers {
   [key: string]: string;
@@ -17,12 +17,12 @@ export interface GraphQLError {
   path: string[];
 }
 
-export interface GraphQLResponse {
-  data?: any;
+export interface GraphQLResponse<T> {
+  data?: T;
   errors?: GraphQLError[];
-  extensions?: any;
+  extensions?: unknown;
   status: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface GraphQLRequestContext {
@@ -31,10 +31,10 @@ export interface GraphQLRequestContext {
 }
 
 export class ClientError extends Error {
-  response: GraphQLResponse;
+  response: GraphQLResponse<unknown>;
   request: GraphQLRequestContext;
 
-  constructor(response: GraphQLResponse, request: GraphQLRequestContext) {
+  constructor(response: GraphQLResponse<unknown>, request: GraphQLRequestContext) {
     const message = `${ClientError.extractMessage(response)}: ${JSON.stringify({ response, request })}`;
 
     super(message);
@@ -45,7 +45,7 @@ export class ClientError extends Error {
     Error.captureStackTrace(this, ClientError);
   }
 
-  private static extractMessage(response: GraphQLResponse): string {
+  private static extractMessage(response: GraphQLResponse<unknown>): string {
     try {
       return response.errors![0].message;
     } catch (e) {

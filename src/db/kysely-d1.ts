@@ -10,7 +10,7 @@ import {
   QueryResult,
   SqliteAdapter,
   SqliteIntrospector,
-  SqliteQueryCompiler,
+  SqliteQueryCompiler
 } from 'kysely';
 
 /**
@@ -52,7 +52,7 @@ export class D1Dialect implements Dialect {
     return new SqliteQueryCompiler();
   }
 
-  createIntrospector(db: Kysely<any>): DatabaseIntrospector {
+  createIntrospector(db: Kysely<unknown>): DatabaseIntrospector {
     return new SqliteIntrospector(db);
   }
 }
@@ -64,7 +64,7 @@ class D1Driver implements Driver {
     this.#config = config;
   }
 
-  async init(): Promise<void> { }
+  async init(): Promise<void> {}
 
   async acquireConnection(): Promise<DatabaseConnection> {
     return new D1Connection(this.#config);
@@ -82,9 +82,9 @@ class D1Driver implements Driver {
     return await conn.rollbackTransaction();
   }
 
-  async releaseConnection(_conn: D1Connection): Promise<void> { }
+  async releaseConnection(_conn: D1Connection): Promise<void> {}
 
-  async destroy(): Promise<void> { }
+  async destroy(): Promise<void> {}
 }
 
 class D1Connection implements DatabaseConnection {
@@ -116,8 +116,8 @@ class D1Connection implements DatabaseConnection {
           : BigInt(results.meta.last_row_id),
       rows: (results?.results as O[]) || [],
       numAffectedRows,
-      // @ts-ignore deprecated in kysely >= 0.23, keep for backward compatibility.
-      numUpdatedOrDeletedRows: numAffectedRows,
+      // deprecated in kysely >= 0.23, keep for backward compatibility.
+      numUpdatedOrDeletedRows: numAffectedRows
     };
   }
 

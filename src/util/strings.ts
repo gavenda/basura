@@ -45,8 +45,8 @@ export const charCount = (str: string, char: string): number => {
 export const titleCase = (str: string): string => {
   // https://stackoverflow.com/a/32589289
   // Modified for enums, won't work with usual things that have underscores.
-  var splitStr = str.toLowerCase().replaceAll('_', ' ').split(' ');
-  for (var i = 0; i < splitStr.length; i++) {
+  const splitStr = str.toLowerCase().replaceAll('_', ' ').split(' ');
+  for (let i = 0; i < splitStr.length; i++) {
     // You do not need to check if i is larger than splitStr length, as your for does that for you
     // Assign it back to the array
     splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);

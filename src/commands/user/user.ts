@@ -1,14 +1,14 @@
 import { Env } from '@env/env';
 import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
 import { ComponentContext, UserCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { handleFindUser } from '../user.js';
+import { handleFindUser } from '../user';
 
 export class FindUserCommand implements CommandHandler<UserCommandContext> {
   ephemeral: boolean = false;
   async handle(context: UserCommandContext): Promise<void> {
     if (!context.guildId) {
       await context.edit({
-        message: `Must be executed inside a guild!`,
+        message: `Must be executed inside a guild!`
       });
       return;
     }
@@ -23,7 +23,7 @@ export class FindUserCommand implements CommandHandler<UserCommandContext> {
 
     if (!result) {
       await context.edit({
-        message: `No linked AniList account found for this user.`,
+        message: `No linked AniList account found for this user.`
       });
       return;
     }

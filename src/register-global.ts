@@ -1,7 +1,7 @@
 import { Client } from '@studio-bogus/discord-interaction-client';
 import { Routes } from 'discord-api-types/v10';
 import * as dotenv from 'dotenv';
-import { commandList } from './commands/index.js';
+import { commandList } from './commands/index';
 
 dotenv.config({ path: '.prod.vars' });
 
@@ -18,7 +18,7 @@ const registerCommands = async () => {
 
   const client = new Client().setToken(token);
   await client.put(Routes.applicationCommands(applicationId), {
-    body: commandList,
+    body: commandList
   });
 };
 

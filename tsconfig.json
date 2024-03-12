@@ -1,61 +1,31 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "noEmit": true,
-    "module": "node16",
     "target": "es2021",
-    "lib": [
-      "es2021"
-    ],
+    "lib": ["es2021"],
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
-    "alwaysStrict": true,
-    "preserveConstEnums": true,
-    "moduleResolution": "node16",
-    "sourceMap": true,
-    "types": [
-      "@types/node",
-      "@cloudflare/workers-types",
-      "@types/he"
-    ],
+    "skipLibCheck": true,
+    "types": ["@cloudflare/workers-types", "@types/he"],
     "paths": {
-      "@logger/logger": [
-        "src/logger.ts"
-      ],
-      "@env/env": [
-        "src/env.ts"
-      ],
-      "@studio-bogus/discord-interaction-app": [
-        "src/app/index.ts"
-      ],
-      "@studio-bogus/discord-interaction-app/context": [
-        "src/app/context/index.ts"
-      ],
-      "@studio-bogus/discord-interaction-client": [
-        "src/client/index.ts"
-      ],
-      "@anilist/gql": [
-        "src/anilist/gql/index.ts"
-      ],
-      "@anilist/*": [
-        "src/anilist/*"
-      ],
-      "@graphql/*": [
-        "src/graphql/*"
-      ],
-      "@util/*": [
-        "src/util/*"
-      ],
-      "@db/*": [
-        "src/db/*"
-      ]
+      "@logger/logger": ["./src/logger.ts"],
+      "@env/env": ["./src/env.ts"],
+      "@studio-bogus/discord-interaction-app": ["./src/app/index.ts"],
+      "@studio-bogus/discord-interaction-app/context": ["./src/app/context/index.ts"],
+      "@studio-bogus/discord-interaction-client": ["./src/client/index.ts"],
+      "@anilist/gql": ["./src/anilist/gql/index.ts"],
+      "@anilist/*": ["./src/anilist/*"],
+      "@graphql/*": ["./src/graphql/*"],
+      "@util/*": ["./src/util/*"],
+      "@db/*": ["./src/db/*"]
     }
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }

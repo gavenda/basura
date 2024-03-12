@@ -1,7 +1,7 @@
-import { MediaType } from '@anilist/gql/types.js';
+import { MediaType } from '@anilist/gql/types';
 import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
 import { ComponentContext, MessageCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { handleFindMedia } from '../find.js';
+import { handleFindMedia } from '../find';
 
 export class FindMangaMessageCommand implements CommandHandler<MessageCommandContext> {
   ephemeral: boolean = false;

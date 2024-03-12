@@ -1,13 +1,13 @@
-import { aniListRequest } from './anilist.js';
-import { FIND_STAFF_NAME } from './gql/find-staff-name.js';
-import { FIND_STAFF } from './gql/find-staff.js';
-import { Query, Staff } from './gql/types.js';
+import { aniListRequest } from './anilist';
+import { FIND_STAFF } from './gql/find-staff';
+import { FIND_STAFF_NAME } from './gql/find-staff-name';
+import { Query, Staff } from './gql/types';
 
 export const findStaff = async (query: string): Promise<Staff[] | undefined> => {
   const variables = {
     query,
     page: 1,
-    perPage: 10,
+    perPage: 10
   };
 
   try {
@@ -22,7 +22,7 @@ export const findStaffByName = async (query: string): Promise<string[]> => {
   const variables = {
     query,
     page: 1,
-    perPage: 25,
+    perPage: 25
   };
 
   try {

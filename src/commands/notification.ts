@@ -1,9 +1,9 @@
-import { MediaType } from '@anilist/gql/types.js';
-import { findAiringMedia, findMediaIds } from '@anilist/media.js';
+import { MediaType } from '@anilist/gql/types';
+import { findAiringMedia, findMediaIds } from '@anilist/media';
 import { Env } from '@env/env';
 import { CommandHandler } from '@studio-bogus/discord-interaction-app';
 import { AutocompleteContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { truncate } from '@util/strings.js';
+import { truncate } from '@util/strings';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 
 export class NotificationCommand implements CommandHandler<SlashCommandContext> {
@@ -11,7 +11,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
   async handle(context: SlashCommandContext): Promise<void> {
     if (context.group !== 'airing-anime') {
       await context.edit({
-        message: `Unknown command group.`,
+        message: `Unknown command group.`
       });
       return;
     }
@@ -25,7 +25,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
         break;
       default:
         await context.edit({
-          message: `Unknown command.`,
+          message: `Unknown command.`
         });
         break;
     }
@@ -45,26 +45,26 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
       if (media?.title?.native) {
         result.push({
           name: truncate(media.title.native, 100),
-          value: media.id,
+          value: media.id
         });
       }
       if (media?.title?.romaji) {
         result.push({
           name: truncate(media.title.romaji, 100),
-          value: media.id,
+          value: media.id
         });
       }
       if (media?.title?.english) {
         result.push({
           name: truncate(media.title.english, 100),
-          value: media.id,
+          value: media.id
         });
       }
       if (media.synonyms) {
         for (const synonym of media.synonyms) {
           result.push({
             name: truncate(synonym, 100),
-            value: media.id,
+            value: media.id
           });
         }
       }
@@ -83,7 +83,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
 
     if (!context.guildId) {
       await context.edit({
-        message: `You are not in a discord server.`,
+        message: `You are not in a discord server.`
       });
       return;
     }
@@ -92,7 +92,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
 
     if (exists) {
       await context.edit({
-        message: `Anime already added to notifications!`,
+        message: `Anime already added to notifications!`
       });
       return;
     }
@@ -118,7 +118,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     }
 
     await context.edit({
-      message: `Anime airing notification added!`,
+      message: `Anime airing notification added!`
     });
   }
 
@@ -131,7 +131,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
 
     if (!exists) {
       await context.edit({
-        message: `Anime is not in the list for airing notifications.`,
+        message: `Anime is not in the list for airing notifications.`
       });
       return;
     }
@@ -143,7 +143,7 @@ export class NotificationCommand implements CommandHandler<SlashCommandContext> 
     await kv.put(guildKey, JSON.stringify([...mediaIds]));
 
     await context.edit({
-      message: `Anime airing notification removed!`,
+      message: `Anime airing notification removed!`
     });
   }
 }

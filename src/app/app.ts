@@ -1,4 +1,5 @@
 import { Client, KVBucketManager } from '@studio-bogus/discord-interaction-client';
+import { verifyKey } from '@util/verify-key';
 import {
   APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
@@ -13,18 +14,17 @@ import {
   ApplicationCommandType,
   InteractionResponseType,
   InteractionType,
-  MessageFlags,
+  MessageFlags
 } from 'discord-api-types/v10';
-import { verifyKey } from 'discord-interactions';
-import { Cache, DefaultCache, KVCache } from './cache.js';
-import { CommandHandler } from './command.js';
-import { ApplicationCommandContext } from './context/application-command-context.js';
-import { AutocompleteContext } from './context/autocomplete-context.js';
-import { ComponentContext } from './context/component-context.js';
-import { MessageCommandContext } from './context/message-command-context.js';
-import { SlashCommandContext } from './context/slash-command-context.js';
-import { UserCommandContext } from './context/user-command-context.js';
-import { sleep } from './time.js';
+import { Cache, DefaultCache, KVCache } from './cache';
+import { CommandHandler } from './command';
+import { ApplicationCommandContext } from './context/application-command-context';
+import { AutocompleteContext } from './context/autocomplete-context';
+import { ComponentContext } from './context/component-context';
+import { MessageCommandContext } from './context/message-command-context';
+import { SlashCommandContext } from './context/slash-command-context';
+import { UserCommandContext } from './context/user-command-context';
+import { sleep } from './time';
 
 /**
  * A map of command handlers.
@@ -49,7 +49,7 @@ export interface AppOptions {
   /**
    * Cloudflare service worker.
    */
-  environment: any;
+  environment: unknown;
   /**
    * Cloudflare execution context.
    */
@@ -87,7 +87,7 @@ export class App {
   /**
    * Attached environment object.
    */
-  #environment: any;
+  #environment: unknown;
 
   /**
    * Application command map.
@@ -196,8 +196,8 @@ export class App {
 
     return new Response(JSON.stringify(interactionResponse), {
       headers: {
-        'content-type': 'application/json;charset=UTF-8',
-      },
+        'content-type': 'application/json;charset=UTF-8'
+      }
     });
   }
 
@@ -226,8 +226,8 @@ export class App {
       type: InteractionResponseType.ChannelMessageWithSource,
       data: {
         flags: MessageFlags.Ephemeral,
-        content: 'Cannot process the interaction.',
-      },
+        content: 'Cannot process the interaction.'
+      }
     };
   }
 
@@ -241,8 +241,8 @@ export class App {
       type: InteractionResponseType.ChannelMessageWithSource,
       data: {
         flags: MessageFlags.Ephemeral,
-        content: 'Unsupported interaction.',
-      },
+        content: 'Unsupported interaction.'
+      }
     };
   }
 
@@ -251,7 +251,9 @@ export class App {
    * @param interaction
    * @returns
    */
-  async #handleMessageComponentInteraction(interaction: APIMessageComponentInteraction): Promise<APIInteractionResponse> {
+  async #handleMessageComponentInteraction(
+    interaction: APIMessageComponentInteraction
+  ): Promise<APIInteractionResponse> {
     const context = new ComponentContext(this, interaction);
     // Lookup handler for command
     const handler = this.#commandMap[context.command];
@@ -261,8 +263,8 @@ export class App {
         type: InteractionResponseType.UpdateMessage,
         data: {
           flags: MessageFlags.Ephemeral,
-          content: 'No command handler for this component.',
-        },
+          content: 'No command handler for this component.'
+        }
       };
     }
 
@@ -273,7 +275,7 @@ export class App {
       if (!context.handled) {
         await context.edit({
           message: `The interaction timed out.`,
-          ephmeral: true,
+          ephmeral: true
         });
       }
       resolve();
@@ -289,17 +291,17 @@ export class App {
           console.error(`No component handlers found`, { interaction });
           await context.edit({
             message: `No component handlers found.`,
-            ephmeral: true,
+            ephmeral: true
           });
         }
       } catch (error) {
         await context.edit({
           message: `An error occured during the interaction.`,
-          ephmeral: true,
+          ephmeral: true
         });
         console.error(`Error occured during interaction`, {
           error,
-          interaction,
+          interaction
         });
       }
       resolve();
@@ -312,7 +314,7 @@ export class App {
     this.executionContext.waitUntil(race);
 
     return {
-      type: InteractionResponseType.DeferredMessageUpdate,
+      type: InteractionResponseType.DeferredMessageUpdate
     };
   }
 
@@ -324,7 +326,7 @@ export class App {
   async #handleApplicationCommand(interaction: APIApplicationCommandInteraction): Promise<APIInteractionResponse> {
     const initialResponse: Required<APIInteractionResponse> = {
       type: InteractionResponseType.DeferredChannelMessageWithSource,
-      data: {},
+      data: {}
     };
 
     let handler: CommandHandler<ApplicationCommandContext>;
@@ -354,8 +356,8 @@ export class App {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
           flags: MessageFlags.Ephemeral,
-          content: 'No handlers found for this command.',
-        },
+          content: 'No handlers found for this command.'
+        }
       };
     }
 
@@ -364,33 +366,33 @@ export class App {
     }
 
     // Timeout the interaction if it passes than given timeout
-    const timeout = new Promise<void>(async (resolve, _) => {
+    const timeout = new Promise<void>(async (resolve) => {
       await sleep(this.#timeoutMs);
       // We send a message if not handled
       if (!context.handled) {
         console.warn(`Interaction timed out`, { interaction });
         await context.edit({
           message: `The interaction timed out.`,
-          ephmeral: true,
+          ephmeral: true
         });
       }
       resolve();
     });
 
     // The actual handling
-    const handling = new Promise<void>(async (resolve, _) => {
+    const handling = new Promise<void>(async (resolve) => {
       try {
         await handler.handle(context);
         context.handled = true;
       } catch (error) {
         await context.edit({
           message: `An error occured during the interaction.`,
-          ephmeral: true,
+          ephmeral: true
         });
         context.handled = true;
         console.error(`Error occured during interaction`, {
           error,
-          interaction,
+          interaction
         });
       }
       resolve();
@@ -410,7 +412,9 @@ export class App {
    * @param interaction
    * @returns
    */
-  async #handleApplicationCommandAutocomplete(interaction: APIApplicationCommandAutocompleteInteraction): Promise<APIInteractionResponse> {
+  async #handleApplicationCommandAutocomplete(
+    interaction: APIApplicationCommandAutocompleteInteraction
+  ): Promise<APIInteractionResponse> {
     const handler = this.#commandMap[interaction.data.name];
     const context = new AutocompleteContext(this, interaction);
 
@@ -423,8 +427,8 @@ export class App {
     return {
       type: InteractionResponseType.ApplicationCommandAutocompleteResult,
       data: {
-        choices: choices.slice(0, 25),
-      },
+        choices: choices.slice(0, 25)
+      }
     };
   }
 }

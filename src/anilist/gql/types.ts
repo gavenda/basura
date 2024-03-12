@@ -12,10 +12,10 @@ export type Scalars = {
   Int: number;
   Float: number;
   /** ISO 3166-1 alpha-2 country code */
-  CountryCode: any;
+  CountryCode: string;
   /** 8 digit long date integer (YYYYMMDD). Unknown dates represented by 0. E.g. 2016: 20160000, May 1976: 19760500 */
-  FuzzyDateInt: any;
-  Json: any;
+  FuzzyDateInt: number;
+  Json: unknown;
 };
 
 /** Notification for when a activity is liked */
@@ -176,7 +176,7 @@ export type ActivityReplySubscribedNotification = {
 export enum ActivitySort {
   Id = 'ID',
   IdDesc = 'ID_DESC',
-  Pinned = 'PINNED',
+  Pinned = 'PINNED'
 }
 
 /** Activity type enum. */
@@ -190,7 +190,7 @@ export enum ActivityType {
   /** A text message activity sent to another user */
   Message = 'MESSAGE',
   /** Anime & Manga list update, only used in query arguments */
-  MediaList = 'MEDIA_LIST',
+  MediaList = 'MEDIA_LIST'
 }
 
 /** Activity union type */
@@ -274,7 +274,7 @@ export enum AiringSort {
   Time = 'TIME',
   TimeDesc = 'TIME_DESC',
   Episode = 'EPISODE',
-  EpisodeDesc = 'EPISODE_DESC',
+  EpisodeDesc = 'EPISODE_DESC'
 }
 
 export type AniChartHighlightInput = {
@@ -430,7 +430,7 @@ export enum CharacterRole {
   /** A supporting character role in the media */
   SUPPORTING = 'SUPPORTING',
   /** A background character in the media */
-  BACKGROUND = 'BACKGROUND',
+  BACKGROUND = 'BACKGROUND'
 }
 
 /** Character sort enums */
@@ -443,7 +443,7 @@ export enum CharacterSort {
   Favourites = 'FAVOURITES',
   FavouritesDesc = 'FAVOURITES_DESC',
   /** Order manually decided by moderators */
-  Relevance = 'RELEVANCE',
+  Relevance = 'RELEVANCE'
 }
 
 /** A submission for a character that features in an anime or manga */
@@ -499,13 +499,13 @@ export type Deleted = {
 export enum ExternalLinkMediaType {
   Anime = 'ANIME',
   Manga = 'MANGA',
-  Staff = 'STAFF',
+  Staff = 'STAFF'
 }
 
 export enum ExternalLinkType {
   Info = 'INFO',
   Streaming = 'STREAMING',
-  Social = 'SOCIAL',
+  Social = 'SOCIAL'
 }
 
 /** User's favourite anime, manga, characters, staff & studios */
@@ -1000,7 +1000,7 @@ export enum LikeableType {
   Thread = 'THREAD',
   ThreadComment = 'THREAD_COMMENT',
   Activity = 'ACTIVITY',
-  ActivityReply = 'ACTIVITY_REPLY',
+  ActivityReply = 'ACTIVITY_REPLY'
 }
 
 /** Likeable union type */
@@ -1419,7 +1419,7 @@ export enum MediaFormat {
   /** Written books released as a series of light novels */
   NOVEL = 'NOVEL',
   /** Manga with just one chapter */
-  ONE_SHOT = 'ONE_SHOT',
+  ONE_SHOT = 'ONE_SHOT'
 }
 
 /** List of anime or manga */
@@ -1589,7 +1589,7 @@ export enum MediaListSort {
   MediaTitleNative = 'MEDIA_TITLE_NATIVE',
   MediaTitleNativeDesc = 'MEDIA_TITLE_NATIVE_DESC',
   MediaPopularity = 'MEDIA_POPULARITY',
-  MediaPopularityDesc = 'MEDIA_POPULARITY_DESC',
+  MediaPopularityDesc = 'MEDIA_POPULARITY_DESC'
 }
 
 /** Media list watching/reading status enum. */
@@ -1605,7 +1605,7 @@ export enum MediaListStatus {
   /** Paused watching/reading */
   PAUSED = 'PAUSED',
   /** Re-watching/reading */
-  REPEATING = 'REPEATING',
+  REPEATING = 'REPEATING'
 }
 
 /** A user's list options for anime or manga lists */
@@ -1675,7 +1675,7 @@ export enum MediaRankType {
   /** Ranking is based on the media's ratings/score */
   RATED = 'RATED',
   /** Ranking is based on the media's popularity */
-  POPULAR = 'POPULAR',
+  POPULAR = 'POPULAR'
 }
 
 /** Type of relation media has to its parent. */
@@ -1705,7 +1705,7 @@ export enum MediaRelation {
   /** Version 2 only. */
   Compilation = 'COMPILATION',
   /** Version 2 only. */
-  Contains = 'CONTAINS',
+  Contains = 'CONTAINS'
 }
 
 export enum MediaSeason {
@@ -1716,7 +1716,7 @@ export enum MediaSeason {
   /** Months June to August */
   SUMMER = 'SUMMER',
   /** Months September to November */
-  FALL = 'FALL',
+  FALL = 'FALL'
 }
 
 /** Media sort enums */
@@ -1757,7 +1757,7 @@ export enum MediaSort {
   UPDATED_AT_DESC = 'UPDATED_AT_DESC',
   SEARCH_MATCH = 'SEARCH_MATCH',
   FAVOURITES = 'FAVOURITES',
-  FAVOURITES_DESC = 'FAVOURITES_DESC',
+  FAVOURITES_DESC = 'FAVOURITES_DESC'
 }
 
 /** Source type the media was adapted from */
@@ -1791,7 +1791,7 @@ export enum MediaSource {
   /** Version 3 only. Multimedia project */
   MultimediaProject = 'MULTIMEDIA_PROJECT',
   /** Version 3 only. Picture book */
-  PictureBook = 'PICTURE_BOOK',
+  PictureBook = 'PICTURE_BOOK'
 }
 
 /** A media's statistics */
@@ -1814,7 +1814,7 @@ export enum MediaStatus {
   /** Ended before the work could be finished */
   Cancelled = 'CANCELLED',
   /** Version 2 only. Is currently paused from releasing and will resume at a later date */
-  Hiatus = 'HIATUS',
+  Hiatus = 'HIATUS'
 }
 
 /** Data and links to legal streaming episodes on external sites */
@@ -2012,7 +2012,7 @@ export enum MediaTrendSort {
   Trending = 'TRENDING',
   TrendingDesc = 'TRENDING_DESC',
   Episode = 'EPISODE',
-  EpisodeDesc = 'EPISODE_DESC',
+  EpisodeDesc = 'EPISODE_DESC'
 }
 
 /** Media type enum, anime or manga. */
@@ -2020,7 +2020,7 @@ export enum MediaType {
   /** Japanese Anime */
   ANIME = 'ANIME',
   /** Asian comic */
-  MANGA = 'MANGA',
+  MANGA = 'MANGA'
 }
 
 /** User message activity */
@@ -2088,7 +2088,7 @@ export enum ModActionType {
   Expire = 'EXPIRE',
   Report = 'REPORT',
   Reset = 'RESET',
-  Anon = 'ANON',
+  Anon = 'ANON'
 }
 
 /** Mod role enums */
@@ -2118,7 +2118,7 @@ export enum ModRole {
   /** A social media moderator */
   SocialMedia = 'SOCIAL_MEDIA',
   /** A retired moderator */
-  Retired = 'RETIRED',
+  Retired = 'RETIRED'
 }
 
 export type Mutation = {
@@ -2445,7 +2445,7 @@ export enum NotificationType {
   /** Anime or manga entries on the user's list have been merged into a single entry */
   MediaMerge = 'MEDIA_MERGE',
   /** An anime or manga on the user's list has been deleted from the site */
-  MediaDeletion = 'MEDIA_DELETION',
+  MediaDeletion = 'MEDIA_DELETION'
 }
 
 /** Notification union type */
@@ -3233,7 +3233,7 @@ export type RecommendationEdge = {
 export enum RecommendationRating {
   NoRating = 'NO_RATING',
   RateUp = 'RATE_UP',
-  RateDown = 'RATE_DOWN',
+  RateDown = 'RATE_DOWN'
 }
 
 /** Recommendation sort enums */
@@ -3241,7 +3241,7 @@ export enum RecommendationSort {
   Id = 'ID',
   IdDesc = 'ID_DESC',
   Rating = 'RATING',
-  RatingDesc = 'RATING_DESC',
+  RatingDesc = 'RATING_DESC'
 }
 
 /** Notification for when new media is added to the site */
@@ -3332,7 +3332,7 @@ export type ReviewEdge = {
 export enum ReviewRating {
   NoVote = 'NO_VOTE',
   UpVote = 'UP_VOTE',
-  DownVote = 'DOWN_VOTE',
+  DownVote = 'DOWN_VOTE'
 }
 
 /** Review sort enums */
@@ -3346,7 +3346,7 @@ export enum ReviewSort {
   CreatedAt = 'CREATED_AT',
   CreatedAtDesc = 'CREATED_AT_DESC',
   UpdatedAt = 'UPDATED_AT',
-  UpdatedAtDesc = 'UPDATED_AT_DESC',
+  UpdatedAtDesc = 'UPDATED_AT_DESC'
 }
 
 /** Feed of mod edit activity */
@@ -3377,7 +3377,7 @@ export type RevisionHistory = {
 /** Revision history actions */
 export enum RevisionHistoryAction {
   Create = 'CREATE',
-  Edit = 'EDIT',
+  Edit = 'EDIT'
 }
 
 /** A user's list score distribution. */
@@ -3399,7 +3399,7 @@ export enum ScoreFormat {
   /** An integer from 0-5. Should be represented in Stars */
   Point_5 = 'POINT_5',
   /** An integer from 0-3. Should be represented in Smileys. 0 => No Score, 1 => :(, 2 => :|, 3 => :) */
-  Point_3 = 'POINT_3',
+  Point_3 = 'POINT_3'
 }
 
 export type SiteStatistics = {
@@ -3486,7 +3486,7 @@ export enum SiteTrendSort {
   Count = 'COUNT',
   CountDesc = 'COUNT_DESC',
   Change = 'CHANGE',
-  ChangeDesc = 'CHANGE_DESC',
+  ChangeDesc = 'CHANGE_DESC'
 }
 
 /** Voice actors or production staff */
@@ -3632,7 +3632,7 @@ export enum StaffLanguage {
   /** Hebrew */
   Hebrew = 'HEBREW',
   /** Hungarian */
-  Hungarian = 'HUNGARIAN',
+  Hungarian = 'HUNGARIAN'
 }
 
 /** The names of the staff member */
@@ -3691,7 +3691,7 @@ export enum StaffSort {
   Favourites = 'FAVOURITES',
   FavouritesDesc = 'FAVOURITES_DESC',
   /** Order manually decided by moderators */
-  Relevance = 'RELEVANCE',
+  Relevance = 'RELEVANCE'
 }
 
 /** User's staff statistics */
@@ -3792,7 +3792,7 @@ export enum StudioSort {
   NameDesc = 'NAME_DESC',
   SearchMatch = 'SEARCH_MATCH',
   Favourites = 'FAVOURITES',
-  FavouritesDesc = 'FAVOURITES_DESC',
+  FavouritesDesc = 'FAVOURITES_DESC'
 }
 
 /** User's studio statistics */
@@ -3808,7 +3808,7 @@ export type StudioStats = {
 /** Submission sort enums */
 export enum SubmissionSort {
   Id = 'ID',
-  IdDesc = 'ID_DESC',
+  IdDesc = 'ID_DESC'
 }
 
 /** Submission status */
@@ -3816,7 +3816,7 @@ export enum SubmissionStatus {
   Pending = 'PENDING',
   Rejected = 'REJECTED',
   PartiallyAccepted = 'PARTIALLY_ACCEPTED',
-  Accepted = 'ACCEPTED',
+  Accepted = 'ACCEPTED'
 }
 
 /** User's tag statistics */
@@ -4042,7 +4042,7 @@ export type ThreadCommentReplyNotification = {
 /** Thread comments sort enums */
 export enum ThreadCommentSort {
   Id = 'ID',
-  IdDesc = 'ID_DESC',
+  IdDesc = 'ID_DESC'
 }
 
 /** Notification for when a user replies to a subscribed forum thread */
@@ -4108,7 +4108,7 @@ export enum ThreadSort {
   ViewCount = 'VIEW_COUNT',
   ViewCountDesc = 'VIEW_COUNT_DESC',
   IsSticky = 'IS_STICKY',
-  SearchMatch = 'SEARCH_MATCH',
+  SearchMatch = 'SEARCH_MATCH'
 }
 
 /** A user */
@@ -4314,7 +4314,7 @@ export enum UserSort {
   WatchedTimeDesc = 'WATCHED_TIME_DESC',
   ChaptersRead = 'CHAPTERS_READ',
   ChaptersReadDesc = 'CHAPTERS_READ_DESC',
-  SearchMatch = 'SEARCH_MATCH',
+  SearchMatch = 'SEARCH_MATCH'
 }
 
 /** The language the user wants to see staff and character names in */
@@ -4324,7 +4324,7 @@ export enum UserStaffNameLanguage {
   /** The romanization of the staff or character's native name */
   Romaji = 'ROMAJI',
   /** The staff or character's name in their native language */
-  Native = 'NATIVE',
+  Native = 'NATIVE'
 }
 
 export type UserStaffStatistic = {
@@ -4439,7 +4439,7 @@ export enum UserStatisticsSort {
   Progress = 'PROGRESS',
   ProgressDesc = 'PROGRESS_DESC',
   MeanScore = 'MEAN_SCORE',
-  MeanScoreDesc = 'MEAN_SCORE_DESC',
+  MeanScoreDesc = 'MEAN_SCORE_DESC'
 }
 
 export type UserStatisticTypes = {
@@ -4515,7 +4515,7 @@ export enum UserTitleLanguage {
   /** The official english title, stylised by media creator */
   EnglishStylised = 'ENGLISH_STYLISED',
   /** Official title in it's native language, stylised by media creator */
-  NativeStylised = 'NATIVE_STYLISED',
+  NativeStylised = 'NATIVE_STYLISED'
 }
 
 export type UserVoiceActorStatistic = {

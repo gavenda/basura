@@ -1,6 +1,5 @@
-
-import { Callbacks, Manager, ManagerArgs } from './manager.js';
-import { RequestData, RequestMethod, RequestOptions } from './types.js';
+import { Callbacks, Manager, ManagerArgs } from './manager';
+import { RequestData, RequestMethod, RequestOptions } from './types';
 
 export class Client {
   #manager: Manager;
@@ -42,19 +41,11 @@ export class Client {
     return {
       api: this.#manager.config.api,
       version: this.#manager.config.version,
-      cdn: this.#manager.config.cdn,
+      cdn: this.#manager.config.cdn
     };
   }
 
-  set api({
-    api,
-    version,
-    cdn,
-  }: {
-    api: string;
-    version: number;
-    cdn: string;
-  }) {
+  set api({ api, version, cdn }: { api: string; version: number; cdn: string }) {
     this.#manager.config.api = api;
     this.#manager.config.version = version;
     this.#manager.config.cdn = cdn;
@@ -64,14 +55,14 @@ export class Client {
     return {
       headers: this.#manager.config.headers,
       retries: this.#manager.config.retries,
-      timeout: this.#manager.config.timeout,
+      timeout: this.#manager.config.timeout
     };
   }
 
   set requestConfig({
     headers,
     retries,
-    timeout,
+    timeout
   }: {
     headers: Record<string, string>;
     retries: number;
@@ -85,13 +76,13 @@ export class Client {
   get sweepIntervals() {
     return {
       bucketSweepInterval: this.#manager.bucketSweepInterval,
-      queueSweepInterval: this.#manager.queueSweepInterval,
+      queueSweepInterval: this.#manager.queueSweepInterval
     };
   }
 
   set sweepIntervals({
     bucketSweepInterval,
-    queueSweepInterval,
+    queueSweepInterval
   }: {
     bucketSweepInterval: number;
     queueSweepInterval: number;
@@ -105,7 +96,7 @@ export class Client {
       onBucketSweep: this.#manager.onBucketSweep,
       onQueueSweep: this.#manager.onQueueSweep,
       onRateLimit: this.#manager.onRateLimit,
-      onRequest: this.#manager.onRequest,
+      onRequest: this.#manager.onRequest
     };
   }
 
@@ -113,7 +104,7 @@ export class Client {
     onBucketSweep,
     onQueueSweep,
     onRateLimit,
-    onRequest,
+    onRequest
   }: {
     onBucketSweep?: Callbacks['onBucketSweep'];
     onQueueSweep?: Callbacks['onQueueSweep'];
@@ -130,7 +121,7 @@ export class Client {
     return this.#request({
       path,
       method: RequestMethod.Get,
-      ...options,
+      ...options
     }) as Promise<T>;
   }
 
@@ -138,7 +129,7 @@ export class Client {
     return this.#request({
       path,
       method: RequestMethod.Post,
-      ...options,
+      ...options
     }) as Promise<T>;
   }
 
@@ -146,7 +137,7 @@ export class Client {
     return this.#request({
       path,
       method: RequestMethod.Put,
-      ...options,
+      ...options
     }) as Promise<T>;
   }
 
@@ -154,7 +145,7 @@ export class Client {
     return this.#request({
       path,
       method: RequestMethod.Patch,
-      ...options,
+      ...options
     }) as Promise<T>;
   }
 
@@ -162,7 +153,7 @@ export class Client {
     return this.#request({
       path,
       method: RequestMethod.Delete,
-      ...options,
+      ...options
     }) as Promise<T>;
   }
 

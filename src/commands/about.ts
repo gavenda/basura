@@ -24,35 +24,35 @@ export class AboutCommand implements CommandHandler<SlashCommandContext> {
 					`.trim(),
           url: `https://github.com/gavenda/basura-cloudflare-worker`,
           thumbnail: {
-            url: selfAvatarUrl,
+            url: selfAvatarUrl
           },
           fields: [
             {
               name: 'Version',
               value: '1.0',
-              inline: true,
+              inline: true
             },
             {
               name: 'Language',
               value: '[TypeScript](https://typescriptlang.org/)',
-              inline: true,
+              inline: true
             },
             {
               name: 'Platform',
               value: '[Cloudflare Service Workers](https://workers.cloudflare.com/)',
-              inline: true,
+              inline: true
             },
             {
               name: 'Date Created',
-              value: Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'long' }).format(dateCreated),
-            },
+              value: Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'long' }).format(dateCreated)
+            }
           ],
           footer: {
             text: 'You can help with the development by dropping by on GitHub.',
-            icon_url: `https://github.com/fluidicon.png`,
-          },
-        },
-      ],
+            icon_url: `https://github.com/fluidicon.png`
+          }
+        }
+      ]
     });
   }
 }

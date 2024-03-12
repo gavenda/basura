@@ -1,10 +1,10 @@
-import { Database } from '@db/database.js';
-import { D1Dialect } from '@db/kysely-d1.js';
+import { Database } from '@db/database';
+import { D1Dialect } from '@db/kysely-d1';
 import { App } from '@studio-bogus/discord-interaction-app';
 import { Kysely } from 'kysely';
-import { checkAiringAnimes } from './airing.js';
-import { commands } from './commands/commands.js';
-import { Env } from './env.js';
+import { checkAiringAnimes } from './airing';
+import { commands } from './commands/commands';
+import { Env } from './env';
 
 export default {
   /**
@@ -23,7 +23,7 @@ export default {
     if (request.method === 'POST') {
       // Initialize our database
       environment.DB = new Kysely<Database>({
-        dialect: new D1Dialect({ database: environment.D1 }),
+        dialect: new D1Dialect({ database: environment.D1 })
       });
 
       const app = new App({
@@ -34,7 +34,7 @@ export default {
         environment,
         executionContext,
         cacheNamespace: environment.CACHE,
-        bucketNamespace: environment.BUCKET,
+        bucketNamespace: environment.BUCKET
       });
 
       return await app.handle(request);
@@ -53,5 +53,5 @@ export default {
       default:
         break;
     }
-  },
+  }
 };

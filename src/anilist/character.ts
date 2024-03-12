@@ -1,13 +1,13 @@
-import { aniListRequest } from './anilist.js';
-import { FIND_CHARACTER_NAME } from './gql/find-character-name.js';
-import { FIND_CHARACTER } from './gql/find-character.js';
-import { Character, Query } from './gql/types.js';
+import { aniListRequest } from './anilist';
+import { FIND_CHARACTER } from './gql/find-character';
+import { FIND_CHARACTER_NAME } from './gql/find-character-name';
+import { Character, Query } from './gql/types';
 
 export const findCharacterNames = async (query: string): Promise<string[]> => {
   const variables = {
     query,
     page: 1,
-    perPage: 25,
+    perPage: 25
   };
 
   try {
@@ -38,7 +38,7 @@ export const findCharacter = async (query: string): Promise<Character[] | undefi
   const variables = {
     query,
     page: 1,
-    perPage: 10,
+    perPage: 10
   };
 
   try {

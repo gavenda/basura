@@ -8,7 +8,7 @@ export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
   async handle(context: SlashCommandContext): Promise<void> {
     if (!context.guildId) {
       await context.edit({
-        message: `Must be executed inside a guild!`,
+        message: `Must be executed inside a guild!`
       });
       return;
     }
@@ -23,7 +23,7 @@ export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
 
     if (!result) {
       await context.edit({
-        message: `Your account is not linked to this discord server.`,
+        message: `Your account is not linked to this discord server.`
       });
       return;
     }
@@ -36,13 +36,13 @@ export class UnlinkCommand implements CommandHandler<SlashCommandContext> {
 
     if (deleteQuery.numDeletedRows) {
       await context.edit({
-        message: `Your have successfully unlinked your account.`,
+        message: `Your have successfully unlinked your account.`
       });
       return;
     }
 
     await context.edit({
-      message: `There was an error unlinking your account.`,
+      message: `There was an error unlinking your account.`
     });
   }
 }

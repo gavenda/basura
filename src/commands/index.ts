@@ -1,10 +1,15 @@
-import { APIApplicationCommand, ApplicationCommandOptionType, ApplicationCommandType, ChannelType } from 'discord-api-types/v10';
-import { MediaFormat, MediaSeason } from '../anilist/gql/types.js';
+import {
+  APIApplicationCommand,
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ChannelType
+} from 'discord-api-types/v10';
+import { MediaFormat, MediaSeason } from '../anilist/gql/types';
 
 export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {
   name: 'about',
   type: ApplicationCommandType.ChatInput,
-  description: 'Literally all about the trash, me!',
+  description: 'Literally all about the trash, me!'
 };
 
 export const COMMAND_LINK: Partial<APIApplicationCommand> = {
@@ -17,15 +22,15 @@ export const COMMAND_LINK: Partial<APIApplicationCommand> = {
       name: 'username',
       description: 'Your AniList username.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_UNLINK: Partial<APIApplicationCommand> = {
   name: 'unlink',
   type: ApplicationCommandType.ChatInput,
-  description: 'Unlink your AniList account from your Discord account.',
+  description: 'Unlink your AniList account from your Discord account.'
 };
 
 export const COMMAND_FIND: Partial<APIApplicationCommand> = {
@@ -38,9 +43,9 @@ export const COMMAND_FIND: Partial<APIApplicationCommand> = {
       name: 'query',
       description: 'Name of the anime/manga.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_ANIME: Partial<APIApplicationCommand> = {
@@ -53,9 +58,9 @@ export const COMMAND_ANIME: Partial<APIApplicationCommand> = {
       name: 'query',
       description: 'Name of the anime.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_MANGA: Partial<APIApplicationCommand> = {
@@ -68,9 +73,9 @@ export const COMMAND_MANGA: Partial<APIApplicationCommand> = {
       name: 'query',
       description: 'Name of the manga.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_STAFF: Partial<APIApplicationCommand> = {
@@ -83,9 +88,9 @@ export const COMMAND_STAFF: Partial<APIApplicationCommand> = {
       name: 'query',
       description: 'Name of the anime/manga staff.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_USER: Partial<APIApplicationCommand> = {
@@ -98,9 +103,9 @@ export const COMMAND_USER: Partial<APIApplicationCommand> = {
       name: 'username',
       description: 'AniList username.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_CHARACTER: Partial<APIApplicationCommand> = {
@@ -113,9 +118,9 @@ export const COMMAND_CHARACTER: Partial<APIApplicationCommand> = {
       name: 'query',
       description: 'Name of the anime/manga character.',
       autocomplete: true,
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
@@ -127,7 +132,7 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
       type: ApplicationCommandOptionType.Integer,
       name: 'amount',
       description: 'Number of media to show. Defaults to 10.',
-      required: false,
+      required: false
     },
     {
       type: ApplicationCommandOptionType.String,
@@ -137,27 +142,27 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
       choices: [
         {
           name: 'Fall',
-          value: MediaSeason.FALL,
+          value: MediaSeason.FALL
         },
         {
           name: 'Spring',
-          value: MediaSeason.SPRING,
+          value: MediaSeason.SPRING
         },
         {
           name: 'Summer',
-          value: MediaSeason.SUMMER,
+          value: MediaSeason.SUMMER
         },
         {
           name: 'Winter',
-          value: MediaSeason.WINTER,
-        },
-      ],
+          value: MediaSeason.WINTER
+        }
+      ]
     },
     {
       type: ApplicationCommandOptionType.Integer,
       name: 'year',
       description: 'The media year.',
-      required: false,
+      required: false
     },
     {
       type: ApplicationCommandOptionType.String,
@@ -167,47 +172,47 @@ export const COMMAND_RANKING: Partial<APIApplicationCommand> = {
       choices: [
         {
           name: 'Manga',
-          value: MediaFormat.MANGA,
+          value: MediaFormat.MANGA
         },
         {
           name: 'Movie',
-          value: MediaFormat.MOVIE,
+          value: MediaFormat.MOVIE
         },
         {
           name: 'Music',
-          value: MediaFormat.MUSIC,
+          value: MediaFormat.MUSIC
         },
         {
           name: 'Novel',
-          value: MediaFormat.NOVEL,
+          value: MediaFormat.NOVEL
         },
         {
           name: 'ONA',
-          value: MediaFormat.ONA,
+          value: MediaFormat.ONA
         },
         {
           name: 'Oneshot',
-          value: MediaFormat.ONE_SHOT,
+          value: MediaFormat.ONE_SHOT
         },
         {
           name: 'OVA',
-          value: MediaFormat.OVA,
+          value: MediaFormat.OVA
         },
         {
           name: 'Special',
-          value: MediaFormat.SPECIAL,
+          value: MediaFormat.SPECIAL
         },
         {
           name: 'TV',
-          value: MediaFormat.TV,
+          value: MediaFormat.TV
         },
         {
           name: 'TV Short',
-          value: MediaFormat.TV_SHORT,
-        },
-      ],
-    },
-  ],
+          value: MediaFormat.TV_SHORT
+        }
+      ]
+    }
+  ]
 };
 
 export const COMMAND_NOTIFICATION: Partial<APIApplicationCommand> = {
@@ -230,9 +235,9 @@ export const COMMAND_NOTIFICATION: Partial<APIApplicationCommand> = {
               name: 'media',
               description: 'The anime media.',
               required: true,
-              autocomplete: true,
-            },
-          ],
+              autocomplete: true
+            }
+          ]
         },
         {
           name: 'remove',
@@ -244,13 +249,13 @@ export const COMMAND_NOTIFICATION: Partial<APIApplicationCommand> = {
               name: 'media',
               description: 'The anime media.',
               required: true,
-              autocomplete: true,
-            },
-          ],
-        },
-      ],
-    },
-  ],
+              autocomplete: true
+            }
+          ]
+        }
+      ]
+    }
+  ]
 };
 
 export const COMMAND_BIND_NOTIFICATION: Partial<APIApplicationCommand> = {
@@ -264,41 +269,41 @@ export const COMMAND_BIND_NOTIFICATION: Partial<APIApplicationCommand> = {
       channel_types: [ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread],
       name: 'channel',
       description: 'The channel to notify into.',
-      required: true,
-    },
-  ],
+      required: true
+    }
+  ]
 };
 
 export const COMMAND_UNBIND_NOTIFICATION: Partial<APIApplicationCommand> = {
   name: 'unbind',
   description: 'Unbind notifications.',
   default_member_permissions: '0',
-  type: ApplicationCommandType.ChatInput,
+  type: ApplicationCommandType.ChatInput
 };
 
 export const FIND_ANIME_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Anime',
-  type: ApplicationCommandType.Message,
+  type: ApplicationCommandType.Message
 };
 
 export const FIND_MANGA_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Manga',
-  type: ApplicationCommandType.Message,
+  type: ApplicationCommandType.Message
 };
 
 export const FIND_STAFF_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Staff',
-  type: ApplicationCommandType.Message,
+  type: ApplicationCommandType.Message
 };
 
 export const FIND_CHARACTER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Search Character',
-  type: ApplicationCommandType.Message,
+  type: ApplicationCommandType.Message
 };
 
 export const FIND_USER_MESSAGE_COMMAND: Partial<APIApplicationCommand> = {
   name: 'Show AniList User',
-  type: ApplicationCommandType.User,
+  type: ApplicationCommandType.User
 };
 
 export const commandList = [
@@ -319,5 +324,5 @@ export const commandList = [
   COMMAND_CHARACTER,
   COMMAND_BIND_NOTIFICATION,
   COMMAND_UNBIND_NOTIFICATION,
-  COMMAND_NOTIFICATION,
+  COMMAND_NOTIFICATION
 ];

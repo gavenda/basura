@@ -1,8 +1,7 @@
-import { APIEmbed } from 'discord-api-types/v10';
-import { MessageComponent } from 'discord-interactions';
+import { APIActionRowComponent, APIEmbed, APIMessageActionRowComponent } from 'discord-api-types/v10';
 
 export interface MessageOptions {
   message: string | APIEmbed[];
-  components?: MessageComponent[];
+  components?: APIActionRowComponent<APIMessageActionRowComponent>[];
   ephmeral?: boolean;
 }

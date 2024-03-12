@@ -1,11 +1,11 @@
 import { Snowflake, getDate } from 'discord-snowflake';
-import { RequestMethod, Route } from '../types.js';
+import { RequestMethod, Route } from '../types';
 
 export function getRouteInformation(method: RequestMethod, endpoint: string): Route {
   if (endpoint.startsWith('/interactions/') && endpoint.endsWith('/callback')) {
     return {
       path: '/interactions/:id/:token/callback',
-      identifier: 'burst',
+      identifier: 'burst'
     };
   }
 
@@ -25,7 +25,7 @@ export function getRouteInformation(method: RequestMethod, endpoint: string): Ro
   // Hard-Code Old Message Deletion Exception (2 week+ old messages are a different bucket)
   // https://github.com/discord/discord-api-docs/issues/1295
   if (method === RequestMethod.Delete && baseRoute === '/channels/:id/messages/:id') {
-    const id = /\d{17,19}$/.exec(endpoint)![0]!;
+    const id = /\d{17,19}$/.exec(endpoint)![0];
     const timestamp = getDate(id as Snowflake).getDate();
     if (Date.now() - timestamp > 1_000 * 60 * 60 * 24 * 14) {
       exceptions += '/Delete Old Message';
@@ -34,6 +34,6 @@ export function getRouteInformation(method: RequestMethod, endpoint: string): Ro
 
   return {
     path: baseRoute + exceptions,
-    identifier,
+    identifier
   };
 }

@@ -78,7 +78,9 @@ function* parse(value: APIError, key: string | null = null): IterableIterator<st
   }
 
   // Handle nested fields
-  for (const [label, item] of Object.entries(value)) {
+  for (const entry of Object.entries(value)) {
+    const label = entry[0];
+    const item = entry[1] as string | APIError;
     const nextKey = getNextKey(key, label);
 
     if (typeof item === 'string') {

@@ -1,8 +1,12 @@
-import { MediaType } from '@anilist/gql/types.js';
+import { MediaType } from '@anilist/gql/types';
 import { CommandHandler, handlePaginatorComponents } from '@studio-bogus/discord-interaction-app';
-import { AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
+import {
+  AutocompleteContext,
+  ComponentContext,
+  SlashCommandContext
+} from '@studio-bogus/discord-interaction-app/context';
 import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
-import { handleFindMedia, handleMediaTitleAutocomplete } from './find.js';
+import { handleFindMedia, handleMediaTitleAutocomplete } from './find';
 
 export class FindAnimeCommand implements CommandHandler<SlashCommandContext> {
   ephemeral: boolean = false;

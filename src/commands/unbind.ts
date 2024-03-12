@@ -14,7 +14,7 @@ export class UnbindCommand implements CommandHandler<SlashCommandContext> {
 
     if (!webhook) {
       await context.edit({
-        message: `Notifications not bound to any channel!`,
+        message: `Notifications not bound to any channel!`
       });
       return;
     }
@@ -23,7 +23,7 @@ export class UnbindCommand implements CommandHandler<SlashCommandContext> {
     await context.app.client.delete(Routes.webhook(webhook.id));
 
     await context.edit({
-      message: `Notifications unbound.`,
+      message: `Notifications unbound.`
     });
   }
 }

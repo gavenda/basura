@@ -1,10 +1,15 @@
-import { Staff, StaffName } from '@anilist/gql/types.js';
-import { findStaff, findStaffByName } from '@anilist/staff.js';
+import { Staff, StaffName } from '@anilist/gql/types';
+import { findStaff, findStaffByName } from '@anilist/staff';
 import { CommandHandler, Page, handlePaginatorComponents, paginator } from '@studio-bogus/discord-interaction-app';
-import { ApplicationCommandContext, AutocompleteContext, ComponentContext, SlashCommandContext } from '@studio-bogus/discord-interaction-app/context';
-import { zip } from '@util/array.js';
-import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT } from '@util/discord.js';
-import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate } from '@util/strings.js';
+import {
+  ApplicationCommandContext,
+  AutocompleteContext,
+  ComponentContext,
+  SlashCommandContext
+} from '@studio-bogus/discord-interaction-app/context';
+import { zip } from '@util/array';
+import { EMBED_DESCRIPTION_LIMIT, EMBED_FIELD_LIMIT } from '@util/discord';
+import { appendIfNotMax, htmlToMarkdown, isBlank, isNotBlank, titleCase, truncate } from '@util/strings';
 import { APIApplicationCommandOptionChoice, APIEmbed, APIEmbedField } from 'discord-api-types/v10';
 import { decode } from 'he';
 
@@ -22,7 +27,7 @@ export class StaffCommand implements CommandHandler<SlashCommandContext> {
     return names.map((x) => {
       return {
         name: truncate(x, 100),
-        value: truncate(x, 100),
+        value: truncate(x, 100)
       };
     });
   }
@@ -37,7 +42,7 @@ export const handleFindStaff = async (query: string, context: ApplicationCommand
 
   if (staffs === undefined || staffs.length === 0) {
     await context.reply({
-      message: `No matching staff found.`,
+      message: `No matching staff found.`
     });
     return;
   }
@@ -50,8 +55,8 @@ export const handleFindStaff = async (query: string, context: ApplicationCommand
       embed: createStaffEmbed(staff, pageNumber, staffs.length),
       link: {
         label: 'View on AniList',
-        url: staff.siteUrl!!,
-      },
+        url: staff.siteUrl!
+      }
     });
     pageNumber = pageNumber + 1;
   }
@@ -109,7 +114,7 @@ const createStaffEmbed = (staff: Staff, pageNumber: number, pageMax: number): AP
     fields.push({
       name: `Characters Voiced`,
       value: charactersVoiced,
-      inline: false,
+      inline: false
     });
   }
 
@@ -117,7 +122,7 @@ const createStaffEmbed = (staff: Staff, pageNumber: number, pageMax: number): AP
     fields.push({
       name: `Worked On`,
       value: workedOn,
-      inline: false,
+      inline: false
     });
   }
 
@@ -125,30 +130,30 @@ const createStaffEmbed = (staff: Staff, pageNumber: number, pageMax: number): AP
     fields.push({
       name: 'Aliases',
       value: aliases,
-      inline: false,
+      inline: false
     });
   }
 
   fields.push({
     name: `Favorites`,
     value: `${staff.favourites}`,
-    inline: true,
+    inline: true
   });
 
   return {
     title,
     description,
     thumbnail: {
-      url: staff.image?.large ?? staff.image?.medium ?? '',
+      url: staff.image?.large ?? staff.image?.medium ?? ''
     },
     author: {
-      name: `ID#${staff.id}`,
+      name: `ID#${staff.id}`
     },
     color: 16711680,
     fields,
     footer: {
-      text: `Page ${pageNumber} / ${pageMax}`,
-    },
+      text: `Page ${pageNumber} / ${pageMax}`
+    }
   };
 };
 

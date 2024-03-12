@@ -1,8 +1,8 @@
-import { AiringSchedule, MediaStatus } from '@anilist/gql/types.js';
-import { findAiringMedia } from '@anilist/media.js';
+import { AiringSchedule, MediaStatus } from '@anilist/gql/types';
+import { findAiringMedia } from '@anilist/media';
 import { Client, KVBucketManager } from '@studio-bogus/discord-interaction-client';
 import { APIUser, RESTPostAPIWebhookWithTokenJSONBody, Routes } from 'discord-api-types/v10';
-import { Env, KVWebhook } from './env.js';
+import { Env, KVWebhook } from './env';
 
 interface AnnounceOptions {
   kv: KVNamespace;
@@ -24,7 +24,8 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
     const requester = await options.kv.get(requestKey, 'text');
 
     if (requester && webhookData) {
-      const mediaTitle = options.airingSchedule.media?.title?.english ?? options.airingSchedule.media?.title?.romaji ?? 'Unknown';
+      const mediaTitle =
+        options.airingSchedule.media?.title?.english ?? options.airingSchedule.media?.title?.romaji ?? 'Unknown';
 
       const body: RESTPostAPIWebhookWithTokenJSONBody = {
         username: user.username,
@@ -32,21 +33,21 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
         embeds: [
           {
             author: {
-              name: `New Episode Aired`,
+              name: `New Episode Aired`
             },
             color: 16711680,
             thumbnail: {
-              url: options.airingSchedule.media?.coverImage?.extraLarge ?? '',
+              url: options.airingSchedule.media?.coverImage?.extraLarge ?? ''
             },
             description: `:bell: Episode **${options.airingSchedule.episode}** of **${mediaTitle}** has aired.`,
             fields: [
               {
                 name: 'Requested By',
-                value: `<@${requester}>`,
-              },
-            ],
-          },
-        ],
+                value: `<@${requester}>`
+              }
+            ]
+          }
+        ]
       };
 
       const query = new URLSearchParams();
@@ -57,7 +58,7 @@ export const announceAiringMedia = async (options: AnnounceOptions): Promise<voi
 
       await options.client.post(Routes.webhook(webhookData.id, webhookData.token), {
         body,
-        query,
+        query
       });
     }
   }
@@ -122,7 +123,7 @@ export const checkAiringAnimes = async (environment: Env): Promise<void> => {
         client,
         mediaId,
         guildIds,
-        airingSchedule,
+        airingSchedule
       });
       // Update episode count
       await kv.put(mediaKey, airingSchedule.episode.toString());

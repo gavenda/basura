@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Queue } from './queue.js';
-import { RateLimitData, RequestData, Route } from './types.js';
-import { getRouteInformation } from './util/routes.js';
-import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from './util/time.js';
+import { Queue } from './queue';
+import { RateLimitData, RequestData, Route } from './types';
+import { getRouteInformation } from './util/routes';
+import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from './util/time';
 
 export type Bucket = {
   key: string;
@@ -109,7 +109,7 @@ export class Manager {
     queueSweepInterval,
     onRateLimit,
     onRequest,
-    bucketManager,
+    bucketManager
   }: ManagerArgs) {
     this.config = {
       api: api ?? 'https://discord.com/api',
@@ -119,7 +119,7 @@ export class Manager {
       userAgent: userAgent ?? `Basura/1.0`,
       retries: retries ?? 3,
       timeout: timeout ?? 15 * ONE_SECOND,
-      globalRequestsPerSecond: globalRequestsPerSecond ?? 50,
+      globalRequestsPerSecond: globalRequestsPerSecond ?? 50
     };
 
     this.buckets = bucketManager ?? new DefaultBucketManager();
@@ -250,7 +250,7 @@ export class Manager {
     const bucket = await this.buckets.get(key);
     const newBucket: Bucket = {
       key: `Global(${key})`,
-      lastRequest: -1,
+      lastRequest: -1
     };
 
     return bucket ?? newBucket;
@@ -287,7 +287,7 @@ export class Manager {
       }
 
       if (data.formData != null) {
-        for (const [key, value] of Object.entries(data.formData)) {
+        for (const [key, value] of data.formData.entries()) {
           formData.append(key, value);
         }
       }
@@ -309,12 +309,12 @@ export class Manager {
     const fetchOptions: RequestInit = {
       method: data.method,
       headers,
-      body,
+      body
     };
 
     return {
       resource: url,
-      init: fetchOptions,
+      init: fetchOptions
     };
   }
 
