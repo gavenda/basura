@@ -1,1 +1,1 @@
-pnpm dlx lint-staged --quiet
+pnpm --silent dlx lint-staged --quiet
