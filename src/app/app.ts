@@ -288,7 +288,7 @@ export class App {
           context.handled = true;
           await handler.handleComponent(context);
         } else {
-          console.error(`No component handlers found`, { interaction });
+          console.error({ message: `No component handlers found`, interaction });
           await context.edit({
             message: `No component handlers found.`,
             ephmeral: true
@@ -299,10 +299,7 @@ export class App {
           message: `An error occured during the interaction.`,
           ephmeral: true
         });
-        console.error(`Error occured during interaction`, {
-          error,
-          interaction
-        });
+        console.error({ message: `Error occured during interaction`, error, interaction });
       }
       resolve();
     });
@@ -348,10 +345,10 @@ export class App {
         break;
     }
 
-    console.debug(`Handling application command: ${interaction.data.name}`, { interaction });
+    console.debug({ message: `Handling application command`, command: interaction.data.name, interaction });
 
     if (!handler) {
-      console.error(`No handlers found for command: ${interaction.data.name}`, { interaction });
+      console.error({ message: `No handlers found for command`, command: interaction.data.name, interaction });
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -370,7 +367,7 @@ export class App {
       await sleep(this.#timeoutMs);
       // We send a message if not handled
       if (!context.handled) {
-        console.warn(`Interaction timed out`, { interaction });
+        console.warn({ message: `Interaction timed out`, interaction });
         await context.edit({
           message: `The interaction timed out.`,
           ephmeral: true
@@ -390,10 +387,7 @@ export class App {
           ephmeral: true
         });
         context.handled = true;
-        console.error(`Error occured during interaction`, {
-          error,
-          interaction
-        });
+        console.error({ message: `Error occured during interaction`, error, interaction });
       }
       resolve();
     });

@@ -43,7 +43,7 @@ export class Queue {
         try {
           const value = await this.#process(route, resource, init);
           resolve(value);
-        } catch (err) {
+        } catch (err: unknown) {
           reject(err);
         }
       });
@@ -62,8 +62,10 @@ export class Queue {
     this.manager.globalRequestCounter -= 1;
 
     // Setup the timeout signal
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const signal = new AbortController();
     const abortTimeout = setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       signal.abort();
     }, this.manager.config.timeout);
     const clearAbort = () => {
@@ -81,6 +83,7 @@ export class Queue {
     try {
       request = new Request(resource, init);
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       response = await fetch(request, { signal: signal.signal });
     } catch (error: unknown) {
       // Handle timeout aborts
@@ -126,10 +129,7 @@ export class Queue {
     const ttl = reset ? Math.floor(Number(reset) + OFFSET) : OFFSET;
 
     if (key !== null && key !== undefined && key !== this.id) {
-      console.debug(`Received new bucket hash.`, {
-        id: this.id,
-        key
-      });
+      console.debug({ message: `Received new bucket hash.`, id: this.id, key });
 
       await this.manager.buckets.set(
         identifier,
@@ -170,9 +170,7 @@ export class Queue {
 
       this.manager.onRateLimit?.(rateLimitData);
 
-      console.debug(`Encountered 429 rate limit`, {
-        rateLimit: rateLimitData
-      });
+      console.debug({ message: `Encountered 429 rate limit`, rateLimit: rateLimitData });
       await sleep(retryAfter, this.#shutdownSignal);
 
       // Don't bump retries for a non-server issue (the request is expected to succeed)
@@ -218,12 +216,16 @@ export class Queue {
 
       // TODO: Make this use retryAfter
       const timeout = isGlobal ? this.manager.globalTimeout : this.getResetDelay();
-      const delay = isGlobal ? this.manager.globalDelay ?? this.manager.setGlobalDelay(timeout) : sleep(timeout);
+      const delay = isGlobal ? (this.manager.globalDelay ?? this.manager.setGlobalDelay(timeout)) : sleep(timeout);
 
       if (isGlobal) {
-        console.debug(`Global rate limit reached. Blocking all requests for ${timeout}ms`);
+        console.debug({ message: `Global rate limit reached.`, timeout });
       } else {
-        console.debug(`${this.id} encountered a local rate limit. Waiting ${timeout}ms before continuing`);
+        console.debug({
+          message: `Encountered a local rate limit. Waiting before continuing`,
+          id: this.id,
+          timeout
+        });
       }
 
       await delay;

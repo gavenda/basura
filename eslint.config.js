@@ -1,4 +1,3 @@
-import EslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import TSESLint from 'typescript-eslint';
 
 const CustomRules = {
@@ -8,7 +7,9 @@ const CustomRules = {
     '@typescript-eslint/no-unsafe-member-access': 'warn',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
-    '@typescript-eslint/require-await': 'off'
+    '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/prefer-promise-reject-errors': 'off'
   }
 };
 
@@ -27,10 +28,4 @@ const NoTypeCheckOnJavascript = {
 };
 
 /** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigFile} */
-export default [
-  ...TSESLint.configs.recommendedTypeChecked,
-  PerformanceParser,
-  CustomRules,
-  NoTypeCheckOnJavascript,
-  EslintPluginPrettierRecommended
-];
+export default [...TSESLint.configs.recommendedTypeChecked, PerformanceParser, CustomRules, NoTypeCheckOnJavascript];

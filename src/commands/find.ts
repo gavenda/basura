@@ -185,19 +185,22 @@ const createMediaEmbed = (options: {
   const fields: APIEmbedField[] = [];
 
   // First row
-  media.type &&
+
+  if (media.type) {
     fields.push({
       name: `Type`,
       value: titleCase(media.type),
       inline: true
     });
+  }
 
-  media.status &&
+  if (media.status) {
     fields.push({
       name: `Status`,
       value: titleCase(media.status),
       inline: true
     });
+  }
 
   if (season == '-' && seasonYear == '-') {
     fields.push({
@@ -241,12 +244,14 @@ const createMediaEmbed = (options: {
     value: duration,
     inline: true
   });
-  media.format &&
+
+  if (media.format) {
     fields.push({
       name: `Format`,
       value: mediaFormatDisplay(media.format),
       inline: true
     });
+  }
 
   // Fourth row
   if (media.genres && media.genres.length > 0) {

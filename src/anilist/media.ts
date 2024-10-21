@@ -28,7 +28,7 @@ export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[]
     const result = await aniListRequest<Query>(FIND_AIRING_MEDIA, variables);
     return result.Page?.airingSchedules;
   } catch (error) {
-    console.error(`Error when finding airing media`, { error });
+    console.error({ message: `Error when finding airing media`, error });
   }
 };
 
@@ -52,7 +52,7 @@ export const findMedia = async (
     const result = await aniListRequest<Query>(FIND_MEDIA, variables);
     return result.Page?.media;
   } catch (error) {
-    console.error(`Error when finding media`, { error });
+    console.error({ message: `Error when finding media`, error });
   }
 };
 
@@ -80,7 +80,7 @@ export const findMediaByRanking = async (options: {
     const result = await aniListRequest<Query>(FIND_MEDIA_BY_RANKING, variables);
     return result.Page?.media;
   } catch (error) {
-    console.error(`Error when finding media by ranking`, { error });
+    console.error({ message: `Error when finding media by ranking`, error });
   }
 };
 
@@ -96,7 +96,7 @@ export const findMediaIds = async (query: string, type?: MediaType): Promise<Med
     const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
     return result.Page?.media || [];
   } catch (error) {
-    console.error(`Error when finding media ids`, { error });
+    console.error({ message: `Error when finding media ids`, error });
     return [];
   }
 };
@@ -134,7 +134,7 @@ export const findMediaTitles = async (query: string, type?: MediaType, hentai: b
 
     return titles;
   } catch (error) {
-    console.error(`Error when finding media titles`, { error });
+    console.error({ message: `Error when finding media titles`, error });
     return [];
   }
 };
@@ -149,6 +149,6 @@ export const findScoreByUsersAndMedias = async (
     const result = await aniListRequest<Query>(FIND_SCORE_BY_MEDIA_ID_AND_USER_ID, variables);
     return result.Page?.mediaList;
   } catch (error) {
-    console.error(`Error when score by user and media`, { error });
+    console.error({ message: `Error when score by user and media`, error });
   }
 };

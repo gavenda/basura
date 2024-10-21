@@ -20,12 +20,7 @@ export interface ErrorField {
   message: string;
 }
 
-export type APIError =
-  | ErrorGroup
-  | ErrorField
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  | { [k: string]: APIError }
-  | string;
+export type APIError = ErrorGroup | ErrorField | { [k: string]: APIError } | string;
 
 export function isDiscordError(error: ErrorBody): error is DiscordErrorBody {
   return 'code' in error;
@@ -72,7 +67,6 @@ export function getMessage(error: ErrorBody) {
 function* parse(value: APIError, key: string | null = null): IterableIterator<string> {
   // Handle leaf fields
   if (isErrorField(value)) {
-    // eslint-disable-next-line no-negated-condition
     const prefix = key != null ? `${key}[${value.code}]` : `${value.code}`;
     return yield `${prefix}: ${value.message.trim()}`;
   }
