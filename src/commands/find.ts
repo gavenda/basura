@@ -157,9 +157,9 @@ const createMediaEmbed = (options: {
     description = description + `_(Synonym: ${title})_\n`;
   }
 
-  description = description + '\n\n';
+  description = description + '\n';
   // Replace all double line breaks.
-  description = description + htmlToMarkdown(media.description || '').replaceAll('\n\n', '\n');
+  description = description + htmlToMarkdown(media.description || '');
   description = decode(description);
   description = truncate(description, EMBED_DESCRIPTION_LIMIT);
   description = description.trim();

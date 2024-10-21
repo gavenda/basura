@@ -1,3 +1,7 @@
+import Europa from 'node-europa';
+
+const europa = new Europa();
+
 export const trimIndent = (str: string): string => {
   return str.replace(/^ +/gm, '');
 };
@@ -57,29 +61,5 @@ export const titleCase = (str: string): string => {
 
 // Naive html to markdown converter, turndown doesn't work in service workers
 export const htmlToMarkdown = (str: string): string => {
-  // Decode str
-  str = decodeURI(str);
-
-  // Replace a href links
-  const matches = str.matchAll(/<a href="(.*?)">(.*?)<\/a>/gm);
-  for (const match of matches) {
-    const origStr = match[0];
-    const link = match[1];
-    const label = match[2];
-    const markdown = `[${label}](${link})`;
-    str = str.replace(origStr, markdown);
-  }
-
-  // Replace common html tags
-  return str
-    .replaceAll('<b>', '**')
-    .replaceAll('</b>', '**')
-    .replaceAll('<em>', '_')
-    .replaceAll('</em>', '_')
-    .replaceAll('<u>', '__')
-    .replaceAll('</u>', '__')
-    .replaceAll('<i>', '*')
-    .replaceAll('</i>', '*')
-    .replaceAll('<br>', '\n')
-    .replaceAll('</br>', '\n');
+  return europa.convert(str.replaceAll('<br><br>', '<br>'));
 };
