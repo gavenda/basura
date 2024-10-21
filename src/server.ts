@@ -45,8 +45,8 @@ export default {
   },
   async scheduled(event: ScheduledEvent, environment: Env, executionContext: ExecutionContext) {
     switch (event.cron) {
-      // Every 2 minutes
-      case '*/2 * * * *':
+      // Every hour
+      case '0 * * * *':
         // Check airing animes and notify
         executionContext.waitUntil(checkAiringAnimes(environment));
         break;
