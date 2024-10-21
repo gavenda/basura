@@ -1,5 +1,6 @@
 import {
   APIActionRowComponent,
+  APIButtonComponentWithSKUId,
   APIButtonComponentWithURL,
   APIMessageActionRowComponent,
   APIMessageComponentInteraction,
@@ -38,11 +39,9 @@ export class ComponentContext extends InteractionContext {
     return this.app.componentCache.get<T>(this.componentKey);
   }
 
-  async createComponent<T extends Exclude<APIMessageActionRowComponent, APIButtonComponentWithURL>>(options: {
-    id: string;
-    component: T;
-    data?: unknown;
-  }): Promise<T> {
+  async createComponent<
+    T extends Exclude<APIMessageActionRowComponent, APIButtonComponentWithURL | APIButtonComponentWithSKUId>
+  >(options: { id: string; component: T; data?: unknown }): Promise<T> {
     const uniqueId = uuidv4();
     options.component.custom_id = `${this.command}:${options.id}:${uniqueId}`;
     if (options.data) {

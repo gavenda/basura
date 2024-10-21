@@ -1,5 +1,6 @@
 import {
   APIApplicationCommandInteraction,
+  APIButtonComponentWithSKUId,
   APIButtonComponentWithURL,
   APIMessageActionRowComponent
 } from 'discord-api-types/v10';
@@ -15,11 +16,9 @@ export class ApplicationCommandContext extends InteractionContext {
     this.command = interaction.data.name;
   }
 
-  async createComponent<T extends Exclude<APIMessageActionRowComponent, APIButtonComponentWithURL>>(options: {
-    id: string;
-    component: T;
-    data?: unknown;
-  }): Promise<T> {
+  async createComponent<
+    T extends Exclude<APIMessageActionRowComponent, APIButtonComponentWithURL | APIButtonComponentWithSKUId>
+  >(options: { id: string; component: T; data?: unknown }): Promise<T> {
     const uniqueId = uuidv4();
     options.component.custom_id = `${this.command}:${options.id}:${uniqueId}`;
     if (options.data) {
