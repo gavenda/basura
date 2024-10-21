@@ -14,7 +14,7 @@ d1_databases = [
 ]
 
 [triggers]
-crons = ["*/2 * * * *"]
+crons = ["0 * * * *"]
 
 [observability]
 enabled = true
