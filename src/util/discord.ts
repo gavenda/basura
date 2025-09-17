@@ -1,2 +1,0 @@
-export const EMBED_FIELD_LIMIT = 256;
-export const EMBED_DESCRIPTION_LIMIT = 4096;

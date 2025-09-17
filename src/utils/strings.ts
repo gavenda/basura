@@ -60,6 +60,9 @@ export const titleCase = (str: string): string => {
 };
 
 // Naive html to markdown converter, turndown doesn't work in service workers
-export const htmlToMarkdown = (str: string): string => {
-  return europa.convert(str.replaceAll('<br><br>', '<br>'));
+export const htmlToMarkdown = (str: string | undefined): string => {
+  if (str) {
+    return europa.convert(str.replaceAll('<br><br>', '<br>'));
+  }
+  return '';
 };

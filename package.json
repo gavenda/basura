@@ -1,12 +1,13 @@
 {
   "name": "basura",
-  "version": "1.0.0",
+  "version": "2.0.0-alpha1",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "wrangler dev --env dev --local",
-    "deploy": "cross-env NO_D1_WARNING=true wrangler publish",
-    "deploy:dev": "cross-env NO_D1_WARNING=true wrangler publish --env dev",
+    "ngrok": "ngrok http --url=heterocyclic-ursula-ungeologically.ngrok-free.dev 8787",
+    "deploy": "wrangler publish",
+    "deploy:dev": "wrangler publish --env dev",
     "register": "tsx src/register-global.ts",
     "register:dev": "tsx src/register-dev.ts",
     "prettier": "prettier --write src",
@@ -16,32 +17,33 @@
   "author": "Gavenda <gavenda@disroot.org>",
   "license": "MIT",
   "dependencies": {
-    "discord-api-types": "^0.37.103",
+    "discord-api-types": "^0.38.25",
+    "discord-interactions": "^4.3.0",
     "discord-snowflake": "^2.0.0",
     "he": "^1.2.0",
-    "kysely": "^0.27.4",
-    "kysely-d1": "^0.3.0",
+    "kysely": "^0.28.7",
+    "kysely-d1": "^0.4.0",
     "node-europa": "^6.0.0",
     "tweetnacl": "^1.0.3",
-    "uuid": "^10.0.0"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241018.0",
+    "@cloudflare/workers-types": "^4.20250913.0",
     "@types/he": "^1.2.3",
     "@types/uuid": "^10.0.0",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.4.5",
-    "eslint": "^9.13.0",
-    "husky": "^9.1.6",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
-    "tsx": "^4.19.1",
-    "typescript": "^5.6.3",
-    "typescript-eslint": "^8.11.0",
-    "wrangler": "^3.81.0"
+    "dotenv": "^17.2.2",
+    "eslint": "^9.35.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
+    "ngrok": "5.0.0-beta.2",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.0",
+    "wrangler": "^4.37.0"
   },
   "volta": {
-    "node": "23.0.0"
+    "node": "24.8.0"
   },
   "lint-staged": {
     "**/*.ts": [
@@ -49,5 +51,5 @@
       "eslint"
     ]
   },
-  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
+  "packageManager": "pnpm@10.16.1+sha512.0e155aa2629db8672b49e8475da6226aa4bdea85fdcdfdc15350874946d4f3c91faaf64cbdc4a5d1ab8002f473d5c3fcedcd197989cf0390f9badd3c04678706"
 }

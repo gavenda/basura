@@ -1,4 +1,4 @@
-import { GraphQLClient } from '@graphql/client';
+import { GraphQLClient } from './graphql/client';
 
 const ANILIST_ENDPOINT = `https://graphql.anilist.co/`;
 

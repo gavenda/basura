@@ -13,18 +13,7 @@
     "strict": true,
     "skipLibCheck": true,
     "types": ["@cloudflare/workers-types", "@types/he"],
-    "paths": {
-      "@logger/logger": ["./src/logger.ts"],
-      "@env/env": ["./src/env.ts"],
-      "@studio-bogus/discord-interaction-app": ["./src/app/index.ts"],
-      "@studio-bogus/discord-interaction-app/context": ["./src/app/context/index.ts"],
-      "@studio-bogus/discord-interaction-client": ["./src/client/index.ts"],
-      "@anilist/gql": ["./src/anilist/gql/index.ts"],
-      "@anilist/*": ["./src/anilist/*"],
-      "@graphql/*": ["./src/graphql/*"],
-      "@util/*": ["./src/util/*"],
-      "@db/*": ["./src/db/*"]
-    }
+    "paths": {}
   },
   "include": ["src/**/*.ts"],
   "exclude": ["dist", "node_modules"]

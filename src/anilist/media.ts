@@ -117,18 +117,13 @@ export const findMediaTitles = async (query: string, type?: MediaType, hentai: b
     const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
     const medias = result.Page?.media ?? [];
     const titles: string[] = [];
+
     for (const media of medias) {
-      if (media?.title?.native) {
-        titles.push(media.title.native);
-      }
       if (media?.title?.romaji) {
         titles.push(media.title.romaji);
       }
       if (media?.title?.english) {
         titles.push(media.title.english);
-      }
-      if (media.synonyms) {
-        titles.push(...media.synonyms);
       }
     }
 
