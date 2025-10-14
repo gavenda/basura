@@ -1,6 +1,11 @@
 name = "basura"
 main = "./src/server.ts"
 compatibility_date = "2024-09-23"
+
+[observability]
+enabled = true
+
+[env.prod]
 route = "app.basura.gavenda.dev"
 vars = { ENVIRONMENT = "production" }
 d1_databases = [

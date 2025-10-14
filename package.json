@@ -6,11 +6,12 @@
   "scripts": {
     "start": "wrangler dev --env dev --local",
     "ngrok": "ngrok http --url=heterocyclic-ursula-ungeologically.ngrok-free.dev 8787",
-    "deploy": "wrangler deploy --env=''",
+    "deploy": "wrangler deploy --env prod",
     "deploy:dev": "wrangler deploy --env dev",
     "register": "tsx src/register-global.ts",
     "register:dev": "tsx src/register-dev.ts",
     "prettier": "prettier --write src",
+    "types": "wrangler types ./src/worker-configuration.d.ts",
     "lint": "eslint src",
     "prepare": "husky",
     "type-check": "tsc"
