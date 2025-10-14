@@ -2,7 +2,6 @@ export const FIND_MEDIA_BY_ID = `
   query ($mediaId: Int, $mediaType: MediaType) {
     Media(id: $mediaId, type: $mediaType) {
       id
-      idMal
       title {
         english
         romaji

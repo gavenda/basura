@@ -4,17 +4,8 @@ import { FIND_MEDIA_BY_ID } from './gql/find-media-by-id';
 import { FIND_MEDIA_NAME } from './gql/find-media-name';
 import { Media, MediaType, Query } from './gql/types';
 
-export interface FindMediaVars {
-  query: string;
-  page: number;
-  perPage: number;
-  mediaId: number;
-  mediaType: MediaType;
-  genreNotIn: string[];
-}
-
 export const findMediaById = async (mediaId: number, mediaType: MediaType): Promise<Media | undefined> => {
-  const variables: Partial<FindMediaVars> = {
+  const variables = {
     mediaId,
     mediaType
   };
@@ -28,20 +19,13 @@ export const findMediaById = async (mediaId: number, mediaType: MediaType): Prom
 };
 
 export const findMediaTitles = async (
-  query: string,
-  mediaType?: MediaType,
-  hentai: boolean = false
+  search: string,
+  mediaType?: MediaType
 ): Promise<APIApplicationCommandOptionChoice[]> => {
-  const variables: Partial<FindMediaVars> = {
-    query,
-    mediaType,
-    page: 1,
-    perPage: 25
+  const variables = {
+    search,
+    mediaType
   };
-
-  if (!hentai) {
-    variables.genreNotIn = ['hentai'];
-  }
 
   try {
     const result = await aniListRequest<Query>(FIND_MEDIA_NAME, variables);
