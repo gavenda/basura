@@ -13,21 +13,21 @@ import {
   InteractionType,
   MessageFlags
 } from 'discord-api-types/payloads/v10';
+import { Locale } from 'discord-api-types/rest/v10';
 import { verifyKey } from 'discord-interactions';
 import { ApplicationCommandAutocompleteContext } from './application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from './chat-input-application-command.context';
 import { appChatInputCommandMap } from './commands/command';
-import { Environment } from './environment';
 import { truncate } from './utils/strings';
 
 /**
  * Represents a discord interactions application.
  */
 export class Application {
-  environment: Environment;
+  env: Env;
 
-  constructor(options: { environment: Environment }) {
-    this.environment = options.environment;
+  constructor(options: { env: Env }) {
+    this.env = options.env;
   }
 
   async handleRequest(request: Request): Promise<Response> {
@@ -43,17 +43,15 @@ export class Application {
     }
 
     const body = await request.clone().arrayBuffer();
-    const isValidRequest = await verifyKey(body, signature, timestamp, this.environment.DISCORD_PUBLIC_KEY);
+    const isValidRequest = await verifyKey(body, signature, timestamp, this.env.DISCORD_PUBLIC_KEY);
 
     if (!isValidRequest) {
       return new Response('Bad request signature.', { status: 401 });
     }
 
-    const interaction = await request.json<APIInteraction>();
+    const interaction = await request.json();
 
-    const response = await this.handleInteraction(interaction);
-
-    console.log(response);
+    const response = await this.handleInteraction(interaction as APIInteraction);
 
     return new Response(JSON.stringify(response), {
       headers: {
@@ -63,8 +61,6 @@ export class Application {
   }
 
   async handleInteraction(interaction: APIInteraction) {
-    console.log(interaction.data);
-
     // Handle different types of interactions
     switch (interaction.type) {
       case InteractionType.MessageComponent:
@@ -113,19 +109,32 @@ export class Application {
       // Cleanup choices
       const choices = rawChoices
         .map((choice) => {
+          if (choice.name_localizations) {
+            for (const key in choice.name_localizations) {
+              const locale = key as Locale;
+              if (choice.name_localizations[locale]) {
+                choice.name_localizations[locale] = truncate(choice.name_localizations[locale], 100);
+              }
+            }
+          }
+
           if (typeof choice.value === 'string') {
             return {
               name: truncate(choice.name, 100),
+              name_localizations: choice.name_localizations,
               value: truncate(choice.value, 100)
             };
           }
 
           return {
             name: truncate(choice.name, 100),
+            name_localizations: choice.name_localizations,
             value: choice.value
           };
         })
-        .slice(25);
+        .slice(0, 25);
+
+      console.log(choices);
 
       return {
         type: InteractionResponseType.ApplicationCommandAutocompleteResult,

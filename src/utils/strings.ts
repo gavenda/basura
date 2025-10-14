@@ -1,7 +1,3 @@
-import Europa from 'node-europa';
-
-const europa = new Europa();
-
 export const trimIndent = (str: string): string => {
   return str.replace(/^ +/gm, '');
 };
@@ -57,12 +53,4 @@ export const titleCase = (str: string): string => {
   }
   // Directly return the joined string
   return splitStr.join(' ');
-};
-
-// Naive html to markdown converter, turndown doesn't work in service workers
-export const htmlToMarkdown = (str: string | undefined): string => {
-  if (str) {
-    return europa.convert(str.replaceAll('<br><br>', '<br>'));
-  }
-  return '';
 };

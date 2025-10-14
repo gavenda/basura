@@ -39,14 +39,6 @@ export class GraphQLClient {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
         body,
-        cf: {
-          // Always cache this fetch regardless of content type
-          // for a max of 5 seconds before revalidating the resource
-          cacheTtl: options.cacheTtl,
-          cacheEverything: options.cache,
-          //Enterprise only feature, see Cache API for other plans
-          cacheKey: options.cacheKey
-        },
         ...others
       });
       response = new Response(response.body, response);

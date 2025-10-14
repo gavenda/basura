@@ -1,0 +1,250 @@
+import {
+  APIComponentInContainer,
+  APIMessageTopLevelComponent,
+  APITextDisplayComponent,
+  ButtonStyle,
+  ComponentType
+} from 'discord-api-types/payloads/v10';
+import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
+import { Media, MediaFormat, MediaRankType } from '../anilist/gql';
+import { titleCase } from './strings';
+
+export const toIntColor = (color: string): number => {
+  switch (color) {
+    case 'blue':
+      return 4044018;
+    case 'purple':
+      return 12608511;
+    case 'green':
+      return 5032529;
+    case 'orange':
+      return 15697946;
+    case 'red':
+      return 14758707;
+    case 'pink':
+      return 12608511;
+    case 'gray':
+      return 16555478;
+    default:
+      return 0;
+  }
+};
+
+export const toStars = (score: number = 0): string => {
+  if (score >= 90) {
+    // 5 star
+    return '★'.repeat(5);
+  } else if (score >= 70 && score <= 89) {
+    // 4 star
+    return '★'.repeat(4);
+  } else if (score >= 50 && score <= 69) {
+    // 3 star
+    return '★'.repeat(3);
+  } else if (score >= 30 && score <= 49) {
+    // 2 star
+    return '★'.repeat(2);
+  } else if (score >= 1 && score <= 29) {
+    // 1 star
+    return '★'.repeat(1);
+  }
+  return '';
+};
+
+export const mediaFormatDisplay = (format: MediaFormat) => {
+  switch (format) {
+    case MediaFormat.MANGA:
+      return 'Manga';
+    case MediaFormat.MOVIE:
+      return 'Movie';
+    case MediaFormat.MUSIC:
+      return 'Music';
+    case MediaFormat.NOVEL:
+      return 'Novel';
+    case MediaFormat.ONA:
+      return 'ONA';
+    case MediaFormat.ONE_SHOT:
+      return 'Oneshot';
+    case MediaFormat.OVA:
+      return 'OVA';
+    case MediaFormat.SPECIAL:
+      return 'Special';
+    case MediaFormat.TV:
+      return 'TV';
+    case MediaFormat.TV_SHORT:
+      return 'TV Short';
+    default:
+      return '-';
+  }
+};
+
+export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
+  const detailedInfoComponent: APIMessageTopLevelComponent = {
+    type: ComponentType.Container,
+    components: []
+  };
+
+  const detailedInfo: string[] = [];
+  const footerInfo: string[] = [];
+
+  if (media.format) {
+    detailedInfo.push(media.format);
+    detailedInfoComponent.components.push({
+      type: ComponentType.TextDisplay,
+      content: `**Format** - ${media.format}`
+    });
+  }
+
+  if (media.season && media.seasonYear) {
+    detailedInfo.push(`${media.season} ${media.seasonYear}`);
+    detailedInfoComponent.components.push({
+      type: ComponentType.TextDisplay,
+      content: `**Season** - ${media.season} ${media.seasonYear}`
+    });
+  }
+
+  if (media.episodes) {
+    detailedInfo.push(`${media.episodes} Eps`);
+    detailedInfoComponent.components.push({
+      type: ComponentType.TextDisplay,
+      content: `**Episodes** - ${media.episodes}`
+    });
+  }
+
+  if (media.chapters) {
+    detailedInfo.push(`${media.chapters} Chaps`);
+    detailedInfoComponent.components.push({
+      type: ComponentType.TextDisplay,
+      content: `**Chapters** - ${media.chapters}`
+    });
+  }
+
+  if (media.genres) {
+    detailedInfo.push(`${media.genres.map((x) => `${x}`).join(` - `)}`);
+    detailedInfoComponent.components.push({
+      type: ComponentType.TextDisplay,
+      content: `**Genres** - ${media.genres.map((x) => `${x}`).join(` - `)}`
+    });
+  }
+
+  const mediaFormat = media.format && mediaFormatDisplay(media.format);
+
+  if (media.rankings) {
+    const mediaRankingsAsc = media.rankings.sort((a, b) => a.rank - b.rank);
+    const allTimeRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && x.allTime);
+    const seasonRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && !x.allTime && x.season);
+
+    if (allTimeRank) {
+      detailedInfo.push(`Rank #${allTimeRank.rank} (${mediaFormat})`);
+    }
+
+    if (seasonRank && seasonRank.season) {
+      detailedInfo.push(
+        `Rank #${seasonRank.rank} (${mediaFormat}) of ${titleCase(seasonRank.season)} ${seasonRank.year}`
+      );
+    }
+  }
+
+  if (media.meanScore && media.meanScore != 0) {
+    footerInfo.push(`Rating - ${media.meanScore} / 100`);
+  }
+
+  const sourceRegex = /^(\(Source: .*\))$/gm;
+
+  let description = NodeHtmlMarkdown.translate(media.description!);
+
+  // Apply source regex
+  description = description.replaceAll(sourceRegex, (replace) => `-# ${replace}`);
+
+  const components: APIComponentInContainer[] = [];
+
+  // Banner Image, if applicable
+  if (media.bannerImage) {
+    components.push({
+      type: ComponentType.MediaGallery,
+      items: [
+        {
+          media: {
+            url: media.bannerImage
+          }
+        }
+      ]
+    });
+  }
+
+  const titleComponents: APITextDisplayComponent[] = [];
+
+  titleComponents.push({
+    type: ComponentType.TextDisplay,
+    content: `## ${media.title?.english || media.title?.romaji || media.title?.native}`
+  });
+
+  if (media.title?.english && media.title.romaji) {
+    titleComponents.push({
+      type: ComponentType.TextDisplay,
+      content: `-# _(Romaji: ${media.title.romaji})_`
+    });
+  }
+
+  if (media.title?.native) {
+    titleComponents.push({
+      type: ComponentType.TextDisplay,
+      content: `-# _(Native: ${media.title.native})_`
+    });
+  }
+
+  // Title
+  components.push({
+    type: ComponentType.Section,
+    components: titleComponents,
+    accessory: {
+      type: ComponentType.Button,
+      style: ButtonStyle.Link,
+      label: 'AniList',
+      url: `${media.siteUrl}`
+    }
+  });
+
+  components.push({
+    type: ComponentType.TextDisplay,
+    content: `-# ${detailedInfo.join(` — `)}`
+  });
+
+  // Seperator
+  components.push({
+    type: ComponentType.Separator
+  });
+
+  // Description
+  components.push({
+    type: ComponentType.Section,
+    components: [
+      {
+        type: ComponentType.TextDisplay,
+        content: description
+      }
+    ],
+    accessory: {
+      type: ComponentType.Thumbnail,
+      media: {
+        url: `${media.coverImage?.extraLarge}`
+      }
+    }
+  });
+
+  if (footerInfo.length > 0) {
+    components.push({
+      type: ComponentType.Separator
+    });
+    components.push({
+      type: ComponentType.TextDisplay,
+      content: `-# ${footerInfo.join(` — `)}`
+    });
+  }
+
+  return [
+    {
+      type: ComponentType.Container,
+      components
+    }
+  ];
+};

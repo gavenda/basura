@@ -2,7 +2,7 @@ import { APIApplicationCommandOptionChoice, APIInteractionResponse } from 'disco
 import { ApplicationCommandAutocompleteContext } from '../application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from '../chat-input-application-command.context';
 import { about } from './about';
-import { find } from './find';
+import { anime, manga } from './find';
 
 export interface ApplicationChatInputCommandHandler {
   handle: (context: ChatInputApplicationCommandContext) => Promise<APIInteractionResponse>;
@@ -15,5 +15,6 @@ export interface ApplicationChatInputCommandMap {
 
 export const appChatInputCommandMap: ApplicationChatInputCommandMap = {
   about,
-  find
+  anime,
+  manga
 };

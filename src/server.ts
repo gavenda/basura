@@ -1,5 +1,4 @@
 import { Application } from './application';
-import { Environment } from './environment';
 
 export default {
   /**
@@ -9,7 +8,7 @@ export default {
    * @param {*} environment A map of key/value pairs with env vars and secrets from the cloudflare env.
    * @returns
    */
-  async fetch(request: Request, environment: Environment, executionContext: ExecutionContext) {
-    return new Application({ environment }).handleRequest(request);
+  async fetch(request: Request, environment: Env) {
+    return new Application({ env: environment }).handleRequest(request);
   }
 };
