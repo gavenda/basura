@@ -9,9 +9,11 @@ import { Routes } from 'discord-api-types/rest/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
 import { ApplicationChatInputCommandHandler } from './command';
 
+const DISCORD_API_V10 = `https://discord.com/api/v10`;
+
 export const about: ApplicationChatInputCommandHandler = {
   async handle(context) {
-    const result = await fetch(`https://discord.com/api` + Routes.user(), {
+    const result = await fetch(DISCORD_API_V10 + Routes.user(), {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Basura/2.0',

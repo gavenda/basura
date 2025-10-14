@@ -29,7 +29,7 @@ const find = (mediaType: MediaType): ApplicationChatInputCommandHandler => {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
           components: mediaDisplay(media),
-          flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
+          flags: MessageFlags.IsComponentsV2
         }
       };
     },

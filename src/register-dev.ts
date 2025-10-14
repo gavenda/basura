@@ -12,22 +12,19 @@ const testGuildIds: string[] = [
 const DISCORD_API_V10 = `https://discord.com/api/v10`;
 
 const registerGuildCommands = async () => {
-  const token = process.env.DISCORD_TOKEN?.trim();
-  const applicationId = process.env.DISCORD_APPLICATION_ID?.trim();
-
-  if (!token) {
+  if (!process.env.DISCORD_TOKEN) {
     throw new Error('No token passed');
   }
-  if (!applicationId) {
+  if (!process.env.DISCORD_APPLICATION_ID) {
     throw new Error('No application id passed');
   }
 
   for (const guildId of testGuildIds) {
-    await fetch(DISCORD_API_V10 + Routes.applicationGuildCommands(applicationId, guildId), {
+    await fetch(DISCORD_API_V10 + Routes.applicationGuildCommands(process.env.DISCORD_APPLICATION_ID, guildId), {
       method: 'PUT',
       headers: {
         'Content-Type': `application/json`,
-        'Authorization': `Bot ${token}`
+        'Authorization': `Bot ${process.env.DISCORD_TOKEN}`
       },
       body: JSON.stringify(commandList)
     });

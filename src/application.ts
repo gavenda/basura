@@ -35,6 +35,9 @@ export class Application {
     const signature = request.headers.get('x-signature-ed25519');
     const timestamp = request.headers.get('x-signature-timestamp');
 
+    if (!signature && !timestamp) {
+      return new Response(`Hello! You have reached the trashiest endpoint to ever exist. Have a cup of coffee ☕`);
+    }
     if (!signature) {
       return new Response('Cannot find signature header.', { status: 400 });
     }

@@ -1,9 +1,8 @@
 import { APIApplicationCommandOptionChoice, LocalizationMap } from 'discord-api-types/v10';
 import { aniListRequest } from './anilist';
-import { FIND_AIRING_MEDIA } from './gql/find-airing-media';
 import { FIND_MEDIA_BY_ID } from './gql/find-media-by-id';
 import { FIND_MEDIA_NAME } from './gql/find-media-name';
-import { AiringSchedule, Media, MediaType, Query } from './gql/types';
+import { Media, MediaType, Query } from './gql/types';
 
 export interface FindMediaVars {
   query: string;
@@ -13,19 +12,6 @@ export interface FindMediaVars {
   mediaType: MediaType;
   genreNotIn: string[];
 }
-
-export const findAiringMedia = async (mediaId: number): Promise<AiringSchedule[] | undefined> => {
-  const variables: Partial<FindMediaVars> = {
-    mediaId
-  };
-
-  try {
-    const result = await aniListRequest<Query>(FIND_AIRING_MEDIA, variables);
-    return result.Page?.airingSchedules;
-  } catch (error) {
-    console.error({ message: `Error when finding airing media`, error });
-  }
-};
 
 export const findMediaById = async (mediaId: number, mediaType: MediaType): Promise<Media | undefined> => {
   const variables: Partial<FindMediaVars> = {
