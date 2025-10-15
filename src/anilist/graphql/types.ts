@@ -4,13 +4,6 @@ export interface Headers {
   [key: string]: string;
 }
 
-export interface Options {
-  method?: RequestInit['method'];
-  headers?: Headers;
-  redirect?: RequestInit['redirect'];
-  integrity?: RequestInit['integrity'];
-}
-
 export interface GraphQLError {
   message: string;
   locations: { line: number; column: number }[];

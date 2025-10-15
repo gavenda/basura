@@ -8,6 +8,6 @@ type Variables = {
 
 const graphQlClient = new GraphQLClient(ANILIST_ENDPOINT);
 
-export const aniListRequest = <T>(query: string, variables: Variables): Promise<T> => {
-  return graphQlClient.request<T>(query, variables);
+export const aniListRequest = <T>(options: { query: string; variables: Variables }): Promise<T> => {
+  return graphQlClient.request<T>(options);
 };

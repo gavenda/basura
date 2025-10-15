@@ -1,28 +1,30 @@
-import { ClientError, GraphQLResponse, Headers as HttpHeaders, Options, Variables } from './types';
+import { safeFetch } from '../../utils/safe-fetch';
+import { ClientError, GraphQLResponse, Variables } from './types';
 export { ClientError } from './types';
 
 export class GraphQLClient {
-  private url: string;
-  private options: Options;
+  url: string;
 
-  constructor(url: string, options?: Options) {
+  constructor(url: string) {
     this.url = url;
-    this.options = options || {};
   }
 
-  async rawRequest<T>(query: string, variables?: Variables): Promise<GraphQLResponse<T>> {
-    const { headers, ...others } = this.options;
-
+  async rawRequest<T>(options: { query: string; variables?: Variables }): Promise<GraphQLResponse<T>> {
+    const { query, variables } = options;
     const body = JSON.stringify({
       query,
-      variables: variables ? variables : undefined
+      variables
     });
 
-    const response = await fetch(this.url, {
+    const response = await safeFetch(this.url, {
       method: 'POST',
-      headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+      headers: { 'Content-Type': 'application/json' },
       body,
-      ...others
+      cf: {
+        // Always cache this fetch regardless of content type
+        // for a max of 5 seconds before revalidating the resource
+        cacheTtl: 60
+      }
     });
 
     const result = await getResult<T>(response);
@@ -38,39 +40,26 @@ export class GraphQLClient {
     }
   }
 
-  async request<T>(query: string, variables?: Variables): Promise<T> {
-    const { data } = await this.rawRequest<T>(query, variables);
+  async request<T>(options: { query: string; variables?: Variables }): Promise<T> {
+    const { data } = await this.rawRequest<T>(options);
 
     // we cast data to T here as it will be defined. otherwise there would be an error thrown already in the raw request
     return data as T;
   }
-
-  setHeaders(headers: HttpHeaders): GraphQLClient {
-    this.options.headers = headers;
-
-    return this;
-  }
-
-  setHeader(key: string, value: string): GraphQLClient {
-    const { headers } = this.options;
-
-    if (headers) {
-      headers[key] = value;
-    } else {
-      this.options.headers = { [key]: value };
-    }
-    return this;
-  }
 }
 
-export async function rawRequest<T>(url: string, query: string, variables?: Variables): Promise<GraphQLResponse<T>> {
-  const client = new GraphQLClient(url);
-  return client.rawRequest<T>(query, variables);
+export async function rawRequest<T>(options: {
+  url: string;
+  query: string;
+  variables?: Variables;
+}): Promise<GraphQLResponse<T>> {
+  const client = new GraphQLClient(options.url);
+  return client.rawRequest<T>(options);
 }
 
-export async function request<T>(url: string, query: string, variables?: Variables): Promise<T> {
-  const client = new GraphQLClient(url);
-  return client.request<T>(query, variables);
+export async function request<T>(options: { url: string; query: string; variables?: Variables }): Promise<T> {
+  const client = new GraphQLClient(options.url);
+  return client.request<T>(options);
 }
 
 async function getResult<T>(response: Response): Promise<GraphQLResponse<T> | string> {

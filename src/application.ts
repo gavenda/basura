@@ -18,16 +18,21 @@ import { verifyKey } from 'discord-interactions';
 import { ApplicationCommandAutocompleteContext } from './application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from './chat-input-application-command.context';
 import { appChatInputCommandMap } from './commands/command';
+import { sleep } from './utils/sleep';
 import { truncate } from './utils/strings';
+
+const DEFAULT_TIMEOUT_MS = 20000;
 
 /**
  * Represents a discord interactions application.
  */
 export class Application {
   env: Env;
+  executionContext: ExecutionContext;
 
-  constructor(options: { env: Env }) {
+  constructor(options: { env: Env; executionContext: ExecutionContext }) {
     this.env = options.env;
+    this.executionContext = options.executionContext;
   }
 
   async handleRequest(request: Request): Promise<Response> {
@@ -58,7 +63,7 @@ export class Application {
 
     return new Response(JSON.stringify(response), {
       headers: {
-        'content-type': 'application/json;charset=UTF-8'
+        'content-type': 'application/json'
       }
     });
   }
@@ -137,8 +142,6 @@ export class Application {
         })
         .slice(0, 25);
 
-      console.log(choices);
-
       return {
         type: InteractionResponseType.ApplicationCommandAutocompleteResult,
         data: {
@@ -161,16 +164,52 @@ export class Application {
     const commandHandler = appChatInputCommandMap[interaction.data.name];
     const context = new ChatInputApplicationCommandContext(this, interaction);
 
-    if (commandHandler) {
-      return commandHandler.handle(context);
+    if (!commandHandler) {
+      return {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: {
+          content: `No chat input command handler found for \`${interaction.data.name}\`.`,
+          flags: MessageFlags.Ephemeral
+        }
+      };
     }
 
-    return {
-      type: InteractionResponseType.ChannelMessageWithSource,
-      data: {
-        content: `No chat input command handler found for \`${interaction.data.name}\`.`,
-        flags: MessageFlags.Ephemeral
+    // Timeout the interaction if it passes than given timeout
+    const timeout = new Promise<void>(async (resolve, _) => {
+      await sleep(DEFAULT_TIMEOUT_MS);
+      // We send a message if not handled
+      if (!context.handled) {
+        await context.edit({
+          content: `The interaction timed out.`,
+          flags: MessageFlags.Ephemeral
+        });
       }
+      resolve();
+    });
+
+    // The actual handling
+    const handling = new Promise<void>(async (resolve, _) => {
+      try {
+        await commandHandler.handle(context);
+        context.handled = true;
+      } catch (error) {
+        await context.edit({
+          content: `An error occured during the interaction.`,
+          flags: MessageFlags.Ephemeral
+        });
+        console.error({ message: `Error occured during interaction`, error, interaction });
+      }
+      resolve();
+    });
+
+    // Handle the component interaction.
+    const race = Promise.race([handling, timeout]);
+
+    // Do not forcibly exit worker until we finish fully handling the interaction race
+    this.executionContext.waitUntil(race);
+
+    return {
+      type: InteractionResponseType.DeferredMessageUpdate
     };
   }
 

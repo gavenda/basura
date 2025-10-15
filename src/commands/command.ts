@@ -1,11 +1,11 @@
-import { APIApplicationCommandOptionChoice, APIInteractionResponse } from 'discord-api-types/payloads/v10';
+import { APIApplicationCommandOptionChoice } from 'discord-api-types/payloads/v10';
 import { ApplicationCommandAutocompleteContext } from '../application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from '../chat-input-application-command.context';
 import { about } from './about';
 import { anime, manga } from './find';
 
 export interface ApplicationChatInputCommandHandler {
-  handle: (context: ChatInputApplicationCommandContext) => Promise<APIInteractionResponse>;
+  handle: (context: ChatInputApplicationCommandContext) => Promise<void>;
   handleAutocomplete?: (context: ApplicationCommandAutocompleteContext) => Promise<APIApplicationCommandOptionChoice[]>;
 }
 

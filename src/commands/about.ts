@@ -1,10 +1,4 @@
-import {
-  APIUser,
-  ButtonStyle,
-  ComponentType,
-  InteractionResponseType,
-  MessageFlags
-} from 'discord-api-types/payloads/v10';
+import { APIUser, ButtonStyle, ComponentType, MessageFlags } from 'discord-api-types/payloads/v10';
 import { Routes } from 'discord-api-types/rest/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
 import { ApplicationChatInputCommandHandler } from './command';
@@ -17,7 +11,7 @@ export const about: ApplicationChatInputCommandHandler = {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Basura/2.0',
-        'Authorization': `Bot ${context.app.env.DISCORD_TOKEN}`
+        'Authorization': `Bot ${context.env.DISCORD_TOKEN}`
       }
     });
     const user = await result.json<APIUser>();
@@ -29,71 +23,68 @@ export const about: ApplicationChatInputCommandHandler = {
     const platformText = `-# Platform\n[Cloudflare](https://cloudflare.com/)\n`;
     const dateCreatedText = `-# Date Created\n${Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'long' }).format(dateCreated)}\n`;
 
-    return {
-      type: InteractionResponseType.ChannelMessageWithSource,
-      data: {
-        components: [
-          {
-            type: ComponentType.Container,
-            components: [
-              {
-                type: ComponentType.Section,
-                components: [
-                  {
-                    type: ComponentType.TextDisplay,
-                    content: `# What is Basura?`
-                  },
-                  {
-                    type: ComponentType.TextDisplay,
-                    content: `Basura literally means trash.`
-                  }
-                ],
-                accessory: {
-                  type: ComponentType.Thumbnail,
-                  media: {
-                    url: selfAvatarUrl
-                  }
+    await context.reply({
+      components: [
+        {
+          type: ComponentType.Container,
+          components: [
+            {
+              type: ComponentType.Section,
+              components: [
+                {
+                  type: ComponentType.TextDisplay,
+                  content: `# What is Basura?`
+                },
+                {
+                  type: ComponentType.TextDisplay,
+                  content: `Basura literally means trash.`
                 }
-              },
-              {
-                type: ComponentType.TextDisplay,
-                content: versionText
-              },
-              {
-                type: ComponentType.TextDisplay,
-                content: languageText
-              },
-              {
-                type: ComponentType.TextDisplay,
-                content: platformText
-              },
-              {
-                type: ComponentType.TextDisplay,
-                content: dateCreatedText
-              },
-              {
-                type: ComponentType.Separator
-              },
-              {
-                type: ComponentType.Section,
-                components: [
-                  {
-                    type: ComponentType.TextDisplay,
-                    content: `-# If you want to add more languages, feel free to hop on the github and submit a pull request.`
-                  }
-                ],
-                accessory: {
-                  type: ComponentType.Button,
-                  style: ButtonStyle.Link,
-                  label: 'GitHub',
-                  url: `https://github.com/gavenda/basura`
+              ],
+              accessory: {
+                type: ComponentType.Thumbnail,
+                media: {
+                  url: selfAvatarUrl
                 }
               }
-            ]
-          }
-        ],
-        flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
-      }
-    };
+            },
+            {
+              type: ComponentType.TextDisplay,
+              content: versionText
+            },
+            {
+              type: ComponentType.TextDisplay,
+              content: languageText
+            },
+            {
+              type: ComponentType.TextDisplay,
+              content: platformText
+            },
+            {
+              type: ComponentType.TextDisplay,
+              content: dateCreatedText
+            },
+            {
+              type: ComponentType.Separator
+            },
+            {
+              type: ComponentType.Section,
+              components: [
+                {
+                  type: ComponentType.TextDisplay,
+                  content: `-# If you want to add more languages, feel free to hop on the github and submit a pull request.`
+                }
+              ],
+              accessory: {
+                type: ComponentType.Button,
+                style: ButtonStyle.Link,
+                label: 'GitHub',
+                url: `https://github.com/gavenda/basura`
+              }
+            }
+          ]
+        }
+      ],
+      flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
+    });
   }
 };
