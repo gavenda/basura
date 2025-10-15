@@ -1,13 +1,14 @@
 import { APIUser, ButtonStyle, ComponentType, MessageFlags } from 'discord-api-types/payloads/v10';
 import { Routes } from 'discord-api-types/rest/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
+import { safeFetch } from '../utils/safe-fetch';
 import { ApplicationChatInputCommandHandler } from './command';
 
 const DISCORD_API_V10 = `https://discord.com/api/v10`;
 
 export const about: ApplicationChatInputCommandHandler = {
   async handle(context) {
-    const result = await fetch(DISCORD_API_V10 + Routes.user(), {
+    const result = await safeFetch(DISCORD_API_V10 + Routes.user(), {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Basura/2.0',
