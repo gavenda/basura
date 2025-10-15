@@ -182,17 +182,24 @@ export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
     content: `## ${media.title?.english || media.title?.romaji || media.title?.native}`
   });
 
+  let altTitles = '';
+
   if (media.title?.english && media.title.romaji) {
-    titleComponents.push({
-      type: ComponentType.TextDisplay,
-      content: `-# _(Romaji: ${media.title.romaji})_`
-    });
+    altTitles = altTitles + `-# _(Romaji: ${media.title.romaji})_\n`;
   }
 
   if (media.title?.native) {
+    altTitles = altTitles + `-# _(Native: ${media.title.native})_\n`;
+  }
+
+  if (media.synonyms) {
+    altTitles = altTitles + `-# _(Synonym: ${media.synonyms[0]})_\n`;
+  }
+
+  if (altTitles.length > 0) {
     titleComponents.push({
       type: ComponentType.TextDisplay,
-      content: `-# _(Native: ${media.title.native})_`
+      content: altTitles
     });
   }
 
