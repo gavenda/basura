@@ -150,7 +150,11 @@ export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
 
   const sourceRegex = /^(\(Source: .*\))$/gm;
 
-  let description = NodeHtmlMarkdown.translate(media.description!);
+  let description = '-# No synopsis available.';
+
+  if (media.description) {
+    description = NodeHtmlMarkdown.translate(media.description);
+  }
 
   // Apply source regex
   description = description.replaceAll(sourceRegex, (replace) => `-# ${replace}`);
