@@ -209,7 +209,7 @@ export class Application {
     this.executionContext.waitUntil(race);
 
     return {
-      type: InteractionResponseType.DeferredMessageUpdate
+      type: InteractionResponseType.DeferredChannelMessageWithSource
     };
   }
 
