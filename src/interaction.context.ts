@@ -23,7 +23,10 @@ export abstract class InteractionContext {
     this.executionContext = app.executionContext;
     this.id = interaction.id;
     this.token = interaction.token;
-    this.webhook = new Webhook(interaction.id, interaction.token);
+    this.webhook = new Webhook({
+      token: interaction.token,
+      env: app.env
+    });
   }
 
   async reply(body: RESTPostAPIInteractionFollowupJSONBody) {
