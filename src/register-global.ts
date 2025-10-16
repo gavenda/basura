@@ -8,11 +8,11 @@ const registerCommands = async () => {
   if (!process.env.DISCORD_TOKEN) {
     throw new Error('No token passed');
   }
-  if (!process.env.DISCORD_APPLICATION_I) {
+  if (!process.env.DISCORD_APPLICATION_ID) {
     throw new Error('No application id passed');
   }
 
-  const result = await fetch(RouteBases.api + Routes.applicationCommands(process.env.DISCORD_APPLICATION_I), {
+  await fetch(RouteBases.api + Routes.applicationCommands(process.env.DISCORD_APPLICATION_ID), {
     method: 'PUT',
     headers: {
       'Content-Type': `application/json`,
@@ -20,8 +20,6 @@ const registerCommands = async () => {
     },
     body: JSON.stringify(commandList)
   });
-
-  const json = await result.json();
 
   console.info(`✅ Refreshed ${commandList.length} commands`);
 };
