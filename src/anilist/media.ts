@@ -263,11 +263,13 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
   }
 
   // Add source
-  const source = titleCase(media.source?.replaceAll('_', ' '));
-  description = description + `\n\n-# Original Source\n${source}`;
+  if (media.source) {
+    const source = titleCase(media.source?.replaceAll('_', ' '));
+    description = description + `\n\n-# Original Source\n${source}`;
+  }
 
   // Add genres
-  if (media.genres) {
+  if (media.genres && media.genres.length > 0) {
     const genres = `${media.genres.map((x) => `${x}`).join(` - `)}`;
     description = description + `\n\n-# Genres\n${genres}`;
   }
