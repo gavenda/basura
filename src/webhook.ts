@@ -1,6 +1,10 @@
-import { Snowflake } from 'discord-api-types/globals';
-import { APIMessage } from 'discord-api-types/payloads/v10';
-import { RESTPostAPIInteractionFollowupJSONBody, RouteBases, Routes } from 'discord-api-types/rest/v10';
+import {
+  APIMessage,
+  RESTPostAPIInteractionFollowupJSONBody,
+  RouteBases,
+  Routes,
+  Snowflake
+} from 'discord-api-types/v10';
 import { kvRateLimitedFetch } from './utils/kv-fetch';
 
 export class Webhook {

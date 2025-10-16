@@ -3,7 +3,7 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   ChannelType
-} from 'discord-api-types/payloads/v10';
+} from 'discord-api-types/v10';
 import { MediaFormat, MediaSeason } from './anilist/gql/types';
 
 export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {

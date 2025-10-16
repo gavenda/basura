@@ -1,4 +1,4 @@
-import { APIApplicationCommandOptionChoice } from 'discord-api-types/payloads/v10';
+import { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
 import { ApplicationCommandAutocompleteContext } from '../application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from '../chat-input-application-command.context';
 import { about } from './about';

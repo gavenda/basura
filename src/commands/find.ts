@@ -1,8 +1,7 @@
-import { APIApplicationCommandOptionChoice, MessageFlags } from 'discord-api-types/payloads/v10';
+import { APIApplicationCommandOptionChoice, MessageFlags } from 'discord-api-types/v10';
 import { MediaType } from '../anilist/gql';
-import { findMediaById, findMediaTitles } from '../anilist/media';
+import { findMediaById, findMediaTitles, mediaToComponents } from '../anilist/media';
 import { ApplicationCommandAutocompleteContext } from '../application-command-autocomplete.context';
-import { mediaToComponents } from '../utils/anilist';
 import { ApplicationChatInputCommandHandler } from './command';
 
 const find = (mediaType: MediaType): ApplicationChatInputCommandHandler => {

@@ -1,5 +1,13 @@
-import { APIUser, ButtonStyle, ComponentType, MessageFlags } from 'discord-api-types/payloads/v10';
-import { CDNRoutes, ImageFormat, RouteBases, Routes } from 'discord-api-types/rest/v10';
+import {
+  APIUser,
+  ButtonStyle,
+  CDNRoutes,
+  ComponentType,
+  ImageFormat,
+  MessageFlags,
+  RouteBases,
+  Routes
+} from 'discord-api-types/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
 import { kvRateLimitedFetch } from '../utils/kv-fetch';
 import { ApplicationChatInputCommandHandler } from './command';

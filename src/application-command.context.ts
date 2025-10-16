@@ -1,4 +1,4 @@
-import { APIApplicationCommandInteraction } from 'discord-api-types/payloads/v10';
+import { APIApplicationCommandInteraction } from 'discord-api-types/v10';
 import { Application } from './application';
 import { InteractionContext } from './interaction.context';
 

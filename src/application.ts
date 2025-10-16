@@ -12,7 +12,7 @@ import {
   InteractionResponseType,
   InteractionType,
   MessageFlags
-} from 'discord-api-types/payloads/v10';
+} from 'discord-api-types/v10';
 import { verifyKey } from 'discord-interactions';
 import { ApplicationCommandAutocompleteContext } from './application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from './chat-input-application-command.context';
