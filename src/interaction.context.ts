@@ -17,6 +17,7 @@ export abstract class InteractionContext {
   env: Env;
   executionContext: ExecutionContext;
   id: string;
+  guildId: string | undefined;
   token: string;
   webhook: Webhook;
   handled: boolean = false;
@@ -27,6 +28,7 @@ export abstract class InteractionContext {
     this.executionContext = app.executionContext;
     this.id = interaction.id;
     this.token = interaction.token;
+    this.guildId = interaction.guild_id;
     this.webhook = new Webhook({
       token: interaction.token,
       env: app.env

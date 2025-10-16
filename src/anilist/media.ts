@@ -14,8 +14,9 @@ import { toStars } from '../utils/anilist';
 import { titleCase, truncate } from '../utils/strings';
 import { aniListRequest } from './anilist';
 import { findMediaByIdQuery } from './gql/find-media-by-id';
+import { findMediaListByUserIdsAndMediaIdQuery } from './gql/find-media-list-by-userids-and-mediaid';
 import { findMediaTitleQuery } from './gql/find-media-title';
-import { Media, MediaRankType, MediaType, Query } from './gql/types';
+import { Media, MediaList, MediaListStatus, MediaRankType, MediaType, Query } from './gql/types';
 
 export const findMediaById = async (options: {
   mediaId: number;
@@ -38,6 +39,31 @@ export const findMediaById = async (options: {
     return result.Media;
   } catch (error) {
     console.error({ message: `Error when finding media`, error });
+  }
+};
+
+export const findMediaListByUserIdsAndMediaId = async (options: {
+  mediaId: number;
+  userIds: number[];
+  env: Env;
+}): Promise<MediaList[] | undefined> => {
+  const { mediaId, userIds, env } = options;
+
+  const variables = {
+    mediaId,
+    userIds
+  };
+
+  try {
+    const result = await aniListRequest<Query>({
+      query: findMediaListByUserIdsAndMediaIdQuery,
+      variables,
+      env
+    });
+
+    return result.Page?.mediaList;
+  } catch (error) {
+    console.error({ message: `Error when finding media list`, error });
   }
 };
 
@@ -111,7 +137,13 @@ export const findMediaTitles = async (options: {
   }
 };
 
-export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] => {
+export const mediaToComponents = async (options: {
+  media: Media;
+  mediaList: MediaList[];
+  nameMap: Record<number, string>;
+}): Promise<APIMessageTopLevelComponent[]> => {
+  const { media, mediaList, nameMap } = options;
+
   // TITLE START
 
   const titleComponents: APITextDisplayComponent[] = [];
@@ -265,27 +297,112 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
   // Add source
   if (media.source) {
     const source = titleCase(media.source?.replaceAll('_', ' '));
-    description = description + `\n\n-# Original Source\n${source}`;
+    description += `\n\n-# Original Source\n${source}`;
   }
 
   // Add genres
   if (media.genres && media.genres.length > 0) {
     const genres = `${media.genres.map((x) => `${x}`).join(` - `)}`;
-    description = description + `\n\n-# Genres\n${genres}`;
+    description += `\n\n-# Genres\n${genres}`;
   }
 
   // Add characters
   if (media.characters?.edges && media.characters?.edges.length > 0) {
-    description = description + `\n\n-# Characters\n`;
+    description += `\n\n-# Characters\n`;
     for (const characterEdge of media.characters?.edges) {
       const character = characterEdge.node;
 
       if (character) {
-        description =
-          description +
-          `- [${character.name?.full}](${character.siteUrl}) (${character.name?.native}) - ${titleCase(characterEdge.role)}\n`;
+        description += `- [${character.name?.full}](${character.siteUrl}) (${character.name?.native}) - ${titleCase(characterEdge.role)}\n`;
       }
     }
+
+    description = description.slice(0, -1);
+  }
+
+  // Add media list
+  // User statuses operations
+  let completed = '';
+  let planned = '';
+  let inProgress = '';
+  let paused = '';
+  let dropped = '';
+  let repeating = '';
+
+  console.log(mediaList);
+
+  const mediaListFiltered = mediaList
+    .filter((mediaList) => mediaList.mediaId === media.id)
+    .map((mediaList) => {
+      return {
+        discordName: nameMap[mediaList.userId],
+        status: mediaList.status,
+        score: mediaList.score,
+        progress: mediaList.progress
+      };
+    });
+
+  const mediaListSorted = mediaListFiltered?.sort(
+    (a, b) => (a.progress || 0) - (b.progress || 0) || a.discordName.localeCompare(b.discordName)
+  );
+
+  if (mediaListSorted) {
+    for (const mediaList of mediaListSorted) {
+      const scoreStr = mediaList.score === 0 ? 'Unrated' : `${mediaList.score}`;
+      const score = mediaList.score && mediaList.score > 0 ? `(Score: ${scoreStr})` : '';
+      const progress = `[Progress: ${mediaList.progress}]`;
+
+      switch (mediaList.status) {
+        case MediaListStatus.COMPLETED: {
+          completed += `- ${mediaList.discordName} ${score}\n`;
+          break;
+        }
+        case MediaListStatus.CURRENT: {
+          inProgress += `- ${mediaList.discordName} ${score} ${progress}\n`;
+        }
+        case MediaListStatus.DROPPED: {
+          dropped += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          break;
+        }
+        case MediaListStatus.PAUSED: {
+          paused += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          break;
+        }
+        case MediaListStatus.PLANNING: {
+          planned += `- ${mediaList.discordName}\n`;
+          break;
+        }
+        case MediaListStatus.REPEATING: {
+          repeating += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          break;
+        }
+      }
+    }
+  }
+
+  // User scores
+  if (paused) {
+    description += `\n\n-# Paused\n${paused}`;
+  }
+
+  if (inProgress) {
+    description += `\n\n-# In Progress\n${inProgress}`;
+  }
+
+  if (repeating) {
+    description += `\n\n-# Repeating\n${repeating}`;
+  }
+
+  if (completed) {
+    description += `\n\n-# Completed\n${completed}`;
+  }
+
+  if (dropped) {
+    description += `\n\n-# Dropped\n${dropped}`;
+  }
+
+  if (planned) {
+    description += `\n\n-# Planned\n${planned}`;
   }
 
   // DESCRIPTION END

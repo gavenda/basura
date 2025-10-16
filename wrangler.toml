@@ -2,7 +2,7 @@ name = "basura"
 main = "./src/server.ts"
 compatibility_date = "2025-09-15"
 d1_databases = [
-  { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5" },
+  { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5", remote = true },
 ]
 kv_namespaces = [
   { binding = "KV", id = "56c9226225f54cfdb1cc9d2a2a322e28" }
@@ -15,7 +15,7 @@ enabled = true
 route = "app.basura.gavenda.dev"
 vars = { ENVIRONMENT = "production" }
 d1_databases = [
-  { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5" },
+  { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5", remote = true },
 ]
 kv_namespaces = [
   { binding = "KV", id = "56c9226225f54cfdb1cc9d2a2a322e28" }
@@ -25,7 +25,7 @@ kv_namespaces = [
 route = "dev.basura.gavenda.dev"
 vars = { ENVIRONMENT = "development" }
 d1_databases = [
-  { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5" },
+  { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5", remote = true },
 ]
 kv_namespaces = [
   { binding = "KV", id = "56c9226225f54cfdb1cc9d2a2a322e28" }

@@ -203,7 +203,7 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
   // Apply source regex
   description = description.replaceAll(sourceRegex, (replace) => `-# ${replace}`);
 
-  description = description + '\n';
+  description += '\n';
 
   // Appearances operations
   if (character.media?.nodes && character.media?.edges) {
@@ -223,17 +223,17 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
   }
 
   if (isNotBlank(animeAppearances)) {
-    description = description + `\n-# Anime Appearances\n${animeAppearances}`;
+    description += `\n-# Anime Appearances\n${animeAppearances}`;
   }
 
   if (isNotBlank(mangaAppearances)) {
-    description = description + `\n-# Manga Appearances\n${mangaAppearances}`;
+    description += `\n-# Manga Appearances\n${mangaAppearances}`;
   }
 
   const aliases = characterAliases(character.name);
 
   if (isNotBlank(aliases)) {
-    description = description + `\n-# Aliases\n${aliases}`;
+    description += `\n-# Aliases\n${aliases}`;
   }
 
   // DESCRIPTION END
