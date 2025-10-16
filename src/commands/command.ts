@@ -4,6 +4,7 @@ import { ChatInputApplicationCommandContext } from '../chat-input-application-co
 import { about } from './about';
 import { character } from './character';
 import { anime, manga } from './find';
+import { staff } from './staff';
 
 export interface ApplicationChatInputCommandHandler {
   handle: (context: ChatInputApplicationCommandContext) => Promise<void>;
@@ -18,5 +19,6 @@ export const appChatInputCommandMap: ApplicationChatInputCommandMap = {
   about,
   anime,
   manga,
+  staff,
   character
 };

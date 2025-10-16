@@ -13,11 +13,11 @@ import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
 import { zip } from '../utils/array';
 import { isBlank, limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
 import { aniListRequest } from './anilist';
-import { findCharacterQuery } from './gql/find-character';
-import { findCharacterNameQuery } from './gql/find-character-name';
-import { Character, CharacterName, MediaType, Query } from './gql/types';
+import { Query, Staff, StaffName } from './gql';
+import { findStaffQuery } from './gql/find-staff';
+import { findStaffNameQuery } from './gql/find-staff-name';
 
-export const findCharacterNames = async (options: {
+export const findStaffNames = async (options: {
   search: string;
   env: Env;
 }): Promise<APIApplicationCommandOptionChoice[]> => {
@@ -28,24 +28,24 @@ export const findCharacterNames = async (options: {
 
   try {
     const result = await aniListRequest<Query>({
-      query: findCharacterNameQuery,
+      query: findStaffNameQuery,
       env,
       variables
     });
     const names: APIApplicationCommandOptionChoice[] = [];
-    const characters = result?.Page?.characters ?? [];
+    const staffs = result?.Page?.staff ?? [];
 
-    for (const character of characters) {
-      if (character?.name?.full) {
-        const name = truncate(character.name.full, 100);
+    for (const staff of staffs) {
+      if (staff?.name?.full) {
+        const name = truncate(staff.name.full, 100);
         const exists = names.find((x) => x.name === name);
 
         if (exists) continue;
 
         const name_localizations: LocalizationMap = {};
 
-        if (character.name.native) {
-          const nativeName = truncate(character.name.native, 100);
+        if (staff.name.native) {
+          const nativeName = truncate(staff.name.native, 100);
 
           name_localizations[Locale.Japanese] = nativeName;
           name_localizations[Locale.Korean] = nativeName;
@@ -56,60 +56,60 @@ export const findCharacterNames = async (options: {
         names.push({
           name,
           name_localizations,
-          value: character.id
+          value: staff.id
         });
       }
     }
 
     return names;
   } catch (error) {
-    console.error({ message: `Error when finding character names`, error });
+    console.error({ message: `Error when finding staff names`, error });
     return [];
   }
 };
 
-export const findCharacterById = async (options: { characterId: number; env: Env }): Promise<Character | undefined> => {
-  const { characterId, env } = options;
+export const findStaffById = async (options: { staffId: number; env: Env }): Promise<Staff | undefined> => {
+  const { staffId, env } = options;
   const variables = {
-    characterId
+    staffId
   };
 
   try {
     const result = await aniListRequest<Query>({
-      query: findCharacterQuery,
+      query: findStaffQuery,
       env,
       variables
     });
-    return result?.Character;
+    return result?.Staff;
   } catch (error) {
-    console.error({ message: `Error when finding character`, error });
+    console.error({ message: `Error when finding staff`, error });
   }
 };
 
-export const characterToComponents = (character: Character): APIMessageTopLevelComponent[] => {
+export const staffToComponents = (staff: Staff): APIMessageTopLevelComponent[] => {
   // TITLE START
 
   const titleComponents: APITextDisplayComponent[] = [];
 
   titleComponents.push({
     type: ComponentType.TextDisplay,
-    content: `## ${character.name?.full || character.name?.native}`
+    content: `## ${staff.name?.full || staff.name?.native}`
   });
 
-  let altNames = '';
+  const altNames: string[] = [];
 
-  if (character.name?.native) {
-    altNames = altNames + `-# _(Native: ${character.name.native})_\n`;
+  if (staff.name?.native) {
+    altNames.push(`-# _(Native: ${staff.name.native})_`);
   }
 
-  if (character.name?.alternative && character.name.alternative.length > 0) {
-    altNames = altNames + `-# _(Alternative: ${character.name?.alternative[0]})_\n`;
+  if (staff.name?.alternative && staff.name.alternative.length > 0) {
+    altNames.push(`-# _(Alternative: ${staff.name?.alternative[0]})_`);
   }
 
   if (altNames.length > 0) {
     titleComponents.push({
       type: ComponentType.TextDisplay,
-      content: altNames
+      content: altNames.join('\n')
     });
   }
 
@@ -119,20 +119,20 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
 
   const actionRowComponents: APIComponentInMessageActionRow[] = [];
 
-  if (character.gender) {
+  if (staff.gender) {
     actionRowComponents.push({
-      custom_id: 'character:gender',
+      custom_id: 'staff:gender',
       type: ComponentType.Button,
       style: ButtonStyle.Secondary,
-      label: character.gender,
+      label: staff.gender,
       disabled: true
     });
   }
 
-  if (character.dateOfBirth) {
-    const yearNum = character.dateOfBirth.year || 0;
-    const dayNum = character.dateOfBirth.day;
-    const date = new Date(yearNum, character.dateOfBirth.month! - 1, character.dateOfBirth.day);
+  if (staff.dateOfBirth) {
+    const yearNum = staff.dateOfBirth.year || 0;
+    const dayNum = staff.dateOfBirth.day;
+    const date = new Date(yearNum, staff.dateOfBirth.month! - 1, staff.dateOfBirth.day);
 
     const month = date.toLocaleString('default', { month: 'long' });
     let day: string = '';
@@ -170,7 +170,7 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
     }
 
     actionRowComponents.push({
-      custom_id: 'character:birthday',
+      custom_id: 'staff:birthday',
       type: ComponentType.Button,
       style: ButtonStyle.Secondary,
       label: `🎂 ${temp.join(' ')}`,
@@ -179,10 +179,10 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
   }
 
   actionRowComponents.push({
-    custom_id: 'character:favorite',
+    custom_id: 'staff:favorite',
     type: ComponentType.Button,
     style: ButtonStyle.Secondary,
-    label: `❤️ ${character.favourites}`,
+    label: `❤️ ${staff.favourites}`,
     disabled: true
   });
 
@@ -194,9 +194,9 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
 
   const descriptions: string[] = [];
 
-  if (character.description) {
+  if (staff.description) {
     descriptions.push(
-      NodeHtmlMarkdown.translate(character.description).replaceAll(sourceRegex, (replace) => `-# ${replace}`)
+      NodeHtmlMarkdown.translate(staff.description).replaceAll(sourceRegex, (replace) => `-# ${replace}`)
     );
   } else {
     descriptions.push('No description available.');
@@ -206,43 +206,56 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
 
   // DETAILS START
 
-  const animeAppearances: string[] = [];
-  const mangaAppearances: string[] = [];
   const details: string[] = [];
 
-  // Appearances operations
-  if (character.media?.nodes && character.media?.edges) {
-    const nodes = zip(character.media.nodes, character.media.edges);
+  // Characters voiced operations
+  const charactersVoiced: string[] = [];
+
+  if (staff.characters?.nodes && staff.characters?.edges) {
+    const nodes = zip(staff.characters.nodes, staff.characters.edges);
     for (const pair of nodes.slice(0, 5)) {
-      const [media, edge] = pair;
+      const [node, edge] = pair;
 
       // Ensure not null
-      if (media && edge) {
-        const mediaTitle = media.title?.english ?? media.title?.romaji;
-        const format = media.format && media.format.length > 3 ? titleCase(media.format) : media.format;
-        const appearance = `- [${mediaTitle}](${media.siteUrl}) (${format}) - ${titleCase(edge.characterRole)}`;
+      if (node && edge) {
+        const title = node.name?.full ?? node.name?.native;
+        const role = edge.role || '';
 
-        if (media.type === MediaType.ANIME) {
-          animeAppearances.push(appearance);
-        } else {
-          mangaAppearances.push(appearance);
-        }
+        charactersVoiced.push(`- [${title}](${node.siteUrl}) - ${titleCase(role)}`);
       }
     }
   }
 
-  const aliases = characterAliases(character.name);
+  // Worked on operations
+  const workedOn: string[] = [];
+
+  if (staff.staffMedia?.nodes && staff.staffMedia?.edges) {
+    const nodes = zip(staff.staffMedia.nodes, staff.staffMedia.edges);
+    for (const pair of nodes.slice(0, 5)) {
+      const [node, edge] = pair;
+
+      // Ensure not null
+      if (node && edge) {
+        const title = node.title?.romaji ?? node.title?.english ?? node.title?.native;
+
+        workedOn.push(`- [${title}](${node.siteUrl}) - ${edge.staffRole}`);
+      }
+    }
+  }
+
+  // Apply aliases
+  const aliases = staffAliases(staff.name);
 
   if (aliases.length > 0) {
     details.push(`-# Aliases\n${aliases.join('\n')}`);
   }
 
-  if (animeAppearances.length > 0) {
-    details.push(`-# Anime Appearances\n${animeAppearances.join('\n')}`);
+  if (charactersVoiced.length > 0) {
+    details.push(`-# Characters Voiced\n${charactersVoiced.join('\n')}`);
   }
 
-  if (mangaAppearances.length > 0) {
-    details.push(`-# Manga Appearances\n${mangaAppearances.join('\n')}`);
+  if (workedOn.length > 0) {
+    details.push(`-# Worked On\n${workedOn.join('\n')}`);
   }
 
   // DETAILS END
@@ -250,6 +263,7 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
   // CONTAINER BUILD START
 
   const components: APIComponentInContainer[] = [];
+  const descriptionComponents: APITextDisplayComponent[] = [];
 
   // Title
   components.push({
@@ -259,7 +273,7 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
       type: ComponentType.Button,
       style: ButtonStyle.Link,
       label: 'AniList',
-      url: `${character.siteUrl}`
+      url: `${staff.siteUrl}`
     }
   });
 
@@ -288,7 +302,7 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
     accessory: {
       type: ComponentType.Thumbnail,
       media: {
-        url: `${character.image?.large || character.image?.medium}`
+        url: `${staff.image?.large || staff.image?.medium}`
       }
     }
   });
@@ -309,9 +323,9 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
   ];
 };
 
-const characterAliases = (name: CharacterName | undefined): string[] => {
+const staffAliases = (name: StaffName | undefined): string[] => {
   const aliases: string[] = [];
-  const names = name as Required<CharacterName>;
+  const names = name as Required<StaffName>;
   const uniqueNames = [...new Set(names.alternative.slice(1))];
 
   for (const alternateName of uniqueNames.slice(0, 5)) {
@@ -321,6 +335,5 @@ const characterAliases = (name: CharacterName | undefined): string[] => {
 
     aliases.push(`- ${alternateName.trim()}`);
   }
-
   return aliases;
 };

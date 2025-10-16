@@ -12,34 +12,52 @@ export const isBlank = (str: string) => {
 
 export const isNotBlank = (str: string) => !isBlank(str);
 
-export const appendIfNotMax = (str: string, append: string, max: number): string => {
-  const sum = str.length + append.length;
-  if (sum < max) {
-    return str + append;
+/**
+ * Limits the input text to a maximum character length by only cutting
+ * at paragraph breaks ('\\n\\n').
+ *
+ * @param {string} text The full input text.
+ * @param {number} maxLength The maximum desired character length.
+ * @returns {string} The truncated text, or the original text if it's shorter than maxLength.
+ */
+export const limitTextByParagraphs = (text: string, maxLength: number): string => {
+  // 1. Check if the text is already short enough
+  if (text.length <= maxLength) {
+    return text;
   }
-  return str;
-};
 
-export const truncateParagraph = (str: string, n: number): string => {
-  return dropNotParagraph(truncate(str, n).trim());
-};
+  // 2. Split the text into an array of paragraphs
+  const paragraphs = text.split('\n\n');
+  let limitedText = '';
+  let currentLength = 0;
 
-export const dropNotParagraph = (str: string): string => {
-  const lastChar = str.charAt(str.length - 1);
-  if (!(lastChar === '.' || lastChar === '\n')) {
-    return dropLastWhile(str, (x) => x !== '\n');
+  // 3. Iterate through the paragraphs and accumulate them
+  for (let i = 0; i < paragraphs.length; i++) {
+    const paragraph = paragraphs[i];
+
+    // Separator is '\n\n' (2 characters) for all but the first paragraph
+    const separatorLength = i > 0 ? 2 : 0;
+    const paragraphWithSeparatorLength = paragraph.length + separatorLength;
+
+    // 4. Check if adding this paragraph would exceed the max_length
+    if (currentLength + paragraphWithSeparatorLength > maxLength) {
+      // Stop here to enforce cutting only at the paragraph boundary
+      break;
+    }
+
+    // 5. Accumulate the text
+    // Add the separator for the next paragraph (except the first one)
+    if (i > 0) {
+      limitedText += '\n\n';
+      currentLength += 2;
+    }
+
+    limitedText += paragraph;
+    currentLength += paragraph.length;
   }
-  return str;
-};
 
-export const dropLastWhile = (array: string, predicate: (el: string) => boolean): string => {
-  let offset = array.length;
-  while (0 < offset && predicate(array[offset - 1])) offset--;
-  return array.slice(0, offset);
-};
-
-export const charCount = (str: string, char: string): number => {
-  return str.split(char).length - 1;
+  // 6. Return the accumulated text, removing any leading/trailing whitespace
+  return limitedText.trim();
 };
 
 export const titleCase = (str: string | undefined): string => {

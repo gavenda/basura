@@ -84,8 +84,8 @@ export const COMMAND_STAFF: Partial<APIApplicationCommand> = {
   description: 'Looks up the name of an anime/manga staff.',
   options: [
     {
-      type: ApplicationCommandOptionType.String,
-      name: 'query',
+      type: ApplicationCommandOptionType.Number,
+      name: 'id',
       description: 'Name of the anime/manga staff.',
       autocomplete: true,
       required: true
@@ -316,7 +316,7 @@ export const commandList = [
   COMMAND_ANIME,
   // COMMAND_FIND
   COMMAND_MANGA,
-  // COMMAND_STAFF,
+  COMMAND_STAFF,
   // COMMAND_USER,
   // COMMAND_LINK,
   // COMMAND_UNLINK,

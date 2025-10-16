@@ -11,7 +11,7 @@ import {
 } from 'discord-api-types/v10';
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
 import { toStars } from '../utils/anilist';
-import { titleCase, truncate } from '../utils/strings';
+import { limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
 import { aniListRequest } from './anilist';
 import { findMediaByIdQuery } from './gql/find-media-by-id';
 import { findMediaListByUserIdsAndMediaIdQuery } from './gql/find-media-list-by-userids-and-mediaid';
@@ -153,24 +153,24 @@ export const mediaToComponents = async (options: {
     content: `## ${media.title?.english || media.title?.romaji || media.title?.native}`
   });
 
-  let altTitles = '';
+  const altTitles: string[] = [];
 
   if (media.title?.english && media.title.romaji) {
-    altTitles = altTitles + `-# _(Romaji: ${media.title.romaji})_\n`;
+    altTitles.push(`-# _(Romaji: ${media.title.romaji})_`);
   }
 
   if (media.title?.native) {
-    altTitles = altTitles + `-# _(Native: ${media.title.native})_\n`;
+    altTitles.push(`-# _(Native: ${media.title.native})_`);
   }
 
   if (media.synonyms && media.synonyms.length > 0) {
-    altTitles = altTitles + `-# _(Synonym: ${media.synonyms[0]})_\n`;
+    altTitles.push(`-# _(Synonym: ${media.synonyms[0]})_`);
   }
 
   if (altTitles.length > 0) {
     titleComponents.push({
       type: ComponentType.TextDisplay,
-      content: altTitles
+      content: altTitles.join('\n')
     });
   }
 
@@ -280,54 +280,66 @@ export const mediaToComponents = async (options: {
 
   const sourceRegex = /^(\(Source: .*\))$/gm;
 
-  let description = 'No synopsis available.';
-
-  if (media.description) {
-    description = NodeHtmlMarkdown.translate(media.description);
-  }
-
-  // Apply source regex
-  description = description.replaceAll(sourceRegex, (replace) => `-# ${replace}`);
+  const descriptions: string[] = [];
 
   // Apply hashtag
   if (media.hashtag) {
-    description = `-# ${media.hashtag}\n\n${description}`;
+    descriptions.push(`-# ${media.hashtag}`);
   }
+
+  if (media.description) {
+    descriptions.push(
+      NodeHtmlMarkdown.translate(media.description).replaceAll(sourceRegex, (replace) => `-# ${replace}`)
+    );
+  } else {
+    descriptions.push('No description available.');
+  }
+
+  // DESCRIPTIONS END
+
+  // DETAILS START
+
+  const details: string[] = [];
 
   // Add source
   if (media.source) {
-    const source = titleCase(media.source?.replaceAll('_', ' '));
-    description += `\n\n-# Original Source\n${source}`;
+    const source = `${titleCase(media.source?.replaceAll('_', ' '))}`;
+    details.push(`-# Original Source\n${source}`);
   }
 
   // Add genres
   if (media.genres && media.genres.length > 0) {
     const genres = `${media.genres.map((x) => `${x}`).join(` - `)}`;
-    description += `\n\n-# Genres\n${genres}`;
+    details.push(`-# Genres\n${genres}`);
   }
 
   // Add characters
   if (media.characters?.edges && media.characters?.edges.length > 0) {
-    description += `\n\n-# Characters\n`;
+    const characters: string[] = [];
+
     for (const characterEdge of media.characters?.edges) {
       const character = characterEdge.node;
 
       if (character) {
-        description += `- [${character.name?.full}](${character.siteUrl}) (${character.name?.native}) - ${titleCase(characterEdge.role)}\n`;
+        const name = character.name?.full;
+        const nativeName = character.name?.native;
+        const role = titleCase(characterEdge.role);
+
+        characters.push(`- [${name}](${character.siteUrl}) (${nativeName}) - ${role}`);
       }
     }
 
-    description = description.slice(0, -1);
+    details.push(`-# Characters\n${characters.join('\n')}`);
   }
 
   // Add media list
   // User statuses operations
-  let completed = '';
-  let planned = '';
-  let inProgress = '';
-  let paused = '';
-  let dropped = '';
-  let repeating = '';
+  const completed: string[] = [];
+  const planned: string[] = [];
+  const inProgress: string[] = [];
+  const paused: string[] = [];
+  const dropped: string[] = [];
+  const repeating: string[] = [];
 
   const mediaListFiltered = mediaList
     .filter((mediaList) => mediaList.mediaId === media.id)
@@ -352,27 +364,27 @@ export const mediaToComponents = async (options: {
 
       switch (mediaList.status) {
         case MediaListStatus.COMPLETED: {
-          completed += `- ${mediaList.discordName} ${score}\n`;
+          completed.push(`- ${mediaList.discordName} ${score}`);
           break;
         }
         case MediaListStatus.CURRENT: {
-          inProgress += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          inProgress.push(`- ${mediaList.discordName} ${score} ${progress}`);
           break;
         }
         case MediaListStatus.DROPPED: {
-          dropped += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          dropped.push(`- ${mediaList.discordName} ${score} ${progress}`);
           break;
         }
         case MediaListStatus.PAUSED: {
-          paused += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          paused.push(`- ${mediaList.discordName} ${score} ${progress}`);
           break;
         }
         case MediaListStatus.PLANNING: {
-          planned += `- ${mediaList.discordName}\n`;
+          planned.push(`- ${mediaList.discordName}`);
           break;
         }
         case MediaListStatus.REPEATING: {
-          repeating += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          repeating.push(`- ${mediaList.discordName} ${score} ${progress}`);
           break;
         }
       }
@@ -380,28 +392,28 @@ export const mediaToComponents = async (options: {
   }
 
   // User scores
-  if (paused) {
-    description += `\n\n-# Paused\n${paused.slice(0, -1)}`;
+  if (paused.length > 0) {
+    details.push(`-# Paused\n${paused.join('\n')}`);
   }
 
-  if (inProgress) {
-    description += `\n\n-# In Progress\n${inProgress.slice(0, -1)}`;
+  if (inProgress.length > 0) {
+    details.push(`-# In Progress\n${inProgress.join('\n')}`);
   }
 
-  if (repeating) {
-    description += `\n\n-# Repeating\n${repeating.slice(0, -1)}`;
+  if (repeating.length > 0) {
+    details.push(`-# Repeating\n${repeating.join('\n')}`);
   }
 
-  if (completed) {
-    description += `\n\n-# Completed\n${completed.slice(0, -1)}`;
+  if (completed.length > 0) {
+    details.push(`-# Completed\n${completed.join('\n')}`);
   }
 
-  if (dropped) {
-    description += `\n\n-# Dropped\n${dropped.slice(0, -1)}`;
+  if (dropped.length > 0) {
+    details.push(`-# Dropped\n${dropped.join('\n')}`);
   }
 
-  if (planned) {
-    description += `\n\n-# Planned\n${planned.slice(0, -1)}`;
+  if (planned.length > 0) {
+    details.push(`-# Planned\n${planned.join('\n')}`);
   }
 
   // DESCRIPTION END
@@ -442,12 +454,14 @@ export const mediaToComponents = async (options: {
     content: `-# ${detailedInfo.join(` — `)}`
   });
 
+  // Tags
   if (actionRowComponents.length > 0) {
     components.push({
       type: ComponentType.ActionRow,
       components: actionRowComponents
     });
   }
+
   // Seperator
   components.push({
     type: ComponentType.Separator
@@ -459,7 +473,7 @@ export const mediaToComponents = async (options: {
     components: [
       {
         type: ComponentType.TextDisplay,
-        content: description
+        content: limitTextByParagraphs(descriptions.join('\n\n'), 2000)
       }
     ],
     accessory: {
@@ -468,6 +482,11 @@ export const mediaToComponents = async (options: {
         url: `${media.coverImage?.extraLarge}`
       }
     }
+  });
+
+  components.push({
+    type: ComponentType.TextDisplay,
+    content: details.join('\n\n')
   });
 
   return [
