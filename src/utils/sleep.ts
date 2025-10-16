@@ -3,6 +3,6 @@
  * @param {number} ms - Milliseconds to sleep.
  * @returns {Promise<void>}
  */
-export const sleep = (ms: number) => {
+export const sleep = (ms: number): Promise<void> => {
   return new Promise((r) => setTimeout(r, ms));
 };

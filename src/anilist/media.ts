@@ -10,7 +10,7 @@ import {
   LocalizationMap
 } from 'discord-api-types/v10';
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
-import { toStars } from '../utils/anilist';
+import { mediaFormatDisplay, toStars } from '../utils/anilist';
 import { limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
 import { aniListRequest } from './anilist';
 import { findMediaByIdQuery } from './gql/find-media-by-id';
@@ -200,7 +200,7 @@ export const mediaToComponents = async (options: {
   const actionRowComponents: APIComponentInMessageActionRow[] = [];
 
   if (media.format) {
-    const format = media.format && media.format.length > 3 ? titleCase(media.format) : media.format;
+    const format = mediaFormatDisplay(media.format);
 
     actionRowComponents.push({
       custom_id: 'media:format',

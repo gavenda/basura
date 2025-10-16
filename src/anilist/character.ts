@@ -10,6 +10,7 @@ import {
   LocalizationMap
 } from 'discord-api-types/v10';
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
+import { mediaFormatDisplay } from '../utils/anilist';
 import { zip } from '../utils/array';
 import { isBlank, limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
 import { aniListRequest } from './anilist';
@@ -219,7 +220,7 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
       // Ensure not null
       if (media && edge) {
         const mediaTitle = media.title?.english ?? media.title?.romaji;
-        const format = media.format && media.format.length > 3 ? titleCase(media.format) : media.format;
+        const format = mediaFormatDisplay(media.format);
         const appearance = `- [${mediaTitle}](${media.siteUrl}) (${format}) - ${titleCase(edge.characterRole)}`;
 
         if (media.type === MediaType.ANIME) {

@@ -41,7 +41,9 @@ export const toStars = (score: number = 0): string => {
   return '';
 };
 
-export const mediaFormatDisplay = (format: MediaFormat) => {
+export const mediaFormatDisplay = (format: MediaFormat | undefined) => {
+  if (!format) return '-';
+
   switch (format) {
     case MediaFormat.MANGA:
       return 'Manga';
