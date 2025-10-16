@@ -5,7 +5,7 @@ d1_databases = [
   { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5" },
 ]
 kv_namespaces = [
-  { binding = "KV", id = "06779da6940b431db6e566b4846d64db" }
+  { binding = "KV", id = "56c9226225f54cfdb1cc9d2a2a322e28" }
 ]
 
 [observability]
@@ -18,7 +18,7 @@ d1_databases = [
   { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5" },
 ]
 kv_namespaces = [
-  { binding = "KV", id = "06779da6940b431db6e566b4846d64db" }
+  { binding = "KV", id = "56c9226225f54cfdb1cc9d2a2a322e28" }
 ]
 
 [env.dev]
@@ -28,5 +28,5 @@ d1_databases = [
   { binding = "D1", database_name = "bazura", database_id = "ebefa075-89a3-41bd-b3cc-5ae3851674c5" },
 ]
 kv_namespaces = [
-  { binding = "KV", id = "06779da6940b431db6e566b4846d64db" }
+  { binding = "KV", id = "56c9226225f54cfdb1cc9d2a2a322e28" }
 ]
