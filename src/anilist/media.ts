@@ -329,8 +329,6 @@ export const mediaToComponents = async (options: {
   let dropped = '';
   let repeating = '';
 
-  console.log(mediaList);
-
   const mediaListFiltered = mediaList
     .filter((mediaList) => mediaList.mediaId === media.id)
     .map((mediaList) => {
