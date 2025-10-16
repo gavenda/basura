@@ -1,14 +1,12 @@
 import { APIUser, ButtonStyle, ComponentType, MessageFlags } from 'discord-api-types/payloads/v10';
-import { Routes } from 'discord-api-types/rest/v10';
+import { CDNRoutes, ImageFormat, RouteBases, Routes } from 'discord-api-types/rest/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
-import { safeFetch } from '../utils/safe-fetch';
+import { kvRateLimitedFetch } from '../utils/kv-fetch';
 import { ApplicationChatInputCommandHandler } from './command';
-
-const DISCORD_API_V10 = `https://discord.com/api/v10`;
 
 export const about: ApplicationChatInputCommandHandler = {
   async handle(context) {
-    const result = await safeFetch(DISCORD_API_V10 + Routes.user(), {
+    const result = await kvRateLimitedFetch(RouteBases.api + Routes.user(), context.env, {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Basura/2.0',
@@ -16,7 +14,8 @@ export const about: ApplicationChatInputCommandHandler = {
       }
     });
     const user = await result.json<APIUser>();
-    const selfAvatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`;
+
+    const selfAvatarUrl = CDNRoutes.userAvatar(user.id, user.avatar!, ImageFormat.WebP);
     const dateCreated = getDate(user.id as Snowflake);
 
     const versionText = `-# Version\n2.0\n`;

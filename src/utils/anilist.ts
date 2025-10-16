@@ -1,5 +1,6 @@
 import {
   APIComponentInContainer,
+  APIComponentInMessageActionRow,
   APIMessageTopLevelComponent,
   APITextDisplayComponent,
   ButtonStyle,
@@ -33,19 +34,19 @@ export const toIntColor = (color: string): number => {
 export const toStars = (score: number = 0): string => {
   if (score >= 90) {
     // 5 star
-    return '★'.repeat(5);
+    return '⭐'.repeat(5);
   } else if (score >= 70 && score <= 89) {
     // 4 star
-    return '★'.repeat(4);
+    return '⭐'.repeat(4);
   } else if (score >= 50 && score <= 69) {
     // 3 star
-    return '★'.repeat(3);
+    return '⭐'.repeat(3);
   } else if (score >= 30 && score <= 49) {
     // 2 star
-    return '★'.repeat(2);
+    return '⭐'.repeat(2);
   } else if (score >= 1 && score <= 29) {
     // 1 star
-    return '★'.repeat(1);
+    return '⭐'.repeat(1);
   }
   return '';
 };
@@ -77,56 +78,55 @@ export const mediaFormatDisplay = (format: MediaFormat) => {
   }
 };
 
-export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
-  const detailedInfoComponent: APIMessageTopLevelComponent = {
-    type: ComponentType.Container,
-    components: []
-  };
-
+export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] => {
   const detailedInfo: string[] = [];
-  const footerInfo: string[] = [];
+  const actionRowComponents: APIComponentInMessageActionRow[] = [];
 
   if (media.format) {
-    detailedInfo.push(media.format);
-    detailedInfoComponent.components.push({
-      type: ComponentType.TextDisplay,
-      content: `**Format** - ${media.format}`
+    actionRowComponents.push({
+      custom_id: 'media:format',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: media.format,
+      disabled: true
     });
   }
 
   if (media.season && media.seasonYear) {
-    detailedInfo.push(`${media.season} ${media.seasonYear}`);
-    detailedInfoComponent.components.push({
-      type: ComponentType.TextDisplay,
-      content: `**Season** - ${media.season} ${media.seasonYear}`
-    });
-  }
-
-  if (media.episodes) {
-    detailedInfo.push(`${media.episodes} Eps`);
-    detailedInfoComponent.components.push({
-      type: ComponentType.TextDisplay,
-      content: `**Episodes** - ${media.episodes}`
-    });
-  }
-
-  if (media.chapters) {
-    detailedInfo.push(`${media.chapters} Chaps`);
-    detailedInfoComponent.components.push({
-      type: ComponentType.TextDisplay,
-      content: `**Chapters** - ${media.chapters}`
+    actionRowComponents.push({
+      custom_id: 'media:season',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `${titleCase(media.season)} ${media.seasonYear}`,
+      disabled: true
     });
   }
 
   if (media.genres) {
     detailedInfo.push(`${media.genres.map((x) => `${x}`).join(` - `)}`);
-    detailedInfoComponent.components.push({
-      type: ComponentType.TextDisplay,
-      content: `**Genres** - ${media.genres.map((x) => `${x}`).join(` - `)}`
+  }
+
+  if (media.episodes) {
+    detailedInfo.push(`${media.episodes} Episodes`);
+    actionRowComponents.push({
+      custom_id: 'media:parts',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `${media.episodes} Episodes`,
+      disabled: true
     });
   }
 
-  const mediaFormat = media.format && mediaFormatDisplay(media.format);
+  if (media.chapters) {
+    detailedInfo.push(`${media.chapters} Chapters`);
+    actionRowComponents.push({
+      custom_id: 'media:parts',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `${media.chapters} Chapters`,
+      disabled: true
+    });
+  }
 
   if (media.rankings) {
     const mediaRankingsAsc = media.rankings.sort((a, b) => a.rank - b.rank);
@@ -134,18 +134,33 @@ export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
     const seasonRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && !x.allTime && x.season);
 
     if (allTimeRank) {
-      detailedInfo.push(`Rank #${allTimeRank.rank} (${mediaFormat})`);
-    }
-
-    if (seasonRank && seasonRank.season) {
-      detailedInfo.push(
-        `Rank #${seasonRank.rank} (${mediaFormat}) of ${titleCase(seasonRank.season)} ${seasonRank.year}`
-      );
+      actionRowComponents.push({
+        custom_id: 'media:rank',
+        type: ComponentType.Button,
+        style: ButtonStyle.Secondary,
+        label: `Rank #${allTimeRank.rank}`,
+        disabled: true
+      });
+    } else if (seasonRank && seasonRank.season) {
+      actionRowComponents.push({
+        custom_id: 'media:rank',
+        type: ComponentType.Button,
+        style: ButtonStyle.Secondary,
+        label: `Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`,
+        disabled: true
+      });
     }
   }
 
   if (media.meanScore && media.meanScore != 0) {
-    footerInfo.push(`Rating - ${media.meanScore} / 100`);
+    // footerInfo.push(`Rating - ${media.meanScore} / 100`);
+    actionRowComponents.push({
+      custom_id: 'media:rating',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `${toStars(media.meanScore)}`,
+      disabled: true
+    });
   }
 
   const sourceRegex = /^(\(Source: .*\))$/gm;
@@ -225,6 +240,13 @@ export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
     type: ComponentType.Separator
   });
 
+  if (actionRowComponents.length > 0) {
+    components.push({
+      type: ComponentType.ActionRow,
+      components: actionRowComponents
+    });
+  }
+
   // Description
   components.push({
     type: ComponentType.Section,
@@ -241,16 +263,6 @@ export const mediaDisplay = (media: Media): APIMessageTopLevelComponent[] => {
       }
     }
   });
-
-  if (footerInfo.length > 0) {
-    components.push({
-      type: ComponentType.Separator
-    });
-    components.push({
-      type: ComponentType.TextDisplay,
-      content: `-# ${footerInfo.join(` — `)}`
-    });
-  }
 
   return [
     {

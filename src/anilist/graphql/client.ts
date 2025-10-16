@@ -1,4 +1,4 @@
-import { safeFetch } from '../../utils/safe-fetch';
+import { kvRateLimitedFetch } from '../../utils/kv-fetch';
 import { ClientError, GraphQLResponse, Variables } from './types';
 export { ClientError } from './types';
 
@@ -9,14 +9,14 @@ export class GraphQLClient {
     this.url = url;
   }
 
-  async rawRequest<T>(options: { query: string; variables?: Variables }): Promise<GraphQLResponse<T>> {
-    const { query, variables } = options;
+  async rawRequest<T>(options: { query: string; env: Env; variables?: Variables }): Promise<GraphQLResponse<T>> {
+    const { query, variables, env } = options;
     const body = JSON.stringify({
       query,
       variables
     });
 
-    const response = await safeFetch(this.url, {
+    const response = await kvRateLimitedFetch(this.url, env, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body,
@@ -40,7 +40,7 @@ export class GraphQLClient {
     }
   }
 
-  async request<T>(options: { query: string; variables?: Variables }): Promise<T> {
+  async request<T>(options: { query: string; env: Env; variables?: Variables }): Promise<T> {
     const { data } = await this.rawRequest<T>(options);
 
     // we cast data to T here as it will be defined. otherwise there would be an error thrown already in the raw request
@@ -50,6 +50,7 @@ export class GraphQLClient {
 
 export async function rawRequest<T>(options: {
   url: string;
+  env: Env;
   query: string;
   variables?: Variables;
 }): Promise<GraphQLResponse<T>> {
@@ -57,7 +58,7 @@ export async function rawRequest<T>(options: {
   return client.rawRequest<T>(options);
 }
 
-export async function request<T>(options: { url: string; query: string; variables?: Variables }): Promise<T> {
+export async function request<T>(options: { url: string; env: Env; query: string; variables?: Variables }): Promise<T> {
   const client = new GraphQLClient(options.url);
   return client.request<T>(options);
 }

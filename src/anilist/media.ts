@@ -1,15 +1,16 @@
 import { APIApplicationCommandOptionChoice, LocalizationMap } from 'discord-api-types/v10';
+import { truncate } from '../utils/strings';
 import { aniListRequest } from './anilist';
-import { FIND_MEDIA_BY_ID } from './gql/find-media-by-id';
-import { FIND_MEDIA_NAME } from './gql/find-media-name';
+import { findMediaByIdQuery } from './gql/find-media-by-id';
+import { findMediaTitleQuery } from './gql/find-media-title';
 import { Media, MediaType, Query } from './gql/types';
 
 export const findMediaById = async (options: {
   mediaId: number;
   mediaType: MediaType;
-  executionContext: ExecutionContext;
+  env: Env;
 }): Promise<Media | undefined> => {
-  const { mediaId, mediaType, executionContext } = options;
+  const { mediaId, mediaType, env } = options;
 
   const variables = {
     mediaId,
@@ -18,8 +19,9 @@ export const findMediaById = async (options: {
 
   try {
     const result = await aniListRequest<Query>({
-      query: FIND_MEDIA_BY_ID,
-      variables
+      query: findMediaByIdQuery,
+      variables,
+      env
     });
     return result.Media;
   } catch (error) {
@@ -30,8 +32,9 @@ export const findMediaById = async (options: {
 export const findMediaTitles = async (options: {
   search: string;
   mediaType?: MediaType;
+  env: Env;
 }): Promise<APIApplicationCommandOptionChoice[]> => {
-  const { search, mediaType } = options;
+  const { search, mediaType, env } = options;
 
   const variables = {
     search,
@@ -40,26 +43,33 @@ export const findMediaTitles = async (options: {
 
   try {
     const result = await aniListRequest<Query>({
-      query: FIND_MEDIA_NAME,
-      variables
+      query: findMediaTitleQuery,
+      variables,
+      env
     });
     const medias = result.Page?.media ?? [];
     const titles: APIApplicationCommandOptionChoice[] = [];
 
     for (const media of medias) {
-      const name_localizations: LocalizationMap | null = {};
-
-      if (media?.title?.native) {
-        name_localizations['ja'] = media.title.native;
-      }
-
-      if (media?.title?.english) {
-        name_localizations['en-US'] = media.title.english;
-      }
-
       if (media?.title?.romaji) {
+        const title = media.title.english ? `${media.title.romaji} (${media.title.english})` : media.title.romaji;
+        const safeTitle = truncate(title, 100);
+        const exists = titles.find((x) => x.name === safeTitle);
+
+        if (exists) continue;
+
+        const name_localizations: LocalizationMap = {};
+
+        if (media.title.native) {
+          name_localizations['ja'] = truncate(media.title.native, 100);
+        }
+
+        if (media.title.english) {
+          name_localizations['en-US'] = truncate(media.title.english, 100);
+        }
+
         titles.push({
-          name: media.title.english ? `${media.title.romaji} (${media.title.english})` : media.title.romaji,
+          name: safeTitle,
           name_localizations,
           value: media.id
         });

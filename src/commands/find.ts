@@ -2,14 +2,14 @@ import { APIApplicationCommandOptionChoice, MessageFlags } from 'discord-api-typ
 import { MediaType } from '../anilist/gql';
 import { findMediaById, findMediaTitles } from '../anilist/media';
 import { ApplicationCommandAutocompleteContext } from '../application-command-autocomplete.context';
-import { mediaDisplay } from '../utils/anilist';
+import { mediaToComponents } from '../utils/anilist';
 import { ApplicationChatInputCommandHandler } from './command';
 
 const find = (mediaType: MediaType): ApplicationChatInputCommandHandler => {
   return {
     async handle(context) {
       const mediaId = context.getRequiredNumber('media-id');
-      const media = await findMediaById({ mediaId, executionContext: context.executionContext, mediaType });
+      const media = await findMediaById({ mediaId, env: context.env, mediaType });
 
       if (!media) {
         await context.reply({
@@ -20,7 +20,7 @@ const find = (mediaType: MediaType): ApplicationChatInputCommandHandler => {
       }
 
       await context.reply({
-        components: mediaDisplay(media),
+        components: mediaToComponents(media),
         flags: MessageFlags.IsComponentsV2
       });
     },
@@ -37,7 +37,8 @@ export const handleMediaTitleAutocomplete = async (
   const search = context.getRequiredString(`media-id`);
   return findMediaTitles({
     search,
-    mediaType
+    mediaType,
+    env: context.env
   });
 };
 

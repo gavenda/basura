@@ -1,10 +1,8 @@
-import { Routes } from 'discord-api-types/v10';
+import { RouteBases, Routes } from 'discord-api-types/v10';
 import * as dotenv from 'dotenv';
 import { commandList } from './command.list';
 
 dotenv.config({ path: '.prod.vars' });
-
-const DISCORD_API_V10 = `https://discord.com/api/v10`;
 
 const registerCommands = async () => {
   if (!process.env.DISCORD_TOKEN) {
@@ -14,7 +12,7 @@ const registerCommands = async () => {
     throw new Error('No application id passed');
   }
 
-  const result = await fetch(DISCORD_API_V10 + Routes.applicationCommands(process.env.DISCORD_APPLICATION_I), {
+  const result = await fetch(RouteBases.api + Routes.applicationCommands(process.env.DISCORD_APPLICATION_I), {
     method: 'PUT',
     headers: {
       'Content-Type': `application/json`,

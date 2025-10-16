@@ -13,13 +13,11 @@ import {
   InteractionType,
   MessageFlags
 } from 'discord-api-types/payloads/v10';
-import { Locale } from 'discord-api-types/rest/v10';
 import { verifyKey } from 'discord-interactions';
 import { ApplicationCommandAutocompleteContext } from './application-command-autocomplete.context';
 import { ChatInputApplicationCommandContext } from './chat-input-application-command.context';
 import { appChatInputCommandMap } from './commands/command';
 import { sleep } from './utils/sleep';
-import { truncate } from './utils/strings';
 
 const DEFAULT_TIMEOUT_MS = 20000;
 
@@ -112,40 +110,12 @@ export class Application {
     const context = new ApplicationCommandAutocompleteContext(this, interaction);
 
     if (commandHandler?.handleAutocomplete) {
-      const rawChoices = await commandHandler.handleAutocomplete(context);
-
-      // Cleanup choices
-      const choices = rawChoices
-        .map((choice) => {
-          if (choice.name_localizations) {
-            for (const key in choice.name_localizations) {
-              const locale = key as Locale;
-              if (choice.name_localizations[locale]) {
-                choice.name_localizations[locale] = truncate(choice.name_localizations[locale], 100);
-              }
-            }
-          }
-
-          if (typeof choice.value === 'string') {
-            return {
-              name: truncate(choice.name, 100),
-              name_localizations: choice.name_localizations,
-              value: truncate(choice.value, 100)
-            };
-          }
-
-          return {
-            name: truncate(choice.name, 100),
-            name_localizations: choice.name_localizations,
-            value: choice.value
-          };
-        })
-        .slice(0, 25);
+      const choices = await commandHandler.handleAutocomplete(context);
 
       return {
         type: InteractionResponseType.ApplicationCommandAutocompleteResult,
         data: {
-          choices
+          choices: choices.slice(0, 25)
         }
       };
     }

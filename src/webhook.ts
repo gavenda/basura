@@ -1,9 +1,7 @@
 import { Snowflake } from 'discord-api-types/globals';
 import { APIMessage } from 'discord-api-types/payloads/v10';
-import { RESTPostAPIInteractionFollowupJSONBody, Routes } from 'discord-api-types/rest/v10';
-import { safeFetch } from './utils/safe-fetch';
-
-const DISCORD_API_V10 = `https://discord.com/api/v10`;
+import { RESTPostAPIInteractionFollowupJSONBody, RouteBases, Routes } from 'discord-api-types/rest/v10';
+import { kvRateLimitedFetch } from './utils/kv-fetch';
 
 export class Webhook {
   token: string;
@@ -17,15 +15,19 @@ export class Webhook {
   async followUp(data: RESTPostAPIInteractionFollowupJSONBody): Promise<APIMessage> {
     const body = JSON.stringify(data);
 
-    const result = await safeFetch(DISCORD_API_V10 + Routes.webhook(this.env.DISCORD_APPLICATION_ID, this.token), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Basura/2.0',
-        'Authorization': `Bot ${this.env.DISCORD_TOKEN}`
-      },
-      body
-    });
+    const result = await kvRateLimitedFetch(
+      RouteBases.api + Routes.webhook(this.env.DISCORD_APPLICATION_ID, this.token),
+      this.env,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Basura/2.0',
+          'Authorization': `Bot ${this.env.DISCORD_TOKEN}`
+        },
+        body
+      }
+    );
 
     return await result.json<APIMessage>();
   }
@@ -33,8 +35,9 @@ export class Webhook {
   async edit(messageId: string, data: RESTPostAPIInteractionFollowupJSONBody): Promise<APIMessage> {
     const body = JSON.stringify(data);
 
-    const result = await safeFetch(
-      DISCORD_API_V10 + Routes.webhookMessage(this.env.DISCORD_APPLICATION_ID, this.token, messageId),
+    const result = await kvRateLimitedFetch(
+      RouteBases.api + Routes.webhookMessage(this.env.DISCORD_APPLICATION_ID, this.token, messageId),
+      this.env,
       {
         method: 'PATCH',
         headers: {
@@ -50,12 +53,16 @@ export class Webhook {
   }
 
   async delete(id: Snowflake): Promise<void> {
-    await safeFetch(DISCORD_API_V10 + Routes.webhookMessage(this.env.DISCORD_APPLICATION_ID, this.token, id), {
-      headers: {
-        'User-Agent': 'Basura/2.0',
-        'Authorization': `Bot ${this.env.DISCORD_TOKEN}`
-      },
-      method: 'DELETE'
-    });
+    await kvRateLimitedFetch(
+      RouteBases.api + Routes.webhookMessage(this.env.DISCORD_APPLICATION_ID, this.token, id),
+      this.env,
+      {
+        headers: {
+          'User-Agent': 'Basura/2.0',
+          'Authorization': `Bot ${this.env.DISCORD_TOKEN}`
+        },
+        method: 'DELETE'
+      }
+    );
   }
 }

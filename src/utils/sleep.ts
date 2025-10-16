@@ -1,3 +1,8 @@
-export const sleep = (milliseconds: number) => {
-  return new Promise((r) => setTimeout(r, milliseconds));
+/**
+ * Sleeps for a specified amount of time.
+ * @param {number} ms - Milliseconds to sleep.
+ * @returns {Promise<void>}
+ */
+export const sleep = (ms: number) => {
+  return new Promise((r) => setTimeout(r, ms));
 };

@@ -1,4 +1,6 @@
-export const FIND_MEDIA_BY_ID = `
+import gqlmin from 'gqlmin';
+
+export const findMediaByIdQuery = gqlmin(`
   query ($mediaId: Int, $mediaType: MediaType) {
     Media(id: $mediaId, type: $mediaType) {
       id
@@ -35,4 +37,4 @@ export const FIND_MEDIA_BY_ID = `
       siteUrl
     }
   }
-`;
+`);
