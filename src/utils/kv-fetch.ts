@@ -87,6 +87,11 @@ export async function kvRateLimitedFetch(
     return kvRateLimitedFetch(url, env, init, attempt + 1);
   }
 
+  if (!response.ok) {
+    const data = await response.json();
+    console.error({ message: 'Error response', data });
+  }
+
   // Success or Non-429 Error
   return response;
 }
