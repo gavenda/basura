@@ -91,8 +91,8 @@ const mapNameToDiscordName = async (env: Env, userIds: number[]): Promise<Record
     return {};
   }
 
-  const stmt = env.D1.prepare(`SELECT * FROM anilist_user WHERE anilist_id in (?)`);
-  const result = await stmt.bind(userIds.join(',')).run();
+  const stmt = env.D1.prepare(`SELECT * FROM anilist_user WHERE anilist_id in (${userIds.join(',')})`);
+  const result = await stmt.run();
   const data = result.results as unknown as UserTable[];
 
   const nameMap: Record<number, string> = {};
