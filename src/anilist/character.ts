@@ -191,13 +191,16 @@ export const characterToComponents = (character: Character): APIMessageTopLevelC
 
   // DESCRIPTION START
 
-  const sourceRegex = /^(\(Source: .*\))$/gm;
-
   const descriptions: string[] = [];
+
+  const sourceRegex = /^(\(Source: .*\))$/gm;
+  const headingRegex = /^(?:\*\*)(.*)(?:\*\*)/gm;
 
   if (character.description) {
     descriptions.push(
-      NodeHtmlMarkdown.translate(character.description).replaceAll(sourceRegex, (replace) => `-# ${replace}`)
+      NodeHtmlMarkdown.translate(character.description)
+        .replaceAll(sourceRegex, (replace) => `-# ${replace}`)
+        .replaceAll(headingRegex, (_, replace) => `-# ${replace}`)
     );
   } else {
     descriptions.push('No description available.');

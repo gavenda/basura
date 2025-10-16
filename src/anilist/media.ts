@@ -278,21 +278,23 @@ export const mediaToComponents = async (options: {
 
   // DESCRIPTION START
 
-  const sourceRegex = /^(\(Source: .*\))$/gm;
-
   const descriptions: string[] = [];
 
   // Apply hashtag
   if (media.hashtag) {
     descriptions.push(`-# ${media.hashtag}`);
   }
+  const sourceRegex = /^(\(Source: .*\))$/gm;
+  const headingRegex = /^(?:\*\*)(.*)(?:\*\*)/gm;
 
   if (media.description) {
     descriptions.push(
-      NodeHtmlMarkdown.translate(media.description).replaceAll(sourceRegex, (replace) => `-# ${replace}`)
+      NodeHtmlMarkdown.translate(media.description)
+        .replaceAll(sourceRegex, (replace) => `-# ${replace}`)
+        .replaceAll(headingRegex, (_, replace) => `-# ${replace}`)
     );
   } else {
-    descriptions.push('No description available.');
+    descriptions.push('No synopsis available.');
   }
 
   // DESCRIPTIONS END
