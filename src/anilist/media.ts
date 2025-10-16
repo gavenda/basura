@@ -381,27 +381,27 @@ export const mediaToComponents = async (options: {
 
   // User scores
   if (paused) {
-    description += `\n\n-# Paused\n${paused}`;
+    description += `\n\n-# Paused\n${paused.slice(0, -1)}`;
   }
 
   if (inProgress) {
-    description += `\n\n-# In Progress\n${inProgress}`;
+    description += `\n\n-# In Progress\n${inProgress.slice(0, -1)}`;
   }
 
   if (repeating) {
-    description += `\n\n-# Repeating\n${repeating}`;
+    description += `\n\n-# Repeating\n${repeating.slice(0, -1)}`;
   }
 
   if (completed) {
-    description += `\n\n-# Completed\n${completed}`;
+    description += `\n\n-# Completed\n${completed.slice(0, -1)}`;
   }
 
   if (dropped) {
-    description += `\n\n-# Dropped\n${dropped}`;
+    description += `\n\n-# Dropped\n${dropped.slice(0, -1)}`;
   }
 
   if (planned) {
-    description += `\n\n-# Planned\n${planned}`;
+    description += `\n\n-# Planned\n${planned.slice(0, -1)}`;
   }
 
   // DESCRIPTION END
