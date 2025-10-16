@@ -6,6 +6,7 @@ import {
   APITextDisplayComponent,
   ButtonStyle,
   ComponentType,
+  Locale,
   LocalizationMap
 } from 'discord-api-types/v10';
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
@@ -63,24 +64,40 @@ export const findMediaTitles = async (options: {
 
     for (const media of medias) {
       if (media?.title?.romaji) {
-        const title = media.title.english ? `${media.title.romaji} (${media.title.english})` : media.title.romaji;
-        const safeTitle = truncate(title, 100);
-        const exists = titles.find((x) => x.name === safeTitle);
+        const title = truncate(
+          media.title.english ? `${media.title.romaji} (${media.title.english})` : media.title.romaji,
+          100
+        );
+        const exists = titles.find((x) => x.name === title);
 
         if (exists) continue;
 
         const name_localizations: LocalizationMap = {};
 
         if (media.title.native) {
-          name_localizations['ja'] = truncate(media.title.native, 100);
+          const nativeTitle = truncate(media.title.native, 100);
+
+          if (media.countryOfOrigin === 'KR') {
+            name_localizations[Locale.Korean] = nativeTitle;
+          }
+          if (media.countryOfOrigin === 'CN') {
+            name_localizations[Locale.ChineseCN] = nativeTitle;
+            name_localizations[Locale.ChineseTW] = nativeTitle;
+          }
+          if (media.countryOfOrigin === 'JP') {
+            name_localizations[Locale.Japanese] = nativeTitle;
+          }
         }
 
         if (media.title.english) {
-          name_localizations['en-US'] = truncate(media.title.english, 100);
+          const englishTitle = truncate(media.title.english, 100);
+
+          name_localizations[Locale.EnglishGB] = englishTitle;
+          name_localizations[Locale.EnglishUS] = englishTitle;
         }
 
         titles.push({
-          name: safeTitle,
+          name: title,
           name_localizations,
           value: media.id
         });
@@ -95,116 +112,7 @@ export const findMediaTitles = async (options: {
 };
 
 export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] => {
-  const detailedInfo: string[] = [];
-  const actionRowComponents: APIComponentInMessageActionRow[] = [];
-
-  if (media.format) {
-    actionRowComponents.push({
-      custom_id: 'media:format',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: media.format,
-      disabled: true
-    });
-  }
-
-  if (media.season && media.seasonYear) {
-    actionRowComponents.push({
-      custom_id: 'media:season',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `${titleCase(media.season)} ${media.seasonYear}`,
-      disabled: true
-    });
-  }
-
-  if (media.genres) {
-    detailedInfo.push(`${media.genres.map((x) => `${x}`).join(` - `)}`);
-  }
-
-  if (media.episodes) {
-    detailedInfo.push(`${media.episodes} Episodes`);
-    actionRowComponents.push({
-      custom_id: 'media:parts',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `${media.episodes} Episodes`,
-      disabled: true
-    });
-  }
-
-  if (media.chapters) {
-    detailedInfo.push(`${media.chapters} Chapters`);
-    actionRowComponents.push({
-      custom_id: 'media:parts',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `${media.chapters} Chapters`,
-      disabled: true
-    });
-  }
-
-  if (media.rankings) {
-    const mediaRankingsAsc = media.rankings.sort((a, b) => a.rank - b.rank);
-    const allTimeRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && x.allTime);
-    const seasonRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && !x.allTime && x.season);
-
-    if (allTimeRank) {
-      actionRowComponents.push({
-        custom_id: 'media:rank',
-        type: ComponentType.Button,
-        style: ButtonStyle.Secondary,
-        label: `Rank #${allTimeRank.rank}`,
-        disabled: true
-      });
-    } else if (seasonRank && seasonRank.season) {
-      actionRowComponents.push({
-        custom_id: 'media:rank',
-        type: ComponentType.Button,
-        style: ButtonStyle.Secondary,
-        label: `Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`,
-        disabled: true
-      });
-    }
-  }
-
-  if (media.meanScore && media.meanScore != 0) {
-    // footerInfo.push(`Rating - ${media.meanScore} / 100`);
-    actionRowComponents.push({
-      custom_id: 'media:rating',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `${toStars(media.meanScore)}`,
-      disabled: true
-    });
-  }
-
-  const sourceRegex = /^(\(Source: .*\))$/gm;
-
-  let description = '-# No synopsis available.';
-
-  if (media.description) {
-    description = NodeHtmlMarkdown.translate(media.description);
-  }
-
-  // Apply source regex
-  description = description.replaceAll(sourceRegex, (replace) => `-# ${replace}`);
-
-  const components: APIComponentInContainer[] = [];
-
-  // Banner Image, if applicable
-  if (media.bannerImage) {
-    components.push({
-      type: ComponentType.MediaGallery,
-      items: [
-        {
-          media: {
-            url: media.bannerImage
-          }
-        }
-      ]
-    });
-  }
+  // TITLE START
 
   const titleComponents: APITextDisplayComponent[] = [];
 
@@ -223,7 +131,7 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
     altTitles = altTitles + `-# _(Native: ${media.title.native})_\n`;
   }
 
-  if (media.synonyms) {
+  if (media.synonyms && media.synonyms.length > 0) {
     altTitles = altTitles + `-# _(Synonym: ${media.synonyms[0]})_\n`;
   }
 
@@ -231,6 +139,170 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
     titleComponents.push({
       type: ComponentType.TextDisplay,
       content: altTitles
+    });
+  }
+
+  // TITLE END
+
+  // DETAILED INFO START
+
+  const detailedInfo: string[] = [];
+
+  if (media.status) {
+    const status = titleCase(media.status.replaceAll('_', ' '));
+    detailedInfo.push(status);
+  }
+
+  if (media.episodes) {
+    detailedInfo.push(`${media.episodes} Episodes`);
+  }
+
+  if (media.chapters) {
+    detailedInfo.push(`${media.chapters} Chapters`);
+  }
+
+  // DETAILED INFO END
+
+  // TAGS START
+
+  const actionRowComponents: APIComponentInMessageActionRow[] = [];
+
+  if (media.format) {
+    const format = media.format && media.format.length > 3 ? titleCase(media.format) : media.format;
+
+    actionRowComponents.push({
+      custom_id: 'media:format',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: format,
+      disabled: true
+    });
+  }
+
+  if (media.season && media.seasonYear) {
+    actionRowComponents.push({
+      custom_id: 'media:season',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `${titleCase(media.season)} ${media.seasonYear}`,
+      disabled: true
+    });
+  }
+
+  if (media.rankings) {
+    const mediaRankingsAsc = media.rankings.sort((a, b) => a.rank - b.rank);
+    const allTimeRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && x.allTime);
+    const seasonRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && !x.allTime && x.season);
+
+    if (allTimeRank) {
+      actionRowComponents.push({
+        custom_id: 'media:rank',
+        type: ComponentType.Button,
+        style: ButtonStyle.Secondary,
+        label: `Rank #${allTimeRank.rank}`,
+        disabled: true
+      });
+    }
+
+    if (seasonRank && seasonRank.season) {
+      // No all time rank, we add it as a tag
+      if (!allTimeRank) {
+        actionRowComponents.push({
+          custom_id: 'media:rank',
+          type: ComponentType.Button,
+          style: ButtonStyle.Secondary,
+          label: `Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`,
+          disabled: true
+        });
+      } else {
+        // Otherwise, add it to detailed info
+        detailedInfo.push(`Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`);
+      }
+    }
+  }
+
+  if (media.favourites) {
+    actionRowComponents.push({
+      custom_id: 'media:favorite',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `❤️ ${media.favourites}`,
+      disabled: true
+    });
+  }
+
+  if (media.meanScore && media.meanScore != 0) {
+    // footerInfo.push(`Rating - ${media.meanScore} / 100`);
+    actionRowComponents.push({
+      custom_id: 'media:rating',
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: `${toStars(media.meanScore)}`,
+      disabled: true
+    });
+  }
+
+  // TAGS END
+
+  // DESCRIPTION START
+
+  const sourceRegex = /^(\(Source: .*\))$/gm;
+
+  let description = 'No synopsis available.';
+
+  if (media.description) {
+    description = NodeHtmlMarkdown.translate(media.description);
+  }
+
+  // Apply source regex
+  description = description.replaceAll(sourceRegex, (replace) => `-# ${replace}`);
+
+  // Apply hashtag
+  if (media.hashtag) {
+    description = `-# ${media.hashtag}\n\n${description}`;
+  }
+
+  // Add source
+  const source = titleCase(media.source?.replaceAll('_', ' '));
+  description = description + `\n\n-# Original Source\n${source}`;
+
+  // Add genres
+  if (media.genres) {
+    const genres = `${media.genres.map((x) => `${x}`).join(` - `)}`;
+    description = description + `\n\n-# Genres\n${genres}`;
+  }
+
+  // Add characters
+  if (media.characters?.edges) {
+    description = description + `\n\n-# Characters\n`;
+    for (const characterEdge of media.characters?.edges) {
+      const character = characterEdge.node;
+
+      if (character) {
+        description =
+          description +
+          `- [${character.name?.full}](${character.siteUrl}) (${character.name?.native}) - ${titleCase(characterEdge.role)}\n`;
+      }
+    }
+  }
+
+  // DESCRIPTION END
+
+  // CONTAINER START
+
+  const components: APIComponentInContainer[] = [];
+
+  // Banner Image, if applicable
+  if (media.bannerImage) {
+    components.push({
+      type: ComponentType.MediaGallery,
+      items: [
+        {
+          media: {
+            url: media.bannerImage
+          }
+        }
+      ]
     });
   }
 
@@ -246,6 +318,7 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
     }
   });
 
+  // Detailed Info
   components.push({
     type: ComponentType.TextDisplay,
     content: `-# ${detailedInfo.join(` — `)}`

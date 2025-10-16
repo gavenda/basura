@@ -42,7 +42,9 @@ export const charCount = (str: string, char: string): number => {
   return str.split(char).length - 1;
 };
 
-export const titleCase = (str: string): string => {
+export const titleCase = (str: string | undefined): string => {
+  if (!str) return '';
+
   // https://stackoverflow.com/a/32589289
   // Modified for enums, won't work with usual things that have underscores.
   const splitStr = str.toLowerCase().replaceAll('_', ' ').split(' ');

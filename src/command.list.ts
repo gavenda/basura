@@ -40,7 +40,7 @@ export const COMMAND_FIND: Partial<APIApplicationCommand> = {
   options: [
     {
       type: ApplicationCommandOptionType.Integer,
-      name: 'media-id',
+      name: 'id',
       description: 'Name of the anime/manga.',
       autocomplete: true,
       required: true
@@ -55,7 +55,7 @@ export const COMMAND_ANIME: Partial<APIApplicationCommand> = {
   options: [
     {
       type: ApplicationCommandOptionType.Number,
-      name: 'media-id',
+      name: 'id',
       description: 'Name of the anime.',
       autocomplete: true,
       required: true
@@ -70,7 +70,7 @@ export const COMMAND_MANGA: Partial<APIApplicationCommand> = {
   options: [
     {
       type: ApplicationCommandOptionType.Number,
-      name: 'media-id',
+      name: 'id',
       description: 'Name of the manga.',
       autocomplete: true,
       required: true
@@ -114,8 +114,8 @@ export const COMMAND_CHARACTER: Partial<APIApplicationCommand> = {
   description: `Looks up the name of an anime/manga character.`,
   options: [
     {
-      type: ApplicationCommandOptionType.String,
-      name: 'query',
+      type: ApplicationCommandOptionType.Number,
+      name: 'id',
       description: 'Name of the anime/manga character.',
       autocomplete: true,
       required: true
@@ -315,13 +315,13 @@ export const commandList = [
   COMMAND_ABOUT,
   COMMAND_ANIME,
   // COMMAND_FIND
-  COMMAND_MANGA
+  COMMAND_MANGA,
   // COMMAND_STAFF,
   // COMMAND_USER,
   // COMMAND_LINK,
   // COMMAND_UNLINK,
   // COMMAND_RANKING,
-  // COMMAND_CHARACTER,
+  COMMAND_CHARACTER
   // COMMAND_BIND_NOTIFICATION,
   // COMMAND_UNBIND_NOTIFICATION,
   // COMMAND_NOTIFICATION

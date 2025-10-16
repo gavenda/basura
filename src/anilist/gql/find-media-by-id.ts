@@ -12,12 +12,29 @@ export const findMediaByIdQuery = gqlmin(`
       rankings {
         type
         rank
+        year
         allTime
+        season
       }
       type
       format
       status
-      description
+      source(version: 3)
+      description(asHtml: true)
+      characters(sort: RELEVANCE, perPage: 5) {
+        edges {
+          role
+          node {
+            name {
+              full
+              native
+            }
+            siteUrl
+          }
+        }
+      }
+      hashtag
+      countryOfOrigin
       season
       seasonYear
       episodes

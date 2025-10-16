@@ -8,6 +8,7 @@ export const findMediaTitleQuery = gqlmin(`
       }
       media(type: $mediaType, search: $search) {
         id
+        countryOfOrigin
         title {
           native
           romaji
