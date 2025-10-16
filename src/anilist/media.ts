@@ -273,7 +273,7 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
   }
 
   // Add characters
-  if (media.characters?.edges) {
+  if (media.characters?.edges && media.characters?.edges.length > 0) {
     description = description + `\n\n-# Characters\n`;
     for (const characterEdge of media.characters?.edges) {
       const character = characterEdge.node;
