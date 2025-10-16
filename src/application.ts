@@ -178,6 +178,15 @@ export class Application {
     // Do not forcibly exit worker until we finish fully handling the interaction race
     this.executionContext.waitUntil(race);
 
+    if (commandHandler.flags) {
+      return {
+        type: InteractionResponseType.DeferredChannelMessageWithSource,
+        data: {
+          flags: commandHandler.flags
+        }
+      };
+    }
+
     return {
       type: InteractionResponseType.DeferredChannelMessageWithSource
     };

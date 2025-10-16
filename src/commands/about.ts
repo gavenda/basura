@@ -13,6 +13,7 @@ import { kvRateLimitedFetch } from '../utils/kv-fetch';
 import { ApplicationChatInputCommandHandler } from './command';
 
 export const about: ApplicationChatInputCommandHandler = {
+  flags: MessageFlags.Ephemeral | MessageFlags.SuppressNotifications,
   async handle(context) {
     const result = await kvRateLimitedFetch(RouteBases.api + Routes.user(), context.env, {
       headers: {
@@ -23,7 +24,7 @@ export const about: ApplicationChatInputCommandHandler = {
     });
     const user = await result.json<APIUser>();
 
-    const selfAvatarUrl = CDNRoutes.userAvatar(user.id, user.avatar!, ImageFormat.WebP);
+    const selfAvatarUrl = RouteBases.cdn + CDNRoutes.userAvatar(user.id, user.avatar!, ImageFormat.WebP);
     const dateCreated = getDate(user.id as Snowflake);
 
     const versionText = `-# Version\n2.0\n`;
@@ -92,7 +93,7 @@ export const about: ApplicationChatInputCommandHandler = {
           ]
         }
       ],
-      flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
+      flags: MessageFlags.IsComponentsV2
     });
   }
 };
