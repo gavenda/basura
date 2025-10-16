@@ -251,17 +251,16 @@ export const mediaToComponents = (media: Media): APIMessageTopLevelComponent[] =
     content: `-# ${detailedInfo.join(` — `)}`
   });
 
-  // Seperator
-  components.push({
-    type: ComponentType.Separator
-  });
-
   if (actionRowComponents.length > 0) {
     components.push({
       type: ComponentType.ActionRow,
       components: actionRowComponents
     });
   }
+  // Seperator
+  components.push({
+    type: ComponentType.Separator
+  });
 
   // Description
   components.push({
