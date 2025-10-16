@@ -357,6 +357,7 @@ export const mediaToComponents = async (options: {
         }
         case MediaListStatus.CURRENT: {
           inProgress += `- ${mediaList.discordName} ${score} ${progress}\n`;
+          break;
         }
         case MediaListStatus.DROPPED: {
           dropped += `- ${mediaList.discordName} ${score} ${progress}\n`;
