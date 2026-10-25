@@ -8,6 +8,19 @@ export const isBlank = (str: string) => {
 
 export const isNotBlank = (str: string) => !isBlank(str);
 
+/** Minimum characters before autocomplete searches AniList. */
+export const MIN_SEARCH_LENGTH = 3;
+
+// Japanese/Chinese/Korean characters carry a whole word or syllable each, so short searches are still useful.
+const CJK_REGEX = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+
+/** True when a search is too short to be worth a request: blank, or under MIN_SEARCH_LENGTH characters with no CJK. */
+export const isSearchTooShort = (str: string) => {
+  if (isBlank(str)) return true;
+  const trimmed = str.trim();
+  return !CJK_REGEX.test(trimmed) && trimmed.length < MIN_SEARCH_LENGTH;
+};
+
 /**
  * Limits the input text to a maximum character length by only cutting
  * at paragraph breaks ('\\n\\n').

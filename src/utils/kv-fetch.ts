@@ -1,101 +1,115 @@
 import { sleep } from './sleep';
 
-// KEYS used in the KV store
-const KV_KEY_LIMIT = 'rate_limit_limit';
-const KV_KEY_REMAINING = 'rate_limit_remaining';
-const KV_KEY_RESET = 'rate_limit_reset';
+const MAX_ATTEMPTS = 3;
+// KV rejects TTLs under 60 seconds.
+const KV_MIN_TTL_SECONDS = 60;
+
+export interface RateLimitOptions {
+  /**
+   * When true (default), wait out a rate limit and retry.
+   * When false, return a 429 right away. Use this for anything with a hard deadline,
+   * like autocomplete, which Discord drops after 3 seconds.
+   */
+  wait?: boolean;
+}
+
+// Per-isolate copy of the block state, so most requests skip the KV read.
+const blockedUntilCache = new Map<string, number>();
+
+const kvKey = (host: string) => `rate_limit_blocked_until:${host}`;
+
+const getBlockedUntil = async (env: Env, host: string): Promise<number> => {
+  const cached = blockedUntilCache.get(host);
+  if (cached && cached > Date.now()) return cached;
+
+  const stored = parseInt((await env.KV.get(kvKey(host))) ?? '0', 10);
+  if (stored > Date.now()) blockedUntilCache.set(host, stored);
+  return stored;
+};
+
+const setBlockedUntil = async (env: Env, host: string, blockedUntil: number) => {
+  blockedUntilCache.set(host, blockedUntil);
+
+  const ttl = Math.max(KV_MIN_TTL_SECONDS, Math.ceil((blockedUntil - Date.now()) / 1000) + 1);
+  try {
+    await env.KV.put(kvKey(host), blockedUntil.toString(), { expirationTtl: ttl });
+  } catch (error) {
+    console.error({ message: 'Failed to store rate limit state', host, error });
+  }
+};
+
+/** Works out when a 429 lifts, from Retry-After or X-RateLimit-Reset. */
+const blockedUntilFrom = (response: Response, attempt: number): number => {
+  const retryAfter = parseFloat(response.headers.get('Retry-After') ?? '');
+  if (retryAfter > 0) return Date.now() + retryAfter * 1000 + 250;
+
+  const reset = parseFloat(response.headers.get('X-RateLimit-Reset') ?? '');
+  if (reset * 1000 > Date.now()) return reset * 1000 + 250;
+
+  return Date.now() + Math.pow(2, attempt) * 1000;
+};
+
+const rateLimitedResponse = (blockedUntil: number) =>
+  new Response(JSON.stringify({ errors: [{ message: 'Rate limited (local)', status: 429 }] }), {
+    status: 429,
+    headers: {
+      'Content-Type': 'application/json',
+      'Retry-After': Math.ceil((blockedUntil - Date.now()) / 1000).toString()
+    }
+  });
 
 /**
- * A rate-limited fetch function for a Cloudflare Worker using KV for state.
+ * Fetch that respects rate limits per host, with state shared across isolates through KV.
  *
- * NOTE: This is a simplified implementation. Real-world solutions might
- * use a dedicated rate-limiting service or a more robust atomic counter.
- *
- * @param {Request} url - The original request object from the Worker handler.
- * @param {Env} env - The environment object containing KV bindings.
- * @param {Env} init - Fetch options
- * @returns {Promise<Response>} The fetch response or a 429 error response.
+ * KV is only written when a 429 comes back, so normal traffic costs one KV read at most.
  */
 export async function kvRateLimitedFetch(
   url: RequestInfo | URL,
   env: Env,
   init?: RequestInit<RequestInitCfProperties>,
+  options: RateLimitOptions = {},
   attempt = 1
 ): Promise<Response> {
-  // Check Pre-emptive Limit (based on previous call's headers)
-  const nowInSeconds = Math.floor(Date.now() / 1000);
+  const { wait = true } = options;
+  const host = new URL(url instanceof Request ? url.url : url).host;
 
-  const remainingStr = await env.KV.get(KV_KEY_REMAINING);
-  const resetStr = await env.KV.get(KV_KEY_RESET);
-  const limitStr = await env.KV.get(KV_KEY_LIMIT);
+  // Skip the request entirely if we already know the host is blocking us.
+  const blockedUntil = await getBlockedUntil(env, host);
+  if (blockedUntil > Date.now()) {
+    if (!wait) return rateLimitedResponse(blockedUntil);
 
-  let remaining = parseInt(remainingStr || '0', 10);
-  let reset = parseInt(resetStr || '0', 10);
-  let limit = parseInt(limitStr || '0', 10);
-
-  // Check if we are past the server's known reset time
-  if (remaining === 0 && reset > nowInSeconds) {
-    const waitTimeMs = (reset - nowInSeconds) * 1000 + 500; // +500ms buffer
-    console.warn({ message: `Limit hit on previous call. Waiting ${Math.ceil(waitTimeMs / 1000)}s` });
-    await sleep(waitTimeMs);
-
-    // Assume reset occurred and try again
-    remaining = limit;
+    const waitMs = blockedUntil - Date.now();
+    console.warn({ message: `Rate limited by ${host}, waiting ${Math.ceil(waitMs / 1000)}s` });
+    await sleep(waitMs);
   }
 
-  // Perform Fetch
   let response;
   try {
     response = await fetch(url, init);
   } catch (error) {
     console.error({ message: `Failed to fetch`, error });
-    // For demonstration, we break here, but production code might retry network errors.
     throw error;
   }
 
-  // Update State
-  limit = parseInt(response.headers.get('X-RateLimit-Limit') || '0', 10);
-  remaining = parseInt(response.headers.get('X-RateLimit-Remaining') || '0', 10);
-  reset = parseInt(response.headers.get('X-RateLimit-Reset') || '0', 10);
-
-  void env.KV.put(KV_KEY_LIMIT, limit.toString(), { expiration: reset });
-  void env.KV.put(KV_KEY_REMAINING, remaining.toString(), { expiration: reset });
-  void env.KV.put(KV_KEY_RESET, reset.toString(), { expiration: reset });
-
-  // Handle 429 Status
   if (response.status === 429) {
-    let waitTimeMs = 0;
-    const retryAfterSeconds = parseInt(response.headers.get('Retry-After') || '0', 10);
+    const until = blockedUntilFrom(response, attempt);
+    await setBlockedUntil(env, host, until);
+    console.error({ message: `Rate limited by ${host} until ${new Date(until).toISOString()}` });
 
-    if (!isNaN(retryAfterSeconds) && retryAfterSeconds > 0) {
-      // Option A: Use Retry-After header (preferred)
-      waitTimeMs = retryAfterSeconds * 1000 + 100; // Small buffer
-      console.error({ message: `Server requested retry after ${retryAfterSeconds} seconds.` });
-    } else if (reset > nowInSeconds) {
-      // Option B: Use X-RateLimit-Reset timestamp
-      waitTimeMs = (reset - nowInSeconds) * 1000 + 500; // Small buffer
-      console.error({ message: `Using X-RateLimit-Reset time. Waiting ${Math.ceil(waitTimeMs / 1000)}s.` });
-    } else {
-      // Option C: Exponential backoff as a fallback (Should not happen if headers are present)
-      waitTimeMs = Math.pow(2, attempt) * 1000;
-      console.error({ message: `No explicit wait time. Falling back to exponential backoff: ${waitTimeMs}ms.` });
-    }
+    if (!wait || attempt >= MAX_ATTEMPTS) return response;
 
-    await sleep(waitTimeMs);
-
-    // Go to the next retry attempt
-    return kvRateLimitedFetch(url, env, init, attempt + 1);
+    await sleep(until - Date.now());
+    return kvRateLimitedFetch(url, env, init, options, attempt + 1);
   }
 
   if (!response.ok && response.body && init) {
     const [stream1, stream2] = response.body.tee();
-    const data = await new Response(stream1).json();
+    const data = await new Response(stream1).text();
 
-    console.error({ message: 'Error response', data: JSON.stringify(data), body: init.body });
+    console.error({ message: 'Error response', status: response.status, data, body: init.body });
 
-    return new Response(stream2);
+    return new Response(stream2, response);
   }
 
-  // Success or Non-429 Error
   return response;
 }

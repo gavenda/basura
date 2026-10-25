@@ -12,7 +12,7 @@ import {
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
 import { zip } from '../utils/array';
 import { isBlank, limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
-import { aniListRequest } from './anilist';
+import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './anilist';
 import { Query, Staff, StaffName } from './gql';
 import { findStaffQuery } from './gql/find-staff';
 import { findStaffNameQuery } from './gql/find-staff-name';
@@ -23,11 +23,11 @@ export const findStaffNames = async (options: {
 }): Promise<APIApplicationCommandOptionChoice[]> => {
   const { search, env } = options;
   const variables = {
-    search
+    search: normalizeSearch(search)
   };
 
   try {
-    const result = await aniListRequest<Query>({
+    const result = await aniListSearchRequest<Query>({
       query: findStaffNameQuery,
       env,
       variables
@@ -78,7 +78,8 @@ export const findStaffById = async (options: { staffId: number; env: Env }): Pro
     const result = await aniListRequest<Query>({
       query: findStaffQuery,
       env,
-      variables
+      variables,
+      cacheTtl: CACHE_TTL.details
     });
     return result?.Staff;
   } catch (error) {

@@ -3,7 +3,7 @@ import { MediaList, MediaType } from '../anilist/gql';
 import { findMediaById, findMediaListByUserIdsAndMediaId, findMediaTitles, mediaToComponents } from '../anilist/media';
 import { ApplicationCommandAutocompleteContext } from '../application-command-autocomplete.context';
 import { UserTable } from '../db/tables';
-import { isBlank } from '../utils/strings';
+import { isSearchTooShort } from '../utils/strings';
 import { ApplicationChatInputCommandHandler } from './command';
 
 const find = (mediaType: MediaType): ApplicationChatInputCommandHandler => {
@@ -57,7 +57,7 @@ export const handleMediaTitleAutocomplete = async (
 ): Promise<APIApplicationCommandOptionChoice[]> => {
   const search = context.getRequiredString(`id`);
 
-  if (isBlank(search)) {
+  if (isSearchTooShort(search)) {
     return [];
   }
 

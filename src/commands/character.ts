@@ -1,6 +1,6 @@
 import { MessageFlags } from 'discord-api-types/v10';
 import { characterToComponents, findCharacterById, findCharacterNames } from '../anilist/character';
-import { isBlank } from '../utils/strings';
+import { isSearchTooShort } from '../utils/strings';
 import { ApplicationChatInputCommandHandler } from './command';
 
 export const character: ApplicationChatInputCommandHandler = {
@@ -24,7 +24,7 @@ export const character: ApplicationChatInputCommandHandler = {
   async handleAutocomplete(context) {
     const search = context.getRequiredString(`id`);
 
-    if (isBlank(search)) {
+    if (isSearchTooShort(search)) {
       return [];
     }
 

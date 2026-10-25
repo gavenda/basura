@@ -13,7 +13,7 @@ import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
 import { mediaFormatDisplay } from '../utils/anilist';
 import { zip } from '../utils/array';
 import { isBlank, limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
-import { aniListRequest } from './anilist';
+import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './anilist';
 import { findCharacterQuery } from './gql/find-character';
 import { findCharacterNameQuery } from './gql/find-character-name';
 import { Character, CharacterName, MediaType, Query } from './gql/types';
@@ -24,11 +24,11 @@ export const findCharacterNames = async (options: {
 }): Promise<APIApplicationCommandOptionChoice[]> => {
   const { search, env } = options;
   const variables = {
-    search
+    search: normalizeSearch(search)
   };
 
   try {
-    const result = await aniListRequest<Query>({
+    const result = await aniListSearchRequest<Query>({
       query: findCharacterNameQuery,
       env,
       variables
@@ -79,7 +79,8 @@ export const findCharacterById = async (options: { characterId: number; env: Env
     const result = await aniListRequest<Query>({
       query: findCharacterQuery,
       env,
-      variables
+      variables,
+      cacheTtl: CACHE_TTL.details
     });
     return result?.Character;
   } catch (error) {

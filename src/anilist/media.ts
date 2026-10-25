@@ -12,7 +12,7 @@ import {
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
 import { mediaFormatDisplay, toStars } from '../utils/anilist';
 import { limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
-import { aniListRequest } from './anilist';
+import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './anilist';
 import { findMediaByIdQuery } from './gql/find-media-by-id';
 import { findMediaListByUserIdsAndMediaIdQuery } from './gql/find-media-list-by-userids-and-mediaid';
 import { findMediaTitleQuery } from './gql/find-media-title';
@@ -34,7 +34,8 @@ export const findMediaById = async (options: {
     const result = await aniListRequest<Query>({
       query: findMediaByIdQuery,
       variables,
-      env
+      env,
+      cacheTtl: CACHE_TTL.details
     });
     return result.Media;
   } catch (error) {
@@ -75,12 +76,12 @@ export const findMediaTitles = async (options: {
   const { search, mediaType, env } = options;
 
   const variables = {
-    search,
+    search: normalizeSearch(search),
     mediaType
   };
 
   try {
-    const result = await aniListRequest<Query>({
+    const result = await aniListSearchRequest<Query>({
       query: findMediaTitleQuery,
       variables,
       env
