@@ -27,8 +27,8 @@ It looks things up on [AniList](https://anilist.co) straight from Discord:
 - `/character` looks up a character.
 - `/about` tells you about the trash, me.
 
-Being based on what **Annie** can do, these are written but currently turned off in
-[command.list.ts](src/command.list.ts):
+Being based on what **Annie** can do, these are planned. Their slash command definitions are kept (commented out)
+in [command.list.ts](src/command.list.ts), but they have no handlers yet:
 
 - Linking your Discord account to AniList (`/link`, `/unlink`) and showing the scores of linked users within each
   Discord server for the searched media.
@@ -59,17 +59,22 @@ DISCORD_PUBLIC_KEY=...
 DISCORD_APPLICATION_ID=...
 ```
 
-| Command                | What it does                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------------ |
-| `bun start`            | Runs the worker locally on port 8787 using the `dev` environment.                                      |
-| `bun run ngrok`        | Exposes the local worker so Discord can reach it.                                                      |
-| `bun run register:dev` | Registers commands in the test guilds listed in [register-dev.ts](src/register-dev.ts).                |
-| `bun run register`     | Registers commands globally using `.prod.vars`.                                                        |
-| `bun run deploy:dev`   | Deploys the `dev` environment.                                                                         |
-| `bun run deploy`       | Deploys the `prod` environment.                                                                        |
-| `bun run types`        | Regenerates [worker-configuration.d.ts](src/worker-configuration.d.ts) after editing `wrangler.jsonc`. |
-| `bun run type-check`   | Type-checks the project with TypeScript.                                                               |
-| `bun run prettier`     | Formats the source.                                                                                    |
+| Command                | What it does                                                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `bun start`            | Runs the worker locally on port 8787 using the `dev` environment.                                                                |
+| `bun run ngrok`        | Exposes the local worker so Discord can reach it.                                                                                |
+| `bun run register:dev` | Registers commands in the test guilds listed in [register.ts](src/register.ts).                                                  |
+| `bun run register`     | Registers commands globally using `.prod.vars`.                                                                                  |
+| `bun run deploy:dev`   | Deploys the `dev` environment.                                                                                                   |
+| `bun run deploy`       | Deploys the `prod` environment.                                                                                                  |
+| `bun run types`        | Regenerates [worker-configuration.d.ts](src/worker-configuration.d.ts) after editing `wrangler.jsonc`.                           |
+| `bun run codegen`      | Regenerates the AniList types in [types.ts](src/anilist/types.ts) from the live schema and [queries.ts](src/anilist/queries.ts). |
+| `bun run type-check`   | Type-checks the project with TypeScript.                                                                                         |
+| `bun run prettier`     | Formats the source.                                                                                                              |
+
+AniList queries live in [queries.ts](src/anilist/queries.ts). After changing one, run `bun run codegen` to update
+its result types. The [AniList API docs](https://docs.anilist.co/guide/introduction) and
+[GraphiQL](https://anilist.co/graphiql) are handy for exploring the schema.
 
 The pre-commit hook formats staged files with Prettier and runs a type-check, so a commit with type errors
 will be rejected.
@@ -79,7 +84,7 @@ will be rejected.
 Sure. Feel free. If you want to check the changes for your pull requests, you can invite the development
 version of the bot by clicking [here](https://discord.com/oauth2/authorize?client_id=911875737999527956&scope=applications.commands).
 
-To test commands in your own server, add your Discord server id to [register-dev.ts](src/register-dev.ts)
+To test commands in your own server, add your Discord server id to [register.ts](src/register.ts)
 and run `bun run register:dev`.
 
 ## I want to deploy my own!

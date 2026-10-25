@@ -4,7 +4,7 @@ import {
   ApplicationCommandType,
   ChannelType
 } from 'discord-api-types/v10';
-import { MediaFormat, MediaSeason } from './anilist/gql/types';
+import { MediaFormat, MediaSeason } from './anilist/types';
 
 export const COMMAND_ABOUT: Partial<APIApplicationCommand> = {
   name: 'about',

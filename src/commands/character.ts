@@ -1,36 +1,9 @@
-import { MessageFlags } from 'discord-api-types/v10';
-import { characterToComponents, findCharacterById, findCharacterNames } from '../anilist/character';
-import { isSearchTooShort } from '../utils/strings';
-import { ApplicationChatInputCommandHandler } from './command';
+import { characterToComponents, findCharacter, findCharacterNames } from '../anilist/character';
+import { lookupCommand } from './command';
 
-export const character: ApplicationChatInputCommandHandler = {
-  async handle(context) {
-    const characterId = context.getRequiredNumber('id');
-    const character = await findCharacterById({ characterId, env: context.env });
-
-    if (!character) {
-      await context.reply({
-        flags: MessageFlags.Ephemeral,
-        content: 'Unable to find character.'
-      });
-      return;
-    }
-
-    await context.reply({
-      components: characterToComponents(character),
-      flags: MessageFlags.IsComponentsV2
-    });
-  },
-  async handleAutocomplete(context) {
-    const search = context.getRequiredString(`id`);
-
-    if (isSearchTooShort(search)) {
-      return [];
-    }
-
-    return findCharacterNames({
-      search,
-      env: context.env
-    });
-  }
-};
+export const character = lookupCommand({
+  notFound: 'Unable to find character.',
+  find: findCharacter,
+  render: characterToComponents,
+  search: findCharacterNames
+});

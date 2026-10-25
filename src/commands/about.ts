@@ -9,20 +9,13 @@ import {
   Routes
 } from 'discord-api-types/v10';
 import { Snowflake, getDate } from 'discord-snowflake';
-import { kvRateLimitedFetch } from '../utils/kv-fetch';
-import { ApplicationChatInputCommandHandler } from './command';
+import { discordRequest } from '../discord';
+import { Command } from './command';
 
-export const about: ApplicationChatInputCommandHandler = {
+export const about: Command = {
   flags: MessageFlags.Ephemeral | MessageFlags.SuppressNotifications,
   async handle(context) {
-    const result = await kvRateLimitedFetch(RouteBases.api + Routes.user(), context.env, {
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Basura/2.0',
-        'Authorization': `Bot ${context.env.DISCORD_TOKEN}`
-      }
-    });
-    const user = await result.json<APIUser>();
+    const user = await discordRequest<APIUser>(context.env, 'GET', Routes.user());
 
     const selfAvatarUrl = RouteBases.cdn + CDNRoutes.userAvatar(user.id, user.avatar!, ImageFormat.WebP);
     const dateCreated = getDate(user.id as Snowflake);

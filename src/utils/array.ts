@@ -1,10 +1,4 @@
-export const zip = <S1, S2>(firstCollection: Array<S1>, lastCollection: Array<S2>): Array<[S1, S2]> => {
-  const length = Math.min(firstCollection.length, lastCollection.length);
-  const zipped: Array<[S1, S2]> = [];
-
-  for (let index = 0; index < length; index++) {
-    zipped.push([firstCollection[index], lastCollection[index]]);
-  }
-
-  return zipped;
+/** Drops null, undefined, false and empty strings, so optional parts can be listed inline. */
+export const compact = <T>(items: (T | null | undefined | false | '' | 0)[]): T[] => {
+  return items.filter(Boolean) as T[];
 };

@@ -1,501 +1,174 @@
+import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord-api-types/v10';
+import { compact } from '../utils/array';
+import { titleCase, truncate } from '../utils/strings';
+import { cardToComponents } from './card';
+import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './client';
+import { descriptionToMarkdown, localize, mediaFormatDisplay, toStars } from './format';
+import { findMediaListEntriesQuery, findMediaQuery, findMediaTitlesQuery } from './queries';
 import {
-  APIApplicationCommandOptionChoice,
-  APIComponentInContainer,
-  APIComponentInMessageActionRow,
-  APIMessageTopLevelComponent,
-  APITextDisplayComponent,
-  ButtonStyle,
-  ComponentType,
-  Locale,
-  LocalizationMap
-} from 'discord-api-types/v10';
-import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
-import { mediaFormatDisplay, toStars } from '../utils/anilist';
-import { limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
-import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './anilist';
-import { findMediaByIdQuery } from './gql/find-media-by-id';
-import { findMediaListByUserIdsAndMediaIdQuery } from './gql/find-media-list-by-userids-and-mediaid';
-import { findMediaTitleQuery } from './gql/find-media-title';
-import { Media, MediaList, MediaListStatus, MediaRankType, MediaType, Query } from './gql/types';
+  FindMediaListEntriesQuery,
+  FindMediaQuery,
+  FindMediaTitlesQuery,
+  MediaListStatus,
+  MediaRankType,
+  MediaType
+} from './types';
 
-export const findMediaById = async (options: {
-  mediaId: number;
-  mediaType: MediaType;
-  env: Env;
-}): Promise<Media | undefined> => {
-  const { mediaId, mediaType, env } = options;
+export type Media = NonNullable<FindMediaQuery['Media']>;
+export type MediaListEntry = NonNullable<
+  NonNullable<NonNullable<FindMediaListEntriesQuery['Page']>['mediaList']>[number]
+>;
 
-  const variables = {
-    mediaId,
-    mediaType
-  };
+/** A guild member's list entry for the media, with how to mention them. */
+export interface MemberEntry extends MediaListEntry {
+  discordName: string;
+}
 
-  try {
-    const result = await aniListRequest<Query>({
-      query: findMediaByIdQuery,
-      variables,
-      env,
-      cacheTtl: CACHE_TTL.details
-    });
-    return result.Media;
-  } catch (error) {
-    console.error({ message: `Error when finding media`, error });
+/** Locales that see the native title, by the media's country of origin. */
+const NATIVE_TITLE_LOCALES: Record<string, Locale[]> = {
+  JP: [Locale.Japanese],
+  KR: [Locale.Korean],
+  CN: [Locale.ChineseCN, Locale.ChineseTW]
+};
+
+export const findMediaTitles = async (
+  search: string,
+  mediaType: MediaType,
+  env: Env
+): Promise<APIApplicationCommandOptionChoice[]> => {
+  const result = await aniListSearchRequest<FindMediaTitlesQuery>({
+    query: findMediaTitlesQuery,
+    variables: { search: normalizeSearch(search), mediaType },
+    env
+  });
+  const choices: APIApplicationCommandOptionChoice[] = [];
+
+  for (const media of result.Page?.media ?? []) {
+    const { romaji, english, native } = media?.title ?? {};
+    if (!media || !romaji) continue;
+
+    const name = truncate(english ? `${romaji} (${english})` : romaji, 100);
+    if (choices.some((choice) => choice.name === name)) continue;
+
+    const name_localizations: LocalizationMap = {
+      ...(native && localize(native, NATIVE_TITLE_LOCALES[String(media.countryOfOrigin)] ?? [])),
+      ...(english && localize(english, [Locale.EnglishGB, Locale.EnglishUS]))
+    };
+
+    choices.push({ name, name_localizations, value: media.id });
+  }
+
+  return choices;
+};
+
+export const findMedia = async (mediaId: number, mediaType: MediaType, env: Env): Promise<Media | null> => {
+  const result = await aniListRequest<FindMediaQuery>({
+    query: findMediaQuery,
+    variables: { mediaId, mediaType },
+    env,
+    cacheTtl: CACHE_TTL.details
+  });
+  return result.Media;
+};
+
+export const findMediaListEntries = async (userIds: number[], mediaId: number, env: Env) => {
+  const result = await aniListRequest<FindMediaListEntriesQuery>({
+    query: findMediaListEntriesQuery,
+    variables: { userIds, mediaId },
+    env
+  });
+  return compact(result.Page?.mediaList ?? []);
+};
+
+/** Guild member list sections, in display order. */
+const STATUS_SECTIONS: [MediaListStatus, string][] = [
+  [MediaListStatus.PAUSED, 'Paused'],
+  [MediaListStatus.CURRENT, 'In Progress'],
+  [MediaListStatus.REPEATING, 'Repeating'],
+  [MediaListStatus.COMPLETED, 'Completed'],
+  [MediaListStatus.DROPPED, 'Dropped'],
+  [MediaListStatus.PLANNING, 'Planned']
+];
+
+const memberLine = (entry: MemberEntry): string => {
+  const score = entry.score ? `(Score: ${entry.score})` : '';
+  const progress = `[Progress: ${entry.progress ?? 0}]`;
+
+  switch (entry.status) {
+    case MediaListStatus.PLANNING:
+      return `- ${entry.discordName}`;
+    case MediaListStatus.COMPLETED:
+      return compact([`- ${entry.discordName}`, score]).join(' ');
+    default:
+      return compact([`- ${entry.discordName}`, score, progress]).join(' ');
   }
 };
 
-export const findMediaListByUserIdsAndMediaId = async (options: {
-  mediaId: number;
-  userIds: number[];
-  env: Env;
-}): Promise<MediaList[] | undefined> => {
-  const { mediaId, userIds, env } = options;
+export const mediaToComponents = (media: Media, members: MemberEntry[]) => {
+  const { title } = media;
+  const info = compact([
+    media.status && titleCase(media.status),
+    media.episodes && `${media.episodes} Episodes`,
+    media.chapters && `${media.chapters} Chapters`
+  ]);
+  const tags = compact([
+    media.format && mediaFormatDisplay(media.format),
+    media.season && media.seasonYear && `${titleCase(media.season)} ${media.seasonYear}`
+  ]);
 
-  const variables = {
-    mediaId,
-    userIds
-  };
+  // Prefer the all-time rank as a tag. A seasonal rank becomes the tag when there's no all-time rank.
+  const rankings = compact(media.rankings ?? [])
+    .filter((ranking) => ranking.type === MediaRankType.RATED)
+    .sort((a, b) => a.rank - b.rank);
+  const allTimeRank = rankings.find((ranking) => ranking.allTime);
+  const seasonRank = rankings.find((ranking) => !ranking.allTime && ranking.season);
+  const seasonRankLabel =
+    seasonRank && `Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`;
 
-  try {
-    const result = await aniListRequest<Query>({
-      query: findMediaListByUserIdsAndMediaIdQuery,
-      variables,
-      env
-    });
-
-    return result.Page?.mediaList;
-  } catch (error) {
-    console.error({ message: `Error when finding media list`, error });
+  if (allTimeRank) {
+    tags.push(`Rank #${allTimeRank.rank}`);
+    if (seasonRankLabel) info.push(seasonRankLabel);
+  } else if (seasonRankLabel) {
+    tags.push(seasonRankLabel);
   }
-};
 
-export const findMediaTitles = async (options: {
-  search: string;
-  mediaType?: MediaType;
-  env: Env;
-}): Promise<APIApplicationCommandOptionChoice[]> => {
-  const { search, mediaType, env } = options;
+  if (media.favourites) tags.push(`❤️ ${media.favourites}`);
+  if (media.meanScore) tags.push(toStars(media.meanScore));
 
-  const variables = {
-    search: normalizeSearch(search),
-    mediaType
-  };
-
-  try {
-    const result = await aniListSearchRequest<Query>({
-      query: findMediaTitleQuery,
-      variables,
-      env
-    });
-    const medias = result.Page?.media ?? [];
-    const titles: APIApplicationCommandOptionChoice[] = [];
-
-    for (const media of medias) {
-      if (media?.title?.romaji) {
-        const title = truncate(
-          media.title.english ? `${media.title.romaji} (${media.title.english})` : media.title.romaji,
-          100
-        );
-        const exists = titles.find((x) => x.name === title);
-
-        if (exists) continue;
-
-        const name_localizations: LocalizationMap = {};
-
-        if (media.title.native) {
-          const nativeTitle = truncate(media.title.native, 100);
-
-          if (media.countryOfOrigin === 'KR') {
-            name_localizations[Locale.Korean] = nativeTitle;
-          }
-          if (media.countryOfOrigin === 'CN') {
-            name_localizations[Locale.ChineseCN] = nativeTitle;
-            name_localizations[Locale.ChineseTW] = nativeTitle;
-          }
-          if (media.countryOfOrigin === 'JP') {
-            name_localizations[Locale.Japanese] = nativeTitle;
-          }
-        }
-
-        if (media.title.english) {
-          const englishTitle = truncate(media.title.english, 100);
-
-          name_localizations[Locale.EnglishGB] = englishTitle;
-          name_localizations[Locale.EnglishUS] = englishTitle;
-        }
-
-        titles.push({
-          name: title,
-          name_localizations,
-          value: media.id
-        });
-      }
-    }
-
-    return titles;
-  } catch (error) {
-    console.error({ message: `Error when finding media titles`, error });
-    return [];
-  }
-};
-
-export const mediaToComponents = async (options: {
-  media: Media;
-  mediaList: MediaList[];
-  nameMap: Record<number, string>;
-}): Promise<APIMessageTopLevelComponent[]> => {
-  const { media, mediaList, nameMap } = options;
-
-  // TITLE START
-
-  const titleComponents: APITextDisplayComponent[] = [];
-
-  titleComponents.push({
-    type: ComponentType.TextDisplay,
-    content: `## ${media.title?.english || media.title?.romaji || media.title?.native}`
+  const characters = compact(media.characters?.edges ?? []).map(({ node, role }) => {
+    const native = node?.name?.native ? ` (${node.name.native})` : '';
+    return `- [${node?.name?.full}](${node?.siteUrl})${native} - ${titleCase(role)}`;
   });
 
-  const altTitles: string[] = [];
-
-  if (media.title?.english && media.title.romaji) {
-    altTitles.push(`-# _(Romaji: ${media.title.romaji})_`);
-  }
-
-  if (media.title?.native) {
-    altTitles.push(`-# _(Native: ${media.title.native})_`);
-  }
-
-  if (media.synonyms && media.synonyms.length > 0) {
-    altTitles.push(`-# _(Synonym: ${media.synonyms[0]})_`);
-  }
-
-  if (altTitles.length > 0) {
-    titleComponents.push({
-      type: ComponentType.TextDisplay,
-      content: altTitles.join('\n')
-    });
-  }
-
-  // TITLE END
-
-  // DETAILED INFO START
-
-  const detailedInfo: string[] = [];
-
-  if (media.status) {
-    const status = titleCase(media.status.replaceAll('_', ' '));
-    detailedInfo.push(status);
-  }
-
-  if (media.episodes) {
-    detailedInfo.push(`${media.episodes} Episodes`);
-  }
-
-  if (media.chapters) {
-    detailedInfo.push(`${media.chapters} Chapters`);
-  }
-
-  // DETAILED INFO END
-
-  // TAGS START
-
-  const actionRowComponents: APIComponentInMessageActionRow[] = [];
-
-  if (media.format) {
-    const format = mediaFormatDisplay(media.format);
-
-    actionRowComponents.push({
-      custom_id: 'media:format',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: format,
-      disabled: true
-    });
-  }
-
-  if (media.season && media.seasonYear) {
-    actionRowComponents.push({
-      custom_id: 'media:season',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `${titleCase(media.season)} ${media.seasonYear}`,
-      disabled: true
-    });
-  }
-
-  if (media.rankings) {
-    const mediaRankingsAsc = media.rankings.sort((a, b) => a.rank - b.rank);
-    const allTimeRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && x.allTime);
-    const seasonRank = mediaRankingsAsc.find((x) => x.type === MediaRankType.RATED && !x.allTime && x.season);
-
-    if (allTimeRank) {
-      actionRowComponents.push({
-        custom_id: 'media:rank',
-        type: ComponentType.Button,
-        style: ButtonStyle.Secondary,
-        label: `Rank #${allTimeRank.rank}`,
-        disabled: true
-      });
-    }
-
-    if (seasonRank && seasonRank.season) {
-      // No all time rank, we add it as a tag
-      if (!allTimeRank) {
-        actionRowComponents.push({
-          custom_id: 'media:rank',
-          type: ComponentType.Button,
-          style: ButtonStyle.Secondary,
-          label: `Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`,
-          disabled: true
-        });
-      } else {
-        // Otherwise, add it to detailed info
-        detailedInfo.push(`Rank #${seasonRank.rank} of ${titleCase(seasonRank.season)} ${seasonRank.year}`);
-      }
-    }
-  }
-
-  if (media.favourites) {
-    actionRowComponents.push({
-      custom_id: 'media:favorite',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `❤️ ${media.favourites}`,
-      disabled: true
-    });
-  }
-
-  if (media.meanScore && media.meanScore != 0) {
-    // footerInfo.push(`Rating - ${media.meanScore} / 100`);
-    actionRowComponents.push({
-      custom_id: 'media:rating',
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: `${toStars(media.meanScore)}`,
-      disabled: true
-    });
-  }
-
-  // TAGS END
-
-  // DESCRIPTION START
-
-  const descriptions: string[] = [];
-
-  // Apply hashtag
-  if (media.hashtag) {
-    descriptions.push(`-# ${media.hashtag}`);
-  }
-  const sourceRegex = /^(\(Source: .*\))$/gm;
-  const headingRegex = /^(?:\*\*)(.*)(?:\*\*)/gm;
-
-  if (media.description) {
-    descriptions.push(
-      NodeHtmlMarkdown.translate(media.description)
-        .replaceAll(sourceRegex, (replace) => `-# ${replace}`)
-        .replaceAll(headingRegex, (_, replace) => `-# ${replace}`)
-    );
-  } else {
-    descriptions.push('No synopsis available.');
-  }
-
-  // DESCRIPTIONS END
-
-  // DETAILS START
-
-  const details: string[] = [];
-
-  // Add source
-  if (media.source) {
-    const source = `${titleCase(media.source?.replaceAll('_', ' '))}`;
-    details.push(`-# Original Source\n${source}`);
-  }
-
-  // Add genres
-  if (media.genres && media.genres.length > 0) {
-    const genres = `${media.genres.map((x) => `${x}`).join(` - `)}`;
-    details.push(`-# Genres\n${genres}`);
-  }
-
-  // Add characters
-  if (media.characters?.edges && media.characters?.edges.length > 0) {
-    const characters: string[] = [];
-
-    for (const characterEdge of media.characters?.edges) {
-      const character = characterEdge.node;
-
-      if (character) {
-        const name = character.name?.full;
-        const nativeName = character.name?.native;
-        const role = titleCase(characterEdge.role);
-
-        characters.push(`- [${name}](${character.siteUrl}) (${nativeName}) - ${role}`);
-      }
-    }
-
-    details.push(`-# Characters\n${characters.join('\n')}`);
-  }
-
-  // Add media list
-  // User statuses operations
-  const completed: string[] = [];
-  const planned: string[] = [];
-  const inProgress: string[] = [];
-  const paused: string[] = [];
-  const dropped: string[] = [];
-  const repeating: string[] = [];
-
-  const mediaListFiltered = mediaList
-    .filter((mediaList) => mediaList.mediaId === media.id)
-    .map((mediaList) => {
-      return {
-        discordName: nameMap[mediaList.userId],
-        status: mediaList.status,
-        score: mediaList.score,
-        progress: mediaList.progress
-      };
-    });
-
-  const mediaListSorted = mediaListFiltered?.sort(
-    (a, b) => (a.progress || 0) - (b.progress || 0) || a.discordName.localeCompare(b.discordName)
+  const sortedMembers = [...members].sort(
+    (a, b) => (a.progress ?? 0) - (b.progress ?? 0) || a.discordName.localeCompare(b.discordName)
   );
+  const memberSections = STATUS_SECTIONS.map(([status, heading]): [string, string[]] => [
+    heading,
+    sortedMembers.filter((entry) => entry.status === status).map(memberLine)
+  ]);
 
-  if (mediaListSorted) {
-    for (const mediaList of mediaListSorted) {
-      const scoreStr = mediaList.score === 0 ? 'Unrated' : `${mediaList.score}`;
-      const score = mediaList.score && mediaList.score > 0 ? `(Score: ${scoreStr})` : '';
-      const progress = `[Progress: ${mediaList.progress}]`;
-
-      switch (mediaList.status) {
-        case MediaListStatus.COMPLETED: {
-          completed.push(`- ${mediaList.discordName} ${score}`);
-          break;
-        }
-        case MediaListStatus.CURRENT: {
-          inProgress.push(`- ${mediaList.discordName} ${score} ${progress}`);
-          break;
-        }
-        case MediaListStatus.DROPPED: {
-          dropped.push(`- ${mediaList.discordName} ${score} ${progress}`);
-          break;
-        }
-        case MediaListStatus.PAUSED: {
-          paused.push(`- ${mediaList.discordName} ${score} ${progress}`);
-          break;
-        }
-        case MediaListStatus.PLANNING: {
-          planned.push(`- ${mediaList.discordName}`);
-          break;
-        }
-        case MediaListStatus.REPEATING: {
-          repeating.push(`- ${mediaList.discordName} ${score} ${progress}`);
-          break;
-        }
-      }
-    }
-  }
-
-  // User scores
-  if (paused.length > 0) {
-    details.push(`-# Paused\n${paused.join('\n')}`);
-  }
-
-  if (inProgress.length > 0) {
-    details.push(`-# In Progress\n${inProgress.join('\n')}`);
-  }
-
-  if (repeating.length > 0) {
-    details.push(`-# Repeating\n${repeating.join('\n')}`);
-  }
-
-  if (completed.length > 0) {
-    details.push(`-# Completed\n${completed.join('\n')}`);
-  }
-
-  if (dropped.length > 0) {
-    details.push(`-# Dropped\n${dropped.join('\n')}`);
-  }
-
-  if (planned.length > 0) {
-    details.push(`-# Planned\n${planned.join('\n')}`);
-  }
-
-  // DESCRIPTION END
-
-  // CONTAINER START
-
-  const components: APIComponentInContainer[] = [];
-
-  // Banner Image, if applicable
-  if (media.bannerImage) {
-    components.push({
-      type: ComponentType.MediaGallery,
-      items: [
-        {
-          media: {
-            url: media.bannerImage
-          }
-        }
-      ]
-    });
-  }
-
-  // Title
-  components.push({
-    type: ComponentType.Section,
-    components: titleComponents,
-    accessory: {
-      type: ComponentType.Button,
-      style: ButtonStyle.Link,
-      label: 'AniList',
-      url: `${media.siteUrl}`
-    }
+  return cardToComponents({
+    title: title?.english || title?.romaji || title?.native || 'Untitled',
+    subtitles: compact([
+      title?.english && title.romaji && `Romaji: ${title.romaji}`,
+      title?.native && `Native: ${title.native}`,
+      media.synonyms?.[0] && `Synonym: ${media.synonyms[0]}`
+    ]),
+    url: media.siteUrl,
+    banner: media.bannerImage,
+    info,
+    tags,
+    description: compact([
+      media.hashtag && `-# ${media.hashtag}`,
+      descriptionToMarkdown(media.description, 'No synopsis available.')
+    ]).join('\n\n'),
+    thumbnail: media.coverImage?.extraLarge,
+    sections: [
+      ['Original Source', compact([media.source && titleCase(media.source)])],
+      ['Genres', media.genres?.length ? [compact(media.genres).join(' - ')] : []],
+      ['Characters', characters],
+      ...memberSections
+    ]
   });
-
-  // Detailed Info
-  components.push({
-    type: ComponentType.TextDisplay,
-    content: `-# ${detailedInfo.join(` — `)}`
-  });
-
-  // Tags
-  if (actionRowComponents.length > 0) {
-    components.push({
-      type: ComponentType.ActionRow,
-      components: actionRowComponents
-    });
-  }
-
-  // Seperator
-  components.push({
-    type: ComponentType.Separator
-  });
-
-  // Description
-  components.push({
-    type: ComponentType.Section,
-    components: [
-      {
-        type: ComponentType.TextDisplay,
-        content: limitTextByParagraphs(descriptions.join('\n\n'), 2000)
-      }
-    ],
-    accessory: {
-      type: ComponentType.Thumbnail,
-      media: {
-        url: `${media.coverImage?.extraLarge}`
-      }
-    }
-  });
-
-  components.push({
-    type: ComponentType.TextDisplay,
-    content: details.join('\n\n')
-  });
-
-  return [
-    {
-      type: ComponentType.Container,
-      components
-    }
-  ];
 };

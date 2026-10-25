@@ -102,7 +102,8 @@ export async function kvRateLimitedFetch(
     return kvRateLimitedFetch(url, env, init, options, attempt + 1);
   }
 
-  if (!response.ok && response.body && init) {
+  // 404s are expected (unknown AniList ids), so only log other failures.
+  if (!response.ok && response.status !== 404 && response.body && init) {
     const [stream1, stream2] = response.body.tee();
     const data = await new Response(stream1).text();
 
