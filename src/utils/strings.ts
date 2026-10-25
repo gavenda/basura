@@ -19,21 +19,31 @@ export const isSearchTooShort = (str: string) => {
   return !CJK_REGEX.test(trimmed) && trimmed.length < MIN_SEARCH_LENGTH;
 };
 
+/** Room left before a paragraph is worth cutting into rather than dropping. */
+const MIN_PARTIAL_PARAGRAPH = 200;
+
 /**
  * Shortens text to at most maxLength characters, cutting at a paragraph break ('\n\n').
- * Falls back to a plain cut when even the first paragraph is too long.
+ * The paragraph that doesn't fit is cut short instead when there's a fair amount of room left for it,
+ * so a short first paragraph (like a hashtag) isn't all that's shown.
  */
 export const limitTextByParagraphs = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
+  if (maxLength <= 3) return '';
 
   let limited = '';
   for (const paragraph of text.split('\n\n')) {
     const next = limited ? `${limited}\n\n${paragraph}` : paragraph;
-    if (next.length > maxLength) break;
+    if (next.length > maxLength) {
+      const room = maxLength - limited.length - 2;
+      if (!limited) limited = truncate(paragraph, maxLength);
+      else if (room >= MIN_PARTIAL_PARAGRAPH) limited = `${limited}\n\n${truncate(paragraph, room)}`;
+      break;
+    }
     limited = next;
   }
 
-  return limited.trim() || truncate(text, maxLength);
+  return limited.trim();
 };
 
 /** Title cases an AniList enum value or phrase: `LIGHT_NOVEL` becomes `Light Novel`. */

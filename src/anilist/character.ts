@@ -1,6 +1,6 @@
 import { compact } from '../utils/array';
 import { titleCase } from '../utils/strings';
-import { cardToComponents } from './card';
+import { Card } from './card';
 import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './client';
 import { aliases, descriptionToMarkdown, fuzzyDate, mediaFormatDisplay, nameChoices } from './format';
 import { findCharacterNamesQuery, findCharacterQuery } from './queries';
@@ -27,7 +27,7 @@ export const findCharacter = async (characterId: number, env: Env): Promise<Char
   return result.Character;
 };
 
-export const characterToComponents = (character: Character) => {
+export const characterToCard = (character: Character): Card => {
   const { name } = character;
   const birthday = fuzzyDate(character.dateOfBirth);
   const appearances = compact(character.media?.edges ?? []).map(({ node, characterRole }) => ({
@@ -35,7 +35,7 @@ export const characterToComponents = (character: Character) => {
     line: `- [${node?.title?.english || node?.title?.romaji}](${node?.siteUrl}) (${mediaFormatDisplay(node?.format ?? null)}) - ${titleCase(characterRole)}`
   }));
 
-  return cardToComponents({
+  return {
     title: name?.full || name?.native || 'Unknown',
     subtitles: compact([
       name?.native && `Native: ${name.native}`,
@@ -43,12 +43,24 @@ export const characterToComponents = (character: Character) => {
     ]),
     url: character.siteUrl,
     tags: compact([character.gender, birthday && `🎂 ${birthday}`, `❤️ ${character.favourites ?? 0}`]),
-    description: descriptionToMarkdown(character.description, 'No description available.'),
     thumbnail: character.image?.large || character.image?.medium,
-    sections: [
-      ['Aliases', aliases(name?.alternative)],
-      ['Anime Appearances', appearances.filter((x) => x.type === MediaType.ANIME).map((x) => x.line)],
-      ['Manga Appearances', appearances.filter((x) => x.type !== MediaType.ANIME).map((x) => x.line)]
+    pages: [
+      {
+        id: 'overview',
+        label: 'Overview',
+        description: descriptionToMarkdown(character.description, 'No description available.'),
+        sections: [['Aliases', aliases(name?.alternative)]]
+      },
+      {
+        id: 'anime',
+        label: 'Anime',
+        sections: [['Anime Appearances', appearances.filter((x) => x.type === MediaType.ANIME).map((x) => x.line)]]
+      },
+      {
+        id: 'manga',
+        label: 'Manga',
+        sections: [['Manga Appearances', appearances.filter((x) => x.type !== MediaType.ANIME).map((x) => x.line)]]
+      }
     ]
-  });
+  };
 };

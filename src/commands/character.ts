@@ -1,9 +1,10 @@
-import { characterToComponents, findCharacter, findCharacterNames } from '../anilist/character';
+import { characterToCard, findCharacter, findCharacterNames } from '../anilist/character';
 import { lookupCommand } from './command';
 
 export const character = lookupCommand({
+  name: 'character',
   notFound: 'Unable to find character.',
   find: findCharacter,
-  render: characterToComponents,
+  toCard: characterToCard,
   search: findCharacterNames
 });

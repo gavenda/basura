@@ -1,4 +1,4 @@
-import { findMedia, findMediaListEntries, findMediaTitles, MemberEntry, mediaToComponents } from '../anilist/media';
+import { findMedia, findMediaListEntries, findMediaTitles, MemberEntry, mediaToCard } from '../anilist/media';
 import { MediaType } from '../anilist/types';
 import { CommandContext } from '../context';
 import { UserTable } from '../db/tables';
@@ -22,13 +22,14 @@ const findMemberEntries = async (context: CommandContext, mediaId: number): Prom
   return entries.map((entry) => ({ ...entry, discordName: `<@${discordIds.get(entry.userId)}>` }));
 };
 
-const mediaCommand = (mediaType: MediaType) =>
+const mediaCommand = (name: string, mediaType: MediaType) =>
   lookupCommand({
+    name,
     notFound: mediaType === MediaType.ANIME ? 'Unable to find anime.' : 'Unable to find manga.',
     find: (id, env) => findMedia(id, mediaType, env),
-    render: async (media, context) => mediaToComponents(media, await findMemberEntries(context, media.id)),
+    toCard: async (media, context) => mediaToCard(media, await findMemberEntries(context, media.id)),
     search: (query, env) => findMediaTitles(query, mediaType, env)
   });
 
-export const anime = mediaCommand(MediaType.ANIME);
-export const manga = mediaCommand(MediaType.MANGA);
+export const anime = mediaCommand('anime', MediaType.ANIME);
+export const manga = mediaCommand('manga', MediaType.MANGA);

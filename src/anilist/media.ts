@@ -1,7 +1,7 @@
 import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord-api-types/v10';
 import { compact } from '../utils/array';
 import { titleCase, truncate } from '../utils/strings';
-import { cardToComponents } from './card';
+import { Card } from './card';
 import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './client';
 import { descriptionToMarkdown, localize, mediaFormatDisplay, toStars } from './format';
 import { findMediaListEntriesQuery, findMediaQuery, findMediaTitlesQuery } from './queries';
@@ -104,7 +104,7 @@ const memberLine = (entry: MemberEntry): string => {
   }
 };
 
-export const mediaToComponents = (media: Media, members: MemberEntry[]) => {
+export const mediaToCard = (media: Media, members: MemberEntry[]): Card => {
   const { title } = media;
   const info = compact([
     media.status && titleCase(media.status),
@@ -148,7 +148,7 @@ export const mediaToComponents = (media: Media, members: MemberEntry[]) => {
     sortedMembers.filter((entry) => entry.status === status).map(memberLine)
   ]);
 
-  return cardToComponents({
+  return {
     title: title?.english || title?.romaji || title?.native || 'Untitled',
     subtitles: compact([
       title?.english && title.romaji && `Romaji: ${title.romaji}`,
@@ -159,16 +159,22 @@ export const mediaToComponents = (media: Media, members: MemberEntry[]) => {
     banner: media.bannerImage,
     info,
     tags,
-    description: compact([
-      media.hashtag && `-# ${media.hashtag}`,
-      descriptionToMarkdown(media.description, 'No synopsis available.')
-    ]).join('\n\n'),
     thumbnail: media.coverImage?.extraLarge,
-    sections: [
-      ['Original Source', compact([media.source && titleCase(media.source)])],
-      ['Genres', media.genres?.length ? [compact(media.genres).join(' - ')] : []],
-      ['Characters', characters],
-      ...memberSections
+    pages: [
+      {
+        id: 'overview',
+        label: 'Overview',
+        description: compact([
+          media.hashtag && `-# ${media.hashtag}`,
+          descriptionToMarkdown(media.description, 'No synopsis available.')
+        ]).join('\n\n'),
+        sections: [
+          ['Original Source', compact([media.source && titleCase(media.source)])],
+          ['Genres', media.genres?.length ? [compact(media.genres).join(' - ')] : []]
+        ]
+      },
+      { id: 'characters', label: 'Characters', sections: [['Characters', characters]] },
+      { id: 'members', label: `Members (${members.length})`, sections: memberSections }
     ]
-  });
+  };
 };

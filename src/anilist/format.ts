@@ -1,7 +1,7 @@
 import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord-api-types/v10';
 import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
 import { compact } from '../utils/array';
-import { isBlank, limitTextByParagraphs, titleCase, truncate } from '../utils/strings';
+import { isBlank, titleCase, truncate } from '../utils/strings';
 import { MediaFormat } from './types';
 
 /** Discord's limit for an autocomplete choice name. */
@@ -41,13 +41,16 @@ export const nameChoices = (people: (Person | null)[] | null | undefined): APIAp
 const sourceRegex = /^(\(Source: .*\))$/gm;
 const headingRegex = /^\*\*(.*)\*\*/gm;
 
-/** Converts an AniList HTML description to Discord markdown, with source and heading lines made small. */
-export const descriptionToMarkdown = (html: string | null, fallback: string, maxLength = 2000): string => {
+/**
+ * Converts an AniList HTML description to Discord markdown, with source and heading lines made small.
+ * Not shortened here: the card fits it to the room its page has left.
+ */
+export const descriptionToMarkdown = (html: string | null, fallback: string): string => {
   if (isBlank(html)) return fallback;
 
   const markdown = NodeHtmlMarkdown.translate(html!).replaceAll(sourceRegex, '-# $1').replaceAll(headingRegex, '-# $1');
 
-  return isBlank(markdown) ? fallback : limitTextByParagraphs(markdown, maxLength);
+  return isBlank(markdown) ? fallback : markdown.trim();
 };
 
 /** Up to 5 unique alternative names as list items, skipping the first, which is already shown under the title. */

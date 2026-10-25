@@ -6,8 +6,29 @@ import {
   ButtonStyle,
   ComponentType
 } from 'discord-api-types/v10';
+import { limitTextByParagraphs } from '../utils/strings';
 
-/** The parts of an AniList result page (media, character or staff). Empty parts are left out. */
+/** Discord's limit on the text across all Text Displays in one Components V2 message. */
+const TEXT_LIMIT = 4000;
+/** Lines shown per section before the rest are counted in an "…and N more" line. */
+const SECTION_LINE_LIMIT = 10;
+/** Room kept for a page's description when its sections are long, so the description isn't squeezed out. */
+const DESCRIPTION_RESERVE = 1000;
+
+/** A detail section as [heading, lines]. Sections with no lines are skipped. */
+export type CardSection = [heading: string, lines: string[]];
+
+/** One page of a card, picked with the buttons under it. */
+export interface CardPage {
+  /** Stable key for the page's button. Keep it short: it goes in the button's custom_id. */
+  id: string;
+  label: string;
+  /** Markdown shown first. Shortened to whatever room the page has left. */
+  description?: string;
+  sections?: CardSection[];
+}
+
+/** The parts of an AniList result (media, character or staff). Empty parts are left out. */
 export interface Card {
   title: string;
   /** Small lines under the title, such as the native or alternative name. */
@@ -18,11 +39,16 @@ export interface Card {
   info?: string[];
   /** Labels shown as a row of disabled buttons. Discord allows 5 per row. */
   tags?: string[];
-  /** Markdown shown beside the thumbnail. */
-  description: string;
   thumbnail?: string | null;
-  /** Detail sections as [heading, lines]. Sections with no lines are skipped. */
-  sections?: [heading: string, lines: string[]][];
+  /** The first page is shown by default. Pages with no description or section lines are dropped. */
+  pages: CardPage[];
+}
+
+export interface CardView {
+  /** Prefix for the page buttons' custom_id, `<command>:<id>`. The page id is added after it. */
+  navId: string;
+  /** Page to show. Falls back to the first page when missing or unknown. */
+  pageId?: string;
 }
 
 const text = (content: string): APITextDisplayComponent => ({ type: ComponentType.TextDisplay, content });
@@ -35,9 +61,47 @@ const withAccessory = (
   return accessory ? [{ type: ComponentType.Section, components: texts, accessory }] : texts;
 };
 
-export const cardToComponents = (card: Card): APIMessageTopLevelComponent[] => {
-  const { title, subtitles = [], url, banner, info = [], tags = [], description, thumbnail, sections = [] } = card;
+const hasContent = (page: CardPage) =>
+  Boolean(page.description) || (page.sections ?? []).some(([, lines]) => lines.length);
+
+/**
+ * Renders sections within `budget` characters. Each section shows up to SECTION_LINE_LIMIT lines, and fewer when
+ * room runs out, with the rest counted in an "…and N more" line. Sections that don't fit at all are left out.
+ */
+const fitSections = (sections: CardSection[], budget: number): string => {
+  const blocks: string[] = [];
+  let used = 0;
+
+  for (const [heading, lines] of sections) {
+    if (lines.length === 0) continue;
+
+    const shown = lines.slice(0, SECTION_LINE_LIMIT);
+    const render = () => {
+      const hidden = lines.length - shown.length;
+      return [`-# ${heading}`, ...shown, ...(hidden > 0 ? [`-# …and ${hidden} more`] : [])].join('\n');
+    };
+    const gap = blocks.length > 0 ? 2 : 0;
+
+    let block = render();
+    while (shown.length > 0 && used + gap + block.length > budget) {
+      shown.pop();
+      block = render();
+    }
+    if (shown.length === 0) break;
+
+    blocks.push(block);
+    used += gap + block.length;
+  }
+
+  return blocks.join('\n\n');
+};
+
+export const cardToComponents = (card: Card, view: CardView): APIMessageTopLevelComponent[] => {
+  const { title, subtitles = [], url, banner, info = [], tags = [], thumbnail } = card;
+  const pages = card.pages.filter(hasContent);
+  const page = pages.find((p) => p.id === view.pageId) ?? pages[0];
   const components: APIComponentInContainer[] = [];
+  const texts: string[] = [];
 
   if (banner) {
     components.push({ type: ComponentType.MediaGallery, items: [{ media: { url: banner } }] });
@@ -47,6 +111,7 @@ export const cardToComponents = (card: Card): APIMessageTopLevelComponent[] => {
   if (subtitles.length > 0) {
     titleTexts.push(text(subtitles.map((subtitle) => `-# _(${subtitle})_`).join('\n')));
   }
+  texts.push(...titleTexts.map((t) => t.content));
   components.push(
     ...withAccessory(
       titleTexts,
@@ -55,7 +120,9 @@ export const cardToComponents = (card: Card): APIMessageTopLevelComponent[] => {
   );
 
   if (info.length > 0) {
-    components.push(text(`-# ${info.join(' — ')}`));
+    const infoText = text(`-# ${info.join(' — ')}`);
+    texts.push(infoText.content);
+    components.push(infoText);
   }
 
   if (tags.length > 0) {
@@ -73,19 +140,33 @@ export const cardToComponents = (card: Card): APIMessageTopLevelComponent[] => {
 
   components.push({ type: ComponentType.Separator });
 
-  components.push(
-    ...withAccessory(
-      [text(description)],
-      thumbnail ? { type: ComponentType.Thumbnail, media: { url: thumbnail } } : undefined
-    )
-  );
+  if (page) {
+    // Sections get the room first, minus a reserve for the description, which then takes what's left.
+    const remaining = TEXT_LIMIT - texts.reduce((sum, t) => sum + t.length, 0);
+    const reserve = page.description ? Math.min(page.description.length, DESCRIPTION_RESERVE) : 0;
+    const sections = fitSections(page.sections ?? [], remaining - reserve);
+    const description = page.description && limitTextByParagraphs(page.description, remaining - sections.length);
+    const thumbnailAccessory: APISectionAccessoryComponent | undefined = thumbnail
+      ? { type: ComponentType.Thumbnail, media: { url: thumbnail } }
+      : undefined;
 
-  const details = sections
-    .filter(([, lines]) => lines.length > 0)
-    .map(([heading, lines]) => `-# ${heading}\n${lines.join('\n')}`);
+    // The first block sits beside the thumbnail; sections under a description get the full width.
+    const [first, second] = [description, sections].filter(Boolean) as string[];
+    if (first) components.push(...withAccessory([text(first)], thumbnailAccessory));
+    if (second) components.push(text(second));
+  }
 
-  if (details.length > 0) {
-    components.push(text(details.join('\n\n')));
+  if (pages.length > 1) {
+    components.push({
+      type: ComponentType.ActionRow,
+      components: pages.slice(0, 5).map((p) => ({
+        type: ComponentType.Button,
+        style: p === page ? ButtonStyle.Primary : ButtonStyle.Secondary,
+        custom_id: `${view.navId}:${p.id}`,
+        label: p.label,
+        disabled: p === page
+      }))
+    });
   }
 
   return [{ type: ComponentType.Container, components }];

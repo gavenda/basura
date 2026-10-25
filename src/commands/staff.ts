@@ -1,9 +1,10 @@
-import { findStaff, findStaffNames, staffToComponents } from '../anilist/staff';
+import { findStaff, findStaffNames, staffToCard } from '../anilist/staff';
 import { lookupCommand } from './command';
 
 export const staff = lookupCommand({
+  name: 'staff',
   notFound: 'Unable to find staff.',
   find: findStaff,
-  render: staffToComponents,
+  toCard: staffToCard,
   search: findStaffNames
 });

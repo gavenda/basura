@@ -1,6 +1,8 @@
 import {
   APIApplicationCommandAutocompleteInteraction,
   APIChatInputApplicationCommandInteraction,
+  APIMessageComponentInteraction,
+  RESTPatchAPIInteractionOriginalResponseJSONBody,
   RESTPostAPIInteractionFollowupJSONBody,
   Routes
 } from 'discord-api-types/v10';
@@ -24,7 +26,10 @@ const collectOptions = (options: RawOption[] = [], values = new Map<string, unkn
   return values;
 };
 
-/** A slash command or autocomplete interaction: its options, and replying through the interaction webhook. */
+/**
+ * A slash command, autocomplete or button interaction: its options, and replying through the interaction webhook.
+ * Button interactions have no options.
+ */
 export class CommandContext {
   readonly env: Env;
   readonly guildId: string | undefined;
@@ -36,12 +41,15 @@ export class CommandContext {
 
   constructor(
     env: Env,
-    interaction: APIChatInputApplicationCommandInteraction | APIApplicationCommandAutocompleteInteraction
+    interaction:
+      | APIChatInputApplicationCommandInteraction
+      | APIApplicationCommandAutocompleteInteraction
+      | APIMessageComponentInteraction
   ) {
     this.env = env;
     this.guildId = interaction.guild_id;
     this.token = interaction.token;
-    this.options = collectOptions(interaction.data.options);
+    this.options = collectOptions('options' in interaction.data ? interaction.data.options : undefined);
   }
 
   getString(name: string): string | undefined {
@@ -61,5 +69,16 @@ export class CommandContext {
   async reply(body: RESTPostAPIInteractionFollowupJSONBody): Promise<void> {
     this.replied = true;
     await discordRequest(this.env, 'POST', Routes.webhook(this.env.DISCORD_APPLICATION_ID, this.token), body);
+  }
+
+  /** Edits the message the interaction came from, such as the card whose button was clicked. */
+  async update(body: RESTPatchAPIInteractionOriginalResponseJSONBody): Promise<void> {
+    this.replied = true;
+    await discordRequest(
+      this.env,
+      'PATCH',
+      Routes.webhookMessage(this.env.DISCORD_APPLICATION_ID, this.token, '@original'),
+      body
+    );
   }
 }

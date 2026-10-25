@@ -3,6 +3,7 @@ import {
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
   APIInteractionResponse,
+  APIMessageComponentInteraction,
   ApplicationCommandType,
   InteractionResponseType,
   InteractionType,
@@ -34,6 +35,28 @@ const autocomplete = async (
   };
 };
 
+/** Runs a handler in the background, replying with an error or timeout notice when it fails or takes too long. */
+const runInBackground = (
+  context: CommandContext,
+  handler: () => Promise<void>,
+  interaction: APIInteraction,
+  executionContext: ExecutionContext
+) => {
+  const run = handler().catch(async (error) => {
+    console.error({ message: 'Error occurred during interaction', error, interaction });
+    await context.reply({ content: 'An error occurred during the interaction.', flags: MessageFlags.Ephemeral });
+  });
+
+  const timeout = sleep(TIMEOUT_MS).then(async () => {
+    if (!context.replied) {
+      await context.reply({ content: 'The interaction timed out.', flags: MessageFlags.Ephemeral });
+    }
+  });
+
+  // Keep the worker running until the handler finishes or times out.
+  executionContext.waitUntil(Promise.race([run, timeout]));
+};
+
 /** Defers the reply right away, then runs the command in the background and replies through the webhook. */
 const runCommand = (
   interaction: APIChatInputApplicationCommandInteraction,
@@ -47,25 +70,34 @@ const runCommand = (
   }
 
   const context = new CommandContext(env, interaction);
-
-  const run = command.handle(context).catch(async (error) => {
-    console.error({ message: 'Error occurred during interaction', error, interaction });
-    await context.reply({ content: 'An error occurred during the interaction.', flags: MessageFlags.Ephemeral });
-  });
-
-  const timeout = sleep(TIMEOUT_MS).then(async () => {
-    if (!context.replied) {
-      await context.reply({ content: 'The interaction timed out.', flags: MessageFlags.Ephemeral });
-    }
-  });
-
-  // Keep the worker running until the command finishes or times out.
-  executionContext.waitUntil(Promise.race([run, timeout]));
+  runInBackground(context, () => command.handle(context), interaction, executionContext);
 
   return {
     type: InteractionResponseType.DeferredChannelMessageWithSource,
     data: command.flags ? { flags: command.flags } : undefined
   };
+};
+
+/**
+ * Routes a button click to the command named at the start of its custom_id (`<command>:<args...>`).
+ * Acknowledges right away, and the command then edits the message in the background.
+ */
+const runComponent = (
+  interaction: APIMessageComponentInteraction,
+  env: Env,
+  executionContext: ExecutionContext
+): APIInteractionResponse => {
+  const [name, ...args] = interaction.data.custom_id.split(':');
+  const command = commands[name];
+
+  if (!command?.component) {
+    return ephemeral('This button is not supported.');
+  }
+
+  const context = new CommandContext(env, interaction);
+  runInBackground(context, () => command.component!(context, args), interaction, executionContext);
+
+  return { type: InteractionResponseType.DeferredMessageUpdate };
 };
 
 const handleInteraction = async (
@@ -83,6 +115,9 @@ const handleInteraction = async (
       if (interaction.data.type === ApplicationCommandType.ChatInput) {
         return runCommand(interaction as APIChatInputApplicationCommandInteraction, env, executionContext);
       }
+      break;
+    case InteractionType.MessageComponent:
+      return runComponent(interaction, env, executionContext);
   }
 
   return ephemeral('This interaction is not supported.');

@@ -1,6 +1,6 @@
 import { compact } from '../utils/array';
 import { titleCase } from '../utils/strings';
-import { cardToComponents } from './card';
+import { Card } from './card';
 import { aniListRequest, aniListSearchRequest, CACHE_TTL, normalizeSearch } from './client';
 import { aliases, descriptionToMarkdown, fuzzyDate, nameChoices } from './format';
 import { findStaffNamesQuery, findStaffQuery } from './queries';
@@ -27,7 +27,7 @@ export const findStaff = async (staffId: number, env: Env): Promise<Staff | null
   return result.Staff;
 };
 
-export const staffToComponents = (staff: Staff) => {
+export const staffToCard = (staff: Staff): Card => {
   const { name } = staff;
   const birthday = fuzzyDate(staff.dateOfBirth);
 
@@ -39,7 +39,7 @@ export const staffToComponents = (staff: Staff) => {
     return `- [${title}](${node?.siteUrl}) - ${staffRole}`;
   });
 
-  return cardToComponents({
+  return {
     title: name?.full || name?.native || 'Unknown',
     subtitles: compact([
       name?.native && `Native: ${name.native}`,
@@ -47,12 +47,16 @@ export const staffToComponents = (staff: Staff) => {
     ]),
     url: staff.siteUrl,
     tags: compact([staff.gender, birthday && `🎂 ${birthday}`, `❤️ ${staff.favourites ?? 0}`]),
-    description: descriptionToMarkdown(staff.description, 'No description available.'),
     thumbnail: staff.image?.large || staff.image?.medium,
-    sections: [
-      ['Aliases', aliases(name?.alternative)],
-      ['Characters Voiced', charactersVoiced],
-      ['Worked On', workedOn]
+    pages: [
+      {
+        id: 'overview',
+        label: 'Overview',
+        description: descriptionToMarkdown(staff.description, 'No description available.'),
+        sections: [['Aliases', aliases(name?.alternative)]]
+      },
+      { id: 'voiced', label: 'Characters Voiced', sections: [['Characters Voiced', charactersVoiced]] },
+      { id: 'works', label: 'Worked On', sections: [['Worked On', workedOn]] }
     ]
-  });
+  };
 };
