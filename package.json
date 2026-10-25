@@ -34,9 +34,6 @@
     "typescript": "^7.0.2",
     "wrangler": "^4.152.0"
   },
-  "volta": {
-    "node": "24.10.0"
-  },
   "lint-staged": {
     "**/*.ts": "prettier --write"
   },
