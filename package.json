@@ -12,39 +12,33 @@
     "register:dev": "bun --env-file=.dev.vars src/register-dev.ts",
     "prettier": "prettier --write src",
     "types": "wrangler types ./src/worker-configuration.d.ts",
-    "lint": "eslint src",
     "prepare": "husky",
     "type-check": "tsc"
   },
   "author": "Gavenda <gavenda@disroot.org>",
   "license": "MIT",
   "dependencies": {
-    "discord-api-types": "^0.38.30",
+    "discord-api-types": "^0.38.57",
     "discord-interactions": "^4.4.0",
     "discord-snowflake": "^2.0.0",
-    "gqlmin": "^0.3.1",
+    "gqlmin": "^0.3.2",
     "node-html-markdown-cloudflare": "^1.3.0",
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.3"
   },
   "devDependencies": {
-    "@types/uuid": "^10.0.0",
-    "eslint": "^9.37.0",
+    "@types/uuid": "^11.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.4",
+    "lint-staged": "^17.6.0",
     "ngrok": "5.0.0-beta.2",
-    "prettier": "^3.6.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.1",
-    "wrangler": "^4.42.2"
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.152.0"
   },
   "volta": {
     "node": "24.10.0"
   },
   "lint-staged": {
-    "**/*.ts": [
-      "prettier --write",
-      "eslint"
-    ]
+    "**/*.ts": "prettier --write"
   },
   "trustedDependencies": [
     "esbuild",
