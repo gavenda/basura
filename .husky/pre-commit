@@ -1,1 +1,1 @@
-pnpm --silent dlx lint-staged --quiet
+bunx lint-staged --quiet

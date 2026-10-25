@@ -1,8 +1,5 @@
 import { RouteBases, Routes } from 'discord-api-types/v10';
-import * as dotenv from 'dotenv';
 import { commandList } from './command.list';
-
-dotenv.config({ path: '.dev.vars' });
 
 const testGuildIds: string[] = [
   // Developer server
