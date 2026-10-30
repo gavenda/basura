@@ -1,5 +1,4 @@
 import {
-  APIComponentInContainer,
   APIMessageTopLevelComponent,
   APISectionAccessoryComponent,
   APITextDisplayComponent,
@@ -57,7 +56,7 @@ const text = (content: string): APITextDisplayComponent => ({ type: ComponentTyp
 const withAccessory = (
   texts: APITextDisplayComponent[],
   accessory: APISectionAccessoryComponent | undefined
-): APIComponentInContainer[] => {
+): APIMessageTopLevelComponent[] => {
   return accessory ? [{ type: ComponentType.Section, components: texts, accessory }] : texts;
 };
 
@@ -100,7 +99,8 @@ export const cardToComponents = (card: Card, view: CardView): APIMessageTopLevel
   const { title, subtitles = [], url, banner, info = [], tags = [], thumbnail } = card;
   const pages = card.pages.filter(hasContent);
   const page = pages.find((p) => p.id === view.pageId) ?? pages[0];
-  const components: APIComponentInContainer[] = [];
+  // Top-level components, with no container around them.
+  const components: APIMessageTopLevelComponent[] = [];
   const texts: string[] = [];
 
   if (banner) {
@@ -169,5 +169,5 @@ export const cardToComponents = (card: Card, view: CardView): APIMessageTopLevel
     });
   }
 
-  return [{ type: ComponentType.Container, components }];
+  return components;
 };

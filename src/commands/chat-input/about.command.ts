@@ -19,35 +19,30 @@ export const aboutCommand: AppChatInputCommand = {
 
     await interaction.reply({
       flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+      // Top-level components, with no container around them.
       components: [
         {
-          type: ComponentType.Container,
+          type: ComponentType.Section,
+          components: [
+            { type: ComponentType.TextDisplay, content: '# What is Basura?' },
+            { type: ComponentType.TextDisplay, content: 'Basura literally means trash.' }
+          ],
+          accessory: { type: ComponentType.Thumbnail, media: { url: me.displayAvatarURL({ size: 256 }) } }
+        },
+        field('Version', version),
+        field('Language', '[TypeScript](https://typescriptlang.org/)'),
+        field('Platform', '[Bun](https://bun.sh/)'),
+        field('Date Created', created),
+        { type: ComponentType.Separator },
+        {
+          type: ComponentType.Section,
           components: [
             {
-              type: ComponentType.Section,
-              components: [
-                { type: ComponentType.TextDisplay, content: '# What is Basura?' },
-                { type: ComponentType.TextDisplay, content: 'Basura literally means trash.' }
-              ],
-              accessory: { type: ComponentType.Thumbnail, media: { url: me.displayAvatarURL({ size: 256 }) } }
-            },
-            field('Version', version),
-            field('Language', '[TypeScript](https://typescriptlang.org/)'),
-            field('Platform', '[Bun](https://bun.sh/)'),
-            field('Date Created', created),
-            { type: ComponentType.Separator },
-            {
-              type: ComponentType.Section,
-              components: [
-                {
-                  type: ComponentType.TextDisplay,
-                  content:
-                    '-# If you want to add more languages, feel free to hop on the github and submit a pull request.'
-                }
-              ],
-              accessory: { type: ComponentType.Button, style: ButtonStyle.Link, label: 'GitHub', url: SOURCE_URL }
+              type: ComponentType.TextDisplay,
+              content: '-# If you want to add more languages, feel free to hop on the github and submit a pull request.'
             }
-          ]
+          ],
+          accessory: { type: ComponentType.Button, style: ButtonStyle.Link, label: 'GitHub', url: SOURCE_URL }
         }
       ]
     });
