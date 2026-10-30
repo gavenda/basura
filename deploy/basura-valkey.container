@@ -4,6 +4,8 @@ Description=Basura cache (Valkey), required by the bot
 [Container]
 ContainerName=basura-valkey
 Image=docker.io/valkey/valkey:9-alpine
+# Picks up Valkey 9.x patch releases with `podman auto-update`.
+AutoUpdate=registry
 Pod=basura.pod
 
 # A cache only: nothing is saved to disk, and the oldest keys go first once it's full.

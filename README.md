@@ -4,7 +4,7 @@
 ![GitHub License](https://img.shields.io/github/license/gavenda/basura?style=for-the-badge)
 
 It connects to the Discord gateway with [discord.js](https://discord.js.org), runs on [Bun](https://bun.sh), keeps
-its data in a local SQLite database, and caches AniList responses in [Valkey](https://valkey.io). To view the gateway version of this bot, please click [here](https://github.com/gavenda/studio-helper/tree/main/bot/basura).
+its data in a local SQLite database, and caches AniList responses in [Valkey](https://valkey.io). To view the original gateway version of this bot, from before this rewrite, please click [here](https://github.com/gavenda/studio-helper/tree/main/bot/basura).
 
 To add this bot to your server, click [here](https://discord.com/api/oauth2/authorize?client_id=870014073197170799&permissions=536870912&scope=applications.commands%20bot).
 
@@ -119,9 +119,6 @@ Go ahead. Feel free to clone or fork this repo. It runs as a rootless [Podman Qu
 pod, with the bot and its Valkey cache side by side:
 
 ```sh
-# Build the image
-bun run image
-
 # Secrets for the container
 mkdir -p ~/.config/basura
 cp .env.example ~/.config/basura/basura.env   # then fill it in
@@ -143,7 +140,28 @@ Valkey keeps nothing on disk and holds at most 128 MB, dropping the least recent
 health check fails; the bot's fails while it's disconnected from the gateway or from Valkey. Logs are in
 `journalctl --user -u basura` and `journalctl --user -u basura-valkey`.
 
-To update, pull the changes, run `bun run image` again, and `systemctl --user restart basura`.
+The image is [published to GHCR](https://github.com/gavenda/basura/pkgs/container/basura) for every version tag, as
+`ghcr.io/gavenda/basura:latest` (and `:3`, `:3.0`, `:3.0.0`). To update automatically, enable Podman's auto-update
+timer, which pulls newer images and restarts the units, rolling back if the new one fails:
+
+```sh
+systemctl --user enable --now podman-auto-update.timer
+```
+
+To run your own build instead, `bun run image` and set `Image=localhost/basura:latest` in `basura.container`, removing
+its `AutoUpdate=` line.
+
+### Releasing
+
+Bump `version` in [package.json](package.json), commit it as `Release vX.Y.Z`, and push an annotated tag:
+
+```sh
+git tag -a v3.1.0 -m "Basura v3.1.0"
+git push origin main v3.1.0
+```
+
+The [Publish container](.github/workflows/publish.yml) workflow checks the tag, then builds and pushes the image.
+Pre-release tags like `v3.1.0-rc.1` are published without moving `latest`.
 
 ## What are the future plans for this?
 

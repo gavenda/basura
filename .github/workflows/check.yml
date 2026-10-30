@@ -1,0 +1,33 @@
+name: Check
+
+# Format and type-check every push to main and every pull request. Publishing an
+# image is separate (publish.yml), and calls this first so a release is checked too.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+# A newer push to the same branch or pull request supersedes an in-flight run, but a
+# release check (called from publish.yml for a tag) is never cancelled.
+concurrency:
+  group: check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+jobs:
+  check:
+    name: Format and type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # bun fmt shipped in Bun 1.4.4, which '1.4' resolves to or past.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4'
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun run format:check
+
+      - run: bun run type-check
