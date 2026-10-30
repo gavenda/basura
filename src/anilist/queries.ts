@@ -37,7 +37,7 @@ export const findMediaQuery = gqlmin(/* GraphQL */ `
       format
       status
       source(version: 3)
-      description(asHtml: true)
+      description(asHtml: false)
       characters(sort: RELEVANCE, perPage: 5) {
         edges {
           role
@@ -113,7 +113,7 @@ export const findCharacterQuery = gqlmin(/* GraphQL */ `
         month
         day
       }
-      description(asHtml: true)
+      description(asHtml: false)
       siteUrl
       media(perPage: 5) {
         edges {
@@ -166,7 +166,7 @@ export const findStaffQuery = gqlmin(/* GraphQL */ `
         large
         medium
       }
-      description(asHtml: true)
+      description(asHtml: false)
       siteUrl
       characters(perPage: 5) {
         edges {

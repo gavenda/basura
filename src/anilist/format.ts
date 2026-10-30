@@ -1,7 +1,7 @@
 import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord.js';
-import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { compact } from '../utils/array';
 import { isBlank, titleCase, truncate } from '../utils/strings';
+import { aniListToDiscordMarkdown } from './markdown';
 import { MediaFormat } from './types';
 
 /** Discord's limit for an autocomplete choice name. */
@@ -39,16 +39,19 @@ export const nameChoices = (people: (Person | null)[] | null | undefined): APIAp
 };
 
 const sourceRegex = /^(\(Source: .*\))$/gm;
-const headingRegex = /^\*\*(.*)\*\*/gm;
+/** A line opening with bold text, such as `**Height:** 150 cm`, even when the line is a spoiler. */
+const headingRegex = /^(\|\|)?\*\*(.*)\*\*/gm;
 
 /**
- * Converts an AniList HTML description to Discord markdown, with source and heading lines made small.
+ * Converts an AniList markdown description to Discord markdown, with source and heading lines made small.
  * Not shortened here: the card fits it to the room its page has left.
  */
-export const descriptionToMarkdown = (html: string | null, fallback: string): string => {
-  if (isBlank(html)) return fallback;
+export const descriptionToMarkdown = (description: string | null, fallback: string): string => {
+  if (isBlank(description)) return fallback;
 
-  const markdown = NodeHtmlMarkdown.translate(html!).replaceAll(sourceRegex, '-# $1').replaceAll(headingRegex, '-# $1');
+  const markdown = aniListToDiscordMarkdown(description!)
+    .replaceAll(sourceRegex, '-# $1')
+    .replaceAll(headingRegex, '-# $1$2');
 
   return isBlank(markdown) ? fallback : markdown.trim();
 };
