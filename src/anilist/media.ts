@@ -1,4 +1,4 @@
-import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord-api-types/v10';
+import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord.js';
 import { compact } from '../utils/array';
 import { titleCase, truncate } from '../utils/strings';
 import { Card } from './card';
@@ -33,13 +33,11 @@ const NATIVE_TITLE_LOCALES: Record<string, Locale[]> = {
 
 export const findMediaTitles = async (
   search: string,
-  mediaType: MediaType,
-  env: Env
+  mediaType: MediaType
 ): Promise<APIApplicationCommandOptionChoice[]> => {
   const result = await aniListSearchRequest<FindMediaTitlesQuery>({
     query: findMediaTitlesQuery,
-    variables: { search: normalizeSearch(search), mediaType },
-    env
+    variables: { search: normalizeSearch(search), mediaType }
   });
   const choices: APIApplicationCommandOptionChoice[] = [];
 
@@ -61,21 +59,20 @@ export const findMediaTitles = async (
   return choices;
 };
 
-export const findMedia = async (mediaId: number, mediaType: MediaType, env: Env): Promise<Media | null> => {
+export const findMedia = async (mediaId: number, mediaType: MediaType): Promise<Media | null> => {
   const result = await aniListRequest<FindMediaQuery>({
     query: findMediaQuery,
     variables: { mediaId, mediaType },
-    env,
     cacheTtl: CACHE_TTL.details
   });
   return result.Media;
 };
 
-export const findMediaListEntries = async (userIds: number[], mediaId: number, env: Env) => {
+export const findMediaListEntries = async (userIds: number[], mediaId: number) => {
   const result = await aniListRequest<FindMediaListEntriesQuery>({
     query: findMediaListEntriesQuery,
     variables: { userIds, mediaId },
-    env
+    cacheTtl: CACHE_TTL.memberEntries
   });
   return compact(result.Page?.mediaList ?? []);
 };

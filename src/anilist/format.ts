@@ -1,5 +1,5 @@
-import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord-api-types/v10';
-import { NodeHtmlMarkdown } from 'node-html-markdown-cloudflare';
+import { APIApplicationCommandOptionChoice, Locale, LocalizationMap } from 'discord.js';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 import { compact } from '../utils/array';
 import { isBlank, titleCase, truncate } from '../utils/strings';
 import { MediaFormat } from './types';

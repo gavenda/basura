@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2021",
-    "lib": ["es2021"],
-    "module": "es2022",
+    "target": "esnext",
+    "lib": ["esnext"],
+    "module": "preserve",
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
     "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": true,
     "noEmit": true,
     "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "types": [],
-    "paths": {}
+    "types": ["bun"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "codegen.ts"],
   "exclude": ["dist", "node_modules"]
 }

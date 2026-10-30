@@ -4,44 +4,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "wrangler dev --env dev --local",
-    "ngrok": "ngrok http --url=heterocyclic-ursula-ungeologically.ngrok-free.dev 8787",
-    "deploy": "wrangler deploy --env prod",
-    "deploy:dev": "wrangler deploy --env dev",
-    "register": "bun --env-file=.prod.vars src/register.ts",
-    "register:dev": "bun --env-file=.dev.vars src/register.ts --dev",
-    "prettier": "prettier --write src",
-    "types": "wrangler types ./src/worker-configuration.d.ts",
+    "dev": "NODE_ENV=development bun --watch src/index.ts",
+    "start": "NODE_ENV=production bun src/index.ts",
+    "build": "bun build src/index.ts --target=bun --minify --sourcemap=linked --outdir=dist",
+    "commands:deploy": "bun src/discord/deploy-commands.ts",
+    "image": "podman build -t localhost/basura:latest -f Containerfile .",
+    "format": "bun fmt src",
     "prepare": "husky",
     "type-check": "tsc",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "format:check": "bun fmt --check src"
   },
   "author": "Gavenda <gavenda@disroot.org>",
   "license": "MIT",
   "dependencies": {
-    "discord-api-types": "^0.38.57",
-    "discord-interactions": "^4.4.0",
-    "discord-snowflake": "^2.0.0",
+    "@logtape/logtape": "^2.4.2",
+    "discord.js": "^14.27.0",
     "gqlmin": "^0.3.2",
-    "node-html-markdown-cloudflare": "^1.3.0"
+    "node-html-markdown": "^2.0.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^7.4.6",
     "@graphql-codegen/typescript-operations": "^6.2.0",
+    "@types/bun": "^1.4.4",
     "graphql": "^17.0.2",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
-    "ngrok": "5.0.0-beta.2",
-    "prettier": "^3.9.10",
-    "typescript": "^7.0.2",
-    "wrangler": "^4.152.0"
-  },
-  "lint-staged": {
-    "**/*.ts": "prettier --write"
-  },
-  "trustedDependencies": [
-    "esbuild",
-    "ngrok",
-    "workerd"
-  ]
+    "typescript": "^7.0.2"
+  }
 }

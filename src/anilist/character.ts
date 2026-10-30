@@ -8,20 +8,18 @@ import { FindCharacterNamesQuery, FindCharacterQuery, MediaType } from './types'
 
 export type Character = NonNullable<FindCharacterQuery['Character']>;
 
-export const findCharacterNames = async (search: string, env: Env) => {
+export const findCharacterNames = async (search: string) => {
   const result = await aniListSearchRequest<FindCharacterNamesQuery>({
     query: findCharacterNamesQuery,
-    variables: { search: normalizeSearch(search) },
-    env
+    variables: { search: normalizeSearch(search) }
   });
   return nameChoices(result.Page?.characters);
 };
 
-export const findCharacter = async (characterId: number, env: Env): Promise<Character | null> => {
+export const findCharacter = async (characterId: number): Promise<Character | null> => {
   const result = await aniListRequest<FindCharacterQuery>({
     query: findCharacterQuery,
     variables: { characterId },
-    env,
     cacheTtl: CACHE_TTL.details
   });
   return result.Character;

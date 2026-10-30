@@ -14,7 +14,7 @@ const config: CodegenConfig = {
       }
     }
   },
-  hooks: { afterAllFileWrite: ['prettier --write'] }
+  hooks: { afterAllFileWrite: ['bun fmt'] }
 };
 
 export default config;

@@ -5,7 +5,7 @@ import {
   APITextDisplayComponent,
   ButtonStyle,
   ComponentType
-} from 'discord-api-types/v10';
+} from 'discord.js';
 import { limitTextByParagraphs } from '../utils/strings';
 
 /** Discord's limit on the text across all Text Displays in one Components V2 message. */
@@ -45,8 +45,8 @@ export interface Card {
 }
 
 export interface CardView {
-  /** Prefix for the page buttons' custom_id, `<command>:<id>`. The page id is added after it. */
-  navId: string;
+  /** Builds a page button's custom_id from the page id. */
+  pageCustomId: (pageId: string) => string;
   /** Page to show. Falls back to the first page when missing or unknown. */
   pageId?: string;
 }
@@ -162,7 +162,7 @@ export const cardToComponents = (card: Card, view: CardView): APIMessageTopLevel
       components: pages.slice(0, 5).map((p) => ({
         type: ComponentType.Button,
         style: p === page ? ButtonStyle.Primary : ButtonStyle.Secondary,
-        custom_id: `${view.navId}:${p.id}`,
+        custom_id: view.pageCustomId(p.id),
         label: p.label,
         disabled: p === page
       }))

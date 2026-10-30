@@ -1,8 +1,2 @@
-/**
- * Sleeps for a specified amount of time.
- * @param {number} ms - Milliseconds to sleep.
- * @returns {Promise<void>}
- */
-export const sleep = (ms: number): Promise<void> => {
-  return new Promise((r) => setTimeout(r, ms));
-};
+/** Sleeps for the given number of milliseconds. */
+export const sleep = (ms: number): Promise<void> => Bun.sleep(Math.max(0, ms));

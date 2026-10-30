@@ -1,2 +1,2 @@
-bunx lint-staged --quiet
+bun fmt --staged
 bun run --silent type-check

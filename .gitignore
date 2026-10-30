@@ -169,12 +169,14 @@ dist
 .yarn/install-state.gz
 .pnp.\*
 
-# wrangler project
+# environment files
 
-.dev.vars
-.prod.vars
-.wrangler/
+.env.production
 
-# data
-d1-data.sql
+# local data
+
+data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 src-old

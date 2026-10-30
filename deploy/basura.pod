@@ -1,0 +1,10 @@
+[Unit]
+Description=Basura pod (bot and its Valkey cache)
+
+[Pod]
+PodName=basura
+# The containers share this pod's network namespace and reach each other on 127.0.0.1, so no
+# Podman network is created. Nothing is published: the bot only makes outgoing connections.
+
+[Install]
+WantedBy=default.target

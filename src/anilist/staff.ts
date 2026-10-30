@@ -8,20 +8,18 @@ import { FindStaffNamesQuery, FindStaffQuery } from './types';
 
 export type Staff = NonNullable<FindStaffQuery['Staff']>;
 
-export const findStaffNames = async (search: string, env: Env) => {
+export const findStaffNames = async (search: string) => {
   const result = await aniListSearchRequest<FindStaffNamesQuery>({
     query: findStaffNamesQuery,
-    variables: { search: normalizeSearch(search) },
-    env
+    variables: { search: normalizeSearch(search) }
   });
   return nameChoices(result.Page?.staff);
 };
 
-export const findStaff = async (staffId: number, env: Env): Promise<Staff | null> => {
+export const findStaff = async (staffId: number): Promise<Staff | null> => {
   const result = await aniListRequest<FindStaffQuery>({
     query: findStaffQuery,
     variables: { staffId },
-    env,
     cacheTtl: CACHE_TTL.details
   });
   return result.Staff;
