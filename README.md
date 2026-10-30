@@ -115,41 +115,24 @@ To test commands in your own server, set `DISCORD_DEV_GUILD_ID` in `.env` to you
 
 ## I want to deploy my own!
 
-Go ahead. Feel free to clone or fork this repo. It runs as a rootless [Podman Quadlet](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
-pod, with the bot and its Valkey cache side by side:
+Go ahead. Feel free to clone or fork this repo. The image is
+[published to GHCR](https://github.com/gavenda/basura/pkgs/container/basura) for every version tag, as
+`ghcr.io/gavenda/basura:latest` (and `:3`, `:3.0`, `:3.0.0`). It needs a Valkey (or Redis) cache, since AniList's
+rate limits are strict. With Podman, a pod keeps the two side by side on `127.0.0.1`:
 
 ```sh
-# Secrets for the container
-mkdir -p ~/.config/basura
-cp .env.example ~/.config/basura/basura.env   # then fill it in
-chmod 600 ~/.config/basura/basura.env
+cp .env.example .env   # then fill it in
 
-# Install the units and start the bot
-mkdir -p ~/.config/containers/systemd
-cp deploy/* ~/.config/containers/systemd/
-systemctl --user daemon-reload
-systemctl --user start basura-pod
-
-# Keep it running when you're logged out
-loginctl enable-linger "$USER"
+podman pod create --name basura
+podman run -d --pod basura --name basura-valkey docker.io/valkey/valkey:9-alpine \
+  valkey-server --bind 127.0.0.1 --save --appendonly no --maxmemory 128mb --maxmemory-policy allkeys-lru
+podman run -d --pod basura --name basura --env-file .env \
+  -e REDIS_URL=redis://127.0.0.1:6379 -v basura-data:/data ghcr.io/gavenda/basura:latest
 ```
 
-The two containers share the pod's network and talk over `127.0.0.1`, so no Podman network is created, and nothing
-is published since the bot only makes outgoing connections. The bot keeps its database on the `basura-data` volume.
-Valkey keeps nothing on disk and holds at most 128 MB, dropping the least recently used entries first. The bot requires Valkey: it starts once Valkey is healthy and stops with it. Podman restarts either container when its
-health check fails; the bot's fails while it's disconnected from the gateway or from Valkey. Logs are in
-`journalctl --user -u basura` and `journalctl --user -u basura-valkey`.
-
-The image is [published to GHCR](https://github.com/gavenda/basura/pkgs/container/basura) for every version tag, as
-`ghcr.io/gavenda/basura:latest` (and `:3`, `:3.0`, `:3.0.0`). To update automatically, enable Podman's auto-update
-timer, which pulls newer images and restarts the units, rolling back if the new one fails:
-
-```sh
-systemctl --user enable --now podman-auto-update.timer
-```
-
-To run your own build instead, `bun run image` and set `Image=localhost/basura:latest` in `basura.container`, removing
-its `AutoUpdate=` line.
+The bot keeps its database in `/data`. Its health check is `http://127.0.0.1:8080/health`, which fails while it's
+disconnected from the gateway or from Valkey. To run your own build instead, `bun run image` and use
+`localhost/basura:latest`.
 
 ### Releasing
 
